@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+import { u, NAV, CONTACT } from '../lib';
+interface Props { title: string; description: string }
+const { title, description } = Astro.props;
+const path = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ''), '').replace(/\/$/, '') || '/';
+---
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>{title === 'בית' ? 'The Y 3211 · קבוצת הרובוטיקה של ירוחם' : `${title} · The Y 3211`}</title>
+  <meta name="description" content={description} />
+  <meta property="og:title" content={title} /><meta property="og:description" content={description} />
+  <meta name="theme-color" content="#0B0B0C" />
+  <link rel="icon" href={u('/assets/logo.jpg')} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@500&display=swap" />
+</head>
+<body>
+  <a class="skip" href="#main">דלג לתוכן</a>
+  <nav id="nav"><div class="w">
+    <a href={u('/')} aria-label="The Y 3211, דף הבית"><img src={u('/assets/logo.jpg')} alt="" width="58" height="34" /></a>
+    <div class="links" id="links">
+      {NAV.map(n => <a href={u(n.href)} aria-current={path === n.href ? 'page' : undefined}>{n.label}</a>)}
+    </div>
+    <div class="right">
+      <a href={u('/support')} aria-current={path === '/support' ? 'page' : undefined}>תמכו בנו</a>
+      <a class="join" href={u('/join')}>הצטרפו</a>
+      <button class="menu" aria-expanded="false" aria-controls="links" id="menu">תפריט</button>
+    </div>
+  </div></nav>
+  <main id="main"><slot /></main>
+  <footer><div class="w">
+    <div><b>The Y · FRC 3211</b>{CONTACT.address}</div>
+    <div><b>יצירת קשר</b><a class="m" style="font-size:14px" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></div>
+    <div><b>עקבו</b>{CONTACT.social}</div>
+  </div></footer>
+  <script>
+    const b = document.getElementById('menu'), n = document.getElementById('nav');
+    b?.addEventListener('click', () => { const o = n!.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
+  </script>
+</body>
+</html>

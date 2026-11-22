@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>מגרש האימונים 3211</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Heebo:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one-column mobile app; top bar with XP, views swap in place; the game board is an SVG "electrical panel" scaled to width. */
+:root{
+  --bg:#F3F7FB; --surface:#FFFFFF; --ink:#0B2A45; --muted:#5A6B7F; --line:#D3DFEB;
+  --accent:#0A6BB0; --accent-2:#0F86D8; --accent-soft:#E4F0FA;
+  --good:#1D8A57; --good-soft:#E3F4EB; --warn:#C8650F; --warn-soft:#FCEFE2; --bad:#C9302A; --bad-soft:#FBE7E5;
+  --panel:#DCE5EE; --panel-hole:#B9C8D7; --comp:#FFFFFF; --comp-edge:#8FA3B8;
+  --wire-red:#D3302A; --wire-black:#1C1F24; --wire-edge:#FFFFFF; --star:#F2B01E;
+  --f-head:"Rubik","Heebo",system-ui,sans-serif; --f-body:"Heebo",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#08131F; --surface:#0F2134; --ink:#E5EEF7; --muted:#93A7BC; --line:#22394F;
+  --accent:#4BAEF2; --accent-2:#7CC8F8; --accent-soft:#12304A;
+  --good:#4CC98A; --good-soft:#123426; --warn:#F09A4A; --warn-soft:#3A2613; --bad:#F2675F; --bad-soft:#3A1715;
+  --panel:#16293D; --panel-hole:#0C1A29; --comp:#1E3550; --comp-edge:#4F6B88;
+  --wire-red:#E8473F; --wire-black:#0A0C0F; --wire-edge:#8DA2B8; --star:#F5C04A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#08131F; --surface:#0F2134; --ink:#E5EEF7; --muted:#93A7BC; --line:#22394F;
+  --accent:#4BAEF2; --accent-2:#7CC8F8; --accent-soft:#12304A;
+  --good:#4CC98A; --good-soft:#123426; --warn:#F09A4A; --warn-soft:#3A2613; --bad:#F2675F; --bad-soft:#3A1715;
+  --panel:#16293D; --panel-hole:#0C1A29; --comp:#1E3550; --comp-edge:#4F6B88;
+  --wire-red:#E8473F; --wire-black:#0A0C0F; --wire-edge:#8DA2B8; --star:#F5C04A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;direction:rtl;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 32px}
+h1,h2,h3{font-family:var(--f-head);text-wrap:balance;margin:0;line-height:1.2}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,.term:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.ltr{direction:ltr;unicode-bidi:isolate}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;gap:12px;padding-block:12px;border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.brand{display:flex;align-items:center;gap:10px;margin-inline-end:auto;background:none;border:0;padding:0}
+.brand .mark{width:38px;height:38px;border-radius:10px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-family:var(--f-head);font-weight:800;font-size:13px}
+.brand b{font-family:var(--f-head);font-size:17px;white-space:nowrap}
+@media (max-width:460px){.brand small,.xp .track{display:none}.brand b{font-size:15px}.bar{gap:8px}}
+.brand small{display:block;color:var(--muted);font-size:12px;line-height:1}
+.xp{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.xp .lvl{font-family:var(--f-head);font-weight:700;color:var(--ink);background:var(--accent-soft);border-radius:999px;padding:2px 10px}
+.xp .track{width:72px;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.xp .fill{height:100%;background:var(--accent);transition:width .6s}
+.tabbtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px}
+.tabbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.btn{border:0;border-radius:12px;padding:12px 20px;font-weight:700;background:var(--accent);color:#fff;font-size:16px}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.small{padding:8px 14px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:default}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.eyebrow{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.muted{color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+
+/* login */
+.login{display:grid;gap:16px;padding-top:24px}
+.login .hero{display:flex;flex-direction:column;gap:8px}
+.login h1{font-size:clamp(28px,7vw,40px);font-weight:800}
+.field{display:flex;flex-direction:column;gap:6px}
+.field input{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:12px}
+
+/* world map */
+.worlds{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.world{display:flex;flex-direction:column;gap:8px;text-align:right;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:16px;min-height:132px}
+.world.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.world.off{opacity:.62;cursor:default}
+.world .ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.world h3{font-size:18px}
+.world .meta{font-size:13px;color:var(--muted);margin-top:auto}
+.prog{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--good)}
+
+/* mission path */
+.path{display:flex;flex-direction:column;gap:0;position:relative}
+.mission{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:12px 0;text-align:right;background:none;border:0;width:100%}
+.mission .node{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-head);font-weight:800;font-size:18px;border:3px solid var(--line);background:var(--surface);position:relative;z-index:1}
+.mission.done .node{background:var(--good);border-color:var(--good);color:#fff}
+.mission.open .node{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)}
+.mission.lock{cursor:default}
+.mission.lock .node{color:var(--muted)}
+.mission h3{font-size:17px}
+.mission p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.path::before{content:"";position:absolute;right:25px;top:30px;bottom:30px;width:3px;background:var(--line)}
+.stars{display:flex;gap:2px;direction:ltr}
+.stars svg{width:18px;height:18px}
+
+/* game */
+.gamehead{display:flex;align-items:flex-start;gap:12px;justify-content:space-between;flex-wrap:wrap}
+.gamehead h2{font-size:22px}
+.goal{font-size:15px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.boardwrap{background:var(--panel);border-radius:18px;padding:6px;position:relative;touch-action:manipulation}
+.board{display:block;width:100%;height:auto;max-height:72vh;user-select:none;-webkit-user-select:none}
+.board text{font-family:var(--f-head);fill:var(--ink)}
+.board .lbl{font-size:13px;font-weight:700}
+.board .sub{font-size:10.5px;fill:var(--muted);font-family:var(--f-mono)}
+.board .tag{font-family:var(--f-mono);font-size:11px;font-weight:700}
+.comp{fill:var(--comp);stroke:var(--comp-edge);stroke-width:1.5}
+.hole{fill:var(--panel-hole)}
+.term{cursor:pointer}
+.term .hit{fill:transparent}
+.term .stud{stroke:var(--comp-edge);stroke-width:2;fill:#C7CFD8}
+.term.pos .ring{stroke:var(--wire-red)} .term.neg .ring{stroke:var(--wire-black)}
+.term .ring{fill:none;stroke-width:2.5;stroke:var(--accent)}
+.term.sel .stud{fill:var(--accent-2)}
+.term.sel .halo{opacity:1}
+.term .halo{fill:none;stroke:var(--accent-2);stroke-width:3;opacity:0;animation:pulse 1s infinite}
+@keyframes pulse{0%{r:11}100%{r:19;stroke-opacity:0}}
+.wire{fill:none;stroke-linecap:round;stroke-linejoin:round;cursor:pointer}
+.wire .edge{stroke:var(--wire-edge);stroke-opacity:.9}
+.wire.hot .core{animation:glow .5s ease-in-out infinite alternate}
+@keyframes glow{from{stroke:#FF8A1F}to{stroke:#FFD15A}}
+.wire.bad .edge{stroke:var(--bad);stroke-opacity:1}
+.wire.live .flow{stroke:#FFE36E;stroke-dasharray:2 12;animation:flow .6s linear infinite;opacity:1}
+.wire .flow{opacity:0}
+@keyframes flow{to{stroke-dashoffset:-14}}
+.smoke{fill:var(--muted);opacity:.0;animation:smoke 1.6s ease-out infinite}
+@keyframes smoke{0%{opacity:.55;transform:translateY(0) scale(.6)}100%{opacity:0;transform:translateY(-34px) scale(1.6)}}
+.spark{stroke:#FFC83A;stroke-width:3;stroke-linecap:round;animation:spark .45s ease-out infinite}
+@keyframes spark{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(1.4)}}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ledon{animation:led 1.2s linear infinite}
+@keyframes led{0%{fill:#FF4D4D}33%{fill:#4DFF88}66%{fill:#4DA6FF}}
+
+/* sheet */
+.sheet{position:fixed;inset:auto 0 0 0;z-index:20;background:var(--surface);border-top:1px solid var(--line);border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.18);
+  padding:18px max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet .in{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;font-family:var(--f-mono);font-weight:700;font-size:14px;min-width:64px}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.chip .sw{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-inline-start:6px;border:1px solid var(--wire-edge)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* feedback */
+.result{display:flex;flex-direction:column;gap:10px}
+.err{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;padding:12px;border-radius:12px;background:var(--bad-soft)}
+.err.w{background:var(--warn-soft)}
+.err .ic{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--bad);color:#fff;font-weight:800;font-family:var(--f-head)}
+.err.w .ic{background:var(--warn)}
+.err p{margin:0}
+.win{background:var(--good-soft);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.win .stars svg{width:30px;height:30px}
+.win h3{font-size:22px;color:var(--good)}
+.manual{border:1px dashed var(--accent);background:var(--accent-soft);border-radius:12px;padding:14px}
+.manual table{border-collapse:collapse;width:100%;font-size:14px}
+.manual th,.manual td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;max-width:90vw}
+
+/* mentor */
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table.m{border-collapse:collapse;min-width:640px;width:100%;font-size:14px}
+table.m th,table.m td{padding:10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.m th{font-size:12px;color:var(--muted);font-weight:700}
+.pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700}
+.p-done{background:var(--good-soft);color:var(--good)} .p-stuck{background:var(--bad-soft);color:var(--bad)} .p-none{color:var(--muted)} .p-prog{background:var(--accent-soft);color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:var(--f-head);font-size:26px}
+.demo{display:inline-block;background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+"use strict";
+/* ---------- storage (preview: this device only; production: Supabase) ---------- */
+const KEY="y3211-train-v1";
+const Store={
+  load(){try{return JSON.parse(localStorage.getItem(KEY))||null}catch(e){return null}},
+  save(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+};
+let S=Store.load()||{user:null,xp:0,m:{}};
+const save=()=>Store.save(S);
+const level=xp=>Math.floor(xp/150)+1;
+
+/* ---------- content ---------- */
+const GAUGE_FOR={40:12,30:14,20:18};      // breaker A -> max AWG number (per 2025-26 manual, verify 2027)
+const GAUGES=[4,6,10,12,14,18,22];
+const WORLDS=[
+  {id:"elec",name:"חשמל וחיווט",desc:"מסלול ההספק, נתיכים, כבלים ו־CAN",icon:"bolt",on:true},
+  {id:"shop",name:"סדנה ראשונה",desc:"חלקים, כלים וזרוע העץ",icon:"tool"},
+  {id:"motor",name:"מנועים ותמסורות",desc:"יחס תמסורת, זרם וחום",icon:"gear"},
+  {id:"mech",name:"קונספטים מכניים",desc:"שוטר, ציר מת, אינטייק, מעלית",icon:"arm"},
+  {id:"fdm",name:"הדפסת FDM",desc:"כיוון, מילוי, חומרים ותקלות",icon:"print"},
+  {id:"strat",name:"אסטרטגיה",desc:"מניואל, סקאוטינג ובחירת ברית",icon:"flag"}
+];
+const ICONS={
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="currentColor"/>',
+  tool:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z" fill="currentColor"/>',
+  gear:'<circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
+  arm:'<path d="M4 20h7M7 20l3-9 7-4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="10" cy="11" r="2" fill="currentColor"/><circle cx="18" cy="6.5" r="2" fill="currentColor"/>',
+  print:'<path d="M5 4h14v4H5zM7 8l2 8h6l2-8M9 20h6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>',
+  flag:'<path d="M6 21V4M6 4h11l-2 4 2 4H6" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>'
+};
+const ico=n=>`<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* Terminal kinds: pw = single wire with colour+gauge; ch = PDH channel; dev = device (pair cable channel<->device). */
+const LEVELS={
+  m1:{title:"מסלול ההספק",short:"סוללה, מפסק ראשי ו־PDH",
+    goal:"חבר את הסוללה ל־PDH דרך המפסק הראשי. בחר לכל חוט צבע ועובי.",
+    hint:"הפלוס עובר דרך המפסק הראשי בדרך ל־PDH. המינוס הולך ישר. כל הנתיב הראשי בחוט עבה.",
+    vb:"0 0 400 500",
+    draw:L=>pdhBox(70,50,260,140,"PDH","Power Distribution Hub")+battery(50,370)+breaker(230,385),
+    terms:[
+      {id:"B+",kind:"pw",x:85,y:370,pol:"+",name:"פלוס סוללה"},{id:"B-",kind:"pw",x:165,y:370,pol:"-",name:"מינוס סוללה"},
+      {id:"BR1",kind:"pw",x:255,y:385,name:"מפסק (בורג 1)"},{id:"BR2",kind:"pw",x:325,y:385,name:"מפסק (בורג 2)"},
+      {id:"P+",kind:"pw",x:150,y:190,pol:"+",name:"PDH פלוס"},{id:"P-",kind:"pw",x:250,y:190,pol:"-",name:"PDH מינוס"}],
+    power:true,devices:[],
+    solution:[{a:"B+",b:"BR1",color:"red",gauge:6},{a:"BR2",b:"P+",color:"red",gauge:6},{a:"B-",b:"P-",color:"black",gauge:6}]},
+  m2:{title:"נתיך וכבל לכל מנוע",short:"ערוצי PDH, נתיכים ועובי כבל",
+    goal:"חבר כל התקן לערוץ PDH עם הנתיך שהוא צריך, ובחר עובי כבל שמתאים לנתיך.",
+    hint:"קרא את הנתיך שמודפס מעל כל ערוץ. עובי הכבל נקבע לפי הנתיך, לא לפי ההתקן. פתח את המניואל.",
+    vb:"0 0 400 500",manual:true,
+    draw:L=>pdhBox(20,40,360,170,"PDH","ערוצים 0 עד 3")+L.terms.filter(t=>t.kind==="ch").map(t=>fuse(t.x,150,t.amps,t.ch)).join("")+L.terms.filter(t=>t.kind==="dev").map(device).join(""),
+    terms:[
+      {id:"C0",kind:"ch",x:70,y:210,amps:30,ch:0,name:"ערוץ 0"},{id:"C1",kind:"ch",x:155,y:210,amps:40,ch:1,name:"ערוץ 1"},
+      {id:"C2",kind:"ch",x:245,y:210,amps:20,ch:2,name:"ערוץ 2"},{id:"C3",kind:"ch",x:330,y:210,amps:40,ch:3,name:"ערוץ 3"},
+      {id:"D0",kind:"dev",x:60,y:380,need:40,dev:"kraken",name:"Kraken שמאל"},{id:"D1",kind:"dev",x:150,y:380,need:20,dev:"led",name:"לדים"},
+      {id:"D2",kind:"dev",x:250,y:380,need:30,dev:"kraken",name:"Kraken אינטייק",short:1},{id:"D3",kind:"dev",x:340,y:380,need:40,dev:"kraken",name:"Kraken ימין"}],
+    power:false,
+    solution:[{a:"C1",b:"D0",gauge:12},{a:"C2",b:"D1",gauge:18},{a:"C0",b:"D2",gauge:14},{a:"C3",b:"D3",gauge:12}]},
+  m3:{title:"לוח חשמל מלא",short:"הכול ביחד, בלי רמזים בדרך",
+    goal:"חווט רובוט שלם: סוללה, מפסק ראשי, PDH ושני התקנים. הכול צריך לעבור ביקורת.",
+    hint:"קודם מסלול ההספק (פלוס דרך המפסק), אחר כך כל התקן לערוץ עם הנתיך שלו.",
+    vb:"0 0 400 520",manual:true,
+    draw:L=>pdhBox(20,40,360,150,"PDH","")+fuse(255,135,40,0)+fuse(335,135,20,1)+battery(25,410)+breaker(30,290)+L.terms.filter(t=>t.kind==="dev").map(device).join(""),
+    terms:[
+      {id:"P+",kind:"pw",x:70,y:190,pol:"+",name:"PDH פלוס"},{id:"P-",kind:"pw",x:150,y:190,pol:"-",name:"PDH מינוס"},
+      {id:"C0",kind:"ch",x:255,y:190,amps:40,ch:0,name:"ערוץ 0"},{id:"C1",kind:"ch",x:335,y:190,amps:20,ch:1,name:"ערוץ 1"},
+      {id:"BR1",kind:"pw",x:55,y:290,name:"מפסק (בורג 1)"},{id:"BR2",kind:"pw",x:125,y:290,name:"מפסק (בורג 2)"},
+      {id:"B+",kind:"pw",x:60,y:410,pol:"+",name:"פלוס סוללה"},{id:"B-",kind:"pw",x:140,y:410,pol:"-",name:"מינוס סוללה"},
+      {id:"D0",kind:"dev",x:340,y:420,need:20,dev:"led",name:"לדים"},{id:"D1",kind:"dev",x:250,y:420,need:40,dev:"kraken",name:"Kraken מעלית"}],
+    power:true,
+    solution:[{a:"B+",b:"BR1",color:"red",gauge:6},{a:"BR2",b:"P+",color:"red",gauge:6},{a:"B-",b:"P-",color:"black",gauge:6},{a:"C0",b:"D1",gauge:12},{a:"C1",b:"D0",gauge:18}]}
+};
+const MISSIONS=[
+  {id:"m1",play:true},{id:"m2",play:true},{id:"m3",play:true},
+  {id:"can",title:"שרשרת CAN",short:"מחברים התקנים בשרשרת ולא שוכחים טרמינציה"},
+  {id:"insp",title:"ביקורת טכנית",short:"מוצאים 5 טעויות בלוח חשמל אמיתי"},
+  {id:"batt",title:"נהג על סוללה גמורה",short:"נוהגים ורואים את המתח צונח עד ברואנאאוט"},
+  {id:"lic",title:"מבחן רישיון חשמל",short:"מבחן במשחק + משימה מעשית שמנטור מאשר"}
+];
+
+/* ---------- SVG drawing helpers ---------- */
+function pdhBox(x,y,w,h,t,s){
+  let holes="";for(let i=0;i<4;i++){holes+=`<circle class="hole" cx="${x+12+(i%2)*(w-24)}" cy="${y+12+(i>1)*(h-24)}" r="4"/>`}
+  return `<rect class="comp" x="${x}" y="${y}" width="${w}" height="${h}" rx="12"/>${holes}
+  <text class="lbl" x="${x+w/2}" y="${y+30}" text-anchor="middle" style="font-size:17px">${t}</text>
+  <text class="sub" x="${x+w/2}" y="${y+48}" text-anchor="middle">${s}</text>`;
+}
+function battery(x,y){
+  return `<rect class="comp" x="${x}" y="${y}" width="150" height="95" rx="8"/>
+  <rect x="${x}" y="${y}" width="150" height="18" rx="8" fill="var(--ink)" opacity=".85"/>
+  <text class="lbl" x="${x+75}" y="${y+52}" text-anchor="middle">סוללה</text>
+  <text class="sub" x="${x+75}" y="${y+70}" text-anchor="middle">12V · 18Ah</text>
+  <text class="tag" x="${x+35}" y="${y+33}" text-anchor="middle" fill="var(--wire-red)">+</text>
+  <text class="tag" x="${x+115}" y="${y+33}" text-anchor="middle" style="fill:var(--ink)">−</text>`;
+}
+function breaker(x,y){
+  return `<rect class="comp" x="${x}" y="${y}" width="120" height="62" rx="8"/>
+  <rect x="${x+48}" y="${y+40}" width="24" height="12" rx="3" fill="var(--wire-red)"/>
+  <text class="lbl" x="${x+60}" y="${y+28}" text-anchor="middle" style="font-size:12px">מפסק ראשי</text>
+  <text class="sub" x="${x+60}" y="${y+-8}" text-anchor="middle">120A</text>`;
+}
+function fuse(x,y,a,ch){
+  return `<rect x="${x-20}" y="${y-14}" width="40" height="28" rx="5" fill="${a===40?"#F2C21B":a===30?"#2E9E5B":"#E0E4EA"}" stroke="var(--comp-edge)"/>
+  <text class="tag" x="${x}" y="${y+4}" text-anchor="middle" style="fill:#1C1F24">${a}A</text>
+  <text class="sub" x="${x}" y="${y+33}" text-anchor="middle">ch ${ch}</text>`;
+}
+function device(t){
+  const x=t.x,y=t.y,w=86;
+  const pic=t.dev==="kraken"
+    ? `<g class="dv" data-dev="${t.id}"><circle cx="${x}" cy="${y+42}" r="20" fill="var(--ink)"/><circle cx="${x}" cy="${y+42}" r="13" fill="none" stroke="var(--comp)" stroke-width="2"/><path class="rotor" d="M${x} ${y+30}v24M${x-12} ${y+42}h24" stroke="var(--comp)" stroke-width="3"/></g>`
+    : `<g class="dv" data-dev="${t.id}">${[0,1,2,3,4].map(i=>`<rect class="led" x="${x-30+i*12.5}" y="${y+34}" width="9" height="14" rx="2" fill="var(--comp-edge)"/>`).join("")}</g>`;
+  return `<rect class="comp" x="${x-w/2}" y="${y}" width="${w}" height="104" rx="10"/>${pic}
+  <text class="lbl" x="${x}" y="${y+78}" text-anchor="middle" style="font-size:${t.short?10.5:11.5}px">${t.name}</text>
+  <text class="tag" x="${x}" y="${y+96}" text-anchor="middle" style="fill:var(--accent)">צריך ${t.need}A</text>`;
+}
+function termSvg(t,sel){
+  const cls=["term",t.pol==="+"?"pos":t.pol==="-"?"neg":"",sel?"sel":""].join(" ");
+  return `<g class="${cls}" data-t="${t.id}" tabindex="0" role="button" aria-label="${t.name}">
+    <circle class="hit" cx="${t.x}" cy="${t.y}" r="20"/>
+    <circle class="halo" cx="${t.x}" cy="${t.y}" r="11"/>
+    <circle class="ring" cx="${t.x}" cy="${t.y}" r="11"/>
+    <circle class="stud" cx="${t.x}" cy="${t.y}" r="6.5"/></g>`;
+}
+function wirePath(a,b,k){
+  const my=(a.y+b.y)/2+((k%3)-1)*16;
+  return `M${a.x} ${a.y}V${my}H${b.x}V${b.y}`;
+}
+const gaugeWidth=g=>({4:9,6:8,10:6.5,12:5.5,14:4.8,18:3.8,22:3})[g]||4;
+
+/* ---------- state for current game ---------- */
+let G=null; // {id,L,wires:[],sel,attempts,hint,errors,phase}
+let sheet=null,toastT=null;
+const T=id=>G.L.terms.find(t=>t.id===id);
+
+/* ---------- rendering ---------- */
+const app=document.getElementById("app");
+let view="home";
+function topbar(){
+  const lv=level(S.xp),pct=Math.round((S.xp%150)/150*100);
+  return `<header class="bar">
+    <button class="brand" data-go="home" aria-label="מסך הבית"><span class="mark">3211</span><span><b>מגרש האימונים</b><small>The Y · ירוחם</small></span></button>
+    <div class="xp" title="${S.xp} XP"><span class="lvl">רמה ${lv}</span><span class="track"><span class="fill" style="width:${pct}%;display:block"></span></span><span class="mono">${S.xp} XP</span></div>
+    <button class="tabbtn" data-go="mentor" aria-pressed="${view==="mentor"}">מנטור</button>
+  </header>`;
+}
+function stars(n,max=3){
+  let s="";for(let i=0;i<max;i++)s+=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="${i<n?"var(--star)":"var(--line)"}"/></svg>`;
+  return `<span class="stars" aria-label="${n} כוכבים">${s}</span>`;
+}
+function missionState(i){
+  const m=MISSIONS[i];if(!m.play)return"lock";
+  if(S.m[m.id]&&S.m[m.id].done)return"done";
+  if(i===0||(S.m[MISSIONS[i-1].id]&&S.m[MISSIONS[i-1].id].done))return"open";
+  return"lock";
+}
+function render(){
+  if(!S.user){app.innerHTML=loginView();bindLogin();return}
+  let body="";
+  if(view==="home")body=homeView();
+  else if(view==="elec")body=worldView();
+  else if(view==="game")body=gameView();
+  else if(view==="mentor")body=mentorView();
+  app.innerHTML=topbar()+body;
+  if(view==="game")bindGame();
+}
+function loginView(){
+  return `<section class="login">
+    <div class="hero"><span class="eyebrow">The Y · 3211 · ירוחם</span>
+      <h1>מגרש האימונים</h1>
+      <p class="muted">כל מה שצריך לדעת כדי לבנות רובוט, במשימות קצרות. מתחילים מחשמל.</p></div>
+    <form class="card" id="lf" style="display:grid;gap:14px">
+      <div class="field"><label for="ln">השם שלך</label><input id="ln" required maxlength="30" autocomplete="nickname" placeholder="למשל: נועה כ."></div>
+      <div class="field"><label for="lp">קוד אישי (4 ספרות, מקבלים מהמנטור)</label><input id="lp" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4" class="mono ltr" style="text-align:right" placeholder="1234"></div>
+      <button class="btn" type="submit">כניסה</button>
+      <p class="note">גרסת תצוגה: ההתקדמות נשמרת רק במכשיר הזה. בגרסה האמיתית היא נשמרת בענן והמנטור רואה אותה.</p>
+    </form></section>`;
+}
+function bindLogin(){
+  document.getElementById("lf").addEventListener("submit",e=>{e.preventDefault();
+    S.user={name:document.getElementById("ln").value.trim(),pin:document.getElementById("lp").value};save();view="home";render()});
+}
+function homeView(){
+  const done=MISSIONS.filter(m=>S.m[m.id]&&S.m[m.id].done).length;
+  return `<section style="display:flex;flex-direction:column;gap:6px;padding-top:8px">
+      <span class="eyebrow">שלום ${esc(S.user.name)}</span>
+      <h1 style="font-size:28px">בחר עולם</h1>
+      <p class="muted" style="margin:0">כל עולם הוא שביל משימות. בסוף כל עולם יש מבחן רישיון שמנטור מאשר בסדנה.</p></section>
+    <div class="worlds">${WORLDS.map(w=>w.on?
+      `<button class="world on" data-go="elec"><span class="ico">${ico(w.icon)}</span><h3>${w.name}</h3><span class="muted" style="font-size:14px">${w.desc}</span>
+        <span class="meta">${done} מתוך ${MISSIONS.length} משימות</span><span class="prog"><i style="width:${done/MISSIONS.length*100}%"></i></span></button>`:
+      `<div class="world off"><span class="ico">${ico(w.icon)}</span><h3>${w.name}</h3><span class="muted" style="font-size:14px">${w.desc}</span><span class="meta">בקרוב</span></div>`).join("")}</div>`;
+}
+function worldView(){
+  return `<section style="display:flex;flex-direction:column;gap:6px;padding-top:8px">
+    <button class="btn ghost small" data-go="home" style="align-self:flex-start">→ כל העולמות</button>
+    <span class="eyebrow">עולם 1</span><h1 style="font-size:28px">חשמל וחיווט</h1>
+    <p class="muted" style="margin:0">ברובוט אמיתי טעות חשמל שורפת בקר או עוצרת אותך באמצע מקצה. פה מותר לטעות.</p></section>
+    <div class="path">${MISSIONS.map((m,i)=>{
+      const st=missionState(i),L=LEVELS[m.id]||m,rec=S.m[m.id];
+      const right=st==="done"?stars(rec.stars):st==="open"?`<span class="pill p-prog">שחק</span>`:`<span class="pill p-none">${m.play?"נעול":"בקרוב"}</span>`;
+      return `<button class="mission ${st}" ${st==="lock"?"disabled":""} data-play="${m.id}">
+        <span class="node">${st==="done"?"✓":i+1}</span><span><h3>${L.title}</h3><p>${L.short}</p></span>${right}</button>`}).join("")}</div>`;
+}
+function gameView(){
+  const L=G.L;
+  const wires=G.wires.map((w,k)=>{
+    const a=T(w.a),b=T(w.b),d=wirePath(a,b,k),cls=["wire",G.flags[w.id]||""].join(" ");
+    if(w.type==="pair"){
+      const gw=gaugeWidth(w.gauge);
+      const d2=wirePath({x:a.x+7,y:a.y},{x:b.x+7,y:b.y},k);
+      return `<g class="${cls}" data-w="${w.id}">
+        <path class="edge" d="${d}" stroke-width="${gw+3}"/><path class="core" d="${d}" stroke="var(--wire-red)" stroke-width="${gw}"/>
+        <path class="edge" d="${d2}" stroke-width="${gw+3}"/><path class="core" d="${d2}" stroke="var(--wire-black)" stroke-width="${gw}"/>
+        <path class="flow" d="${d}" stroke-width="2.5"/>
+        <path d="${d}" stroke="transparent" stroke-width="18"/></g>`;
+    }
+    const gw=gaugeWidth(w.gauge);
+    return `<g class="${cls}" data-w="${w.id}">
+      <path class="edge" d="${d}" stroke-width="${gw+3}"/><path class="core" d="${d}" stroke="${w.color==="red"?"var(--wire-red)":"var(--wire-black)"}" stroke-width="${gw}"/>
+      <path class="flow" d="${d}" stroke-width="2.5"/><path d="${d}" stroke="transparent" stroke-width="18"/></g>`;
+  }).join("");
+  const fx=(G.fx||[]).join("");
+  const svg=`<svg class="board" viewBox="${L.vb}" role="application" aria-label="לוח חשמל">${L.draw(L)}${wires}${L.terms.map(t=>termSvg(t,G.sel===t.id)).join("")}${fx}</svg>`;
+  let res="";
+  if(G.phase==="win"){
+    const r=S.m[G.id];
+    res=`<div class="win"><h3>${G.shown?"זה הפתרון":"הרובוט חי!"}</h3>${stars(G.earned)}
+      <p style="margin:0">${G.shown?"עברנו על הפתרון ביחד. נסה שוב בלי עזרה כדי לקבל כוכבים.":`קיבלת <b class="mono">+${G.gain} XP</b>. ${G.attempts===1?"בניסיון הראשון!":`ב־${G.attempts} ניסיונות.`}`}</p>
+      <div class="row"><button class="btn" data-go="elec">לשביל המשימות</button><button class="btn ghost" data-play="${G.id}">שחק שוב</button></div></div>`;
+  }else if(G.errors&&G.errors.length){
+    res=`<div class="result"><p style="margin:0;font-weight:700">${G.errors.length===1?"בעיה אחת":G.errors.length+" בעיות"} בלוח. תקן ובדוק שוב.</p>
+      ${G.errors.map(e=>`<div class="err ${e.sev==="w"?"w":""}"><span class="ic">!</span><p>${e.text}</p></div>`).join("")}
+      ${G.attempts>=2?`<button class="btn ghost small" id="solve" style="align-self:flex-start">הצג פתרון (בלי כוכבים)</button>`:""}</div>`;
+  }
+  const manual=G.manualOpen?`<div class="manual"><p style="margin:0 0 8px;font-weight:700">מתוך המניואל: נתיך ועובי כבל מינימלי</p>
+    <table><thead><tr><th>נתיך בערוץ</th><th>כבל מינימלי</th></tr></thead><tbody>
+    <tr><td class="mono">40A</td><td class="mono">12 AWG</td></tr><tr><td class="mono">30A</td><td class="mono">14 AWG</td></tr><tr><td class="mono">20A</td><td class="mono">18 AWG</td></tr>
+    <tr><td>נתיב ראשי (סוללה, מפסק, PDH)</td><td class="mono">6 AWG</td></tr></tbody></table>
+    <p class="note" style="margin:8px 0 0">מספר AWG קטן יותר = חוט עבה יותר. לפי המניואל של 2025 ו־2026, לאמת מול המניואל של 2027.</p></div>`:"";
+  return `<section class="gamehead">
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 280px">
+        <button class="btn ghost small" data-go="elec" style="align-self:flex-start">→ שביל המשימות</button>
+        <span class="eyebrow">משימה ${MISSIONS.findIndex(m=>m.id===G.id)+1} · חשמל וחיווט</span>
+        <h2>${L.title}</h2><p class="goal" style="margin:0">${L.goal}</p>
+        <p class="note" style="margin:0">לוחצים על בורג אחד ואז על בורג שני כדי למתוח חוט. לחיצה על חוט מוחקת או משנה אותו.</p></div>
+    </section>
+    <div class="boardwrap">${svg}</div>
+    ${G.phase!=="win"?`<div class="row">
+      <button class="btn" id="check" ${G.wires.length?"":"disabled"}>בדוק חיווט</button>
+      ${L.manual?`<button class="btn ghost" id="man">${G.manualOpen?"סגור מניואל":"פתח מניואל"}</button>`:""}
+      <button class="btn ghost" id="hint">${G.hint?"רמז: "+L.hint:"רמז (−1 כוכב)"}</button>
+      <button class="btn ghost small" id="clear">נקה הכול</button></div>`:""}
+    ${manual}${res}`;
+}
+
+/* ---------- game logic ---------- */
+function startGame(id){
+  G={id,L:LEVELS[id],wires:[],sel:null,attempts:0,hint:false,errors:null,flags:{},fx:[],phase:"play",n:0};
+  view="game";render();window.scrollTo(0,0);
+}
+function bindGame(){
+  const svg=app.querySelector(".board");if(!svg)return;
+  svg.querySelectorAll(".term").forEach(el=>{
+    const f=()=>tapTerm(el.dataset.t);
+    el.addEventListener("click",f);el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f()}});
+  });
+  svg.querySelectorAll(".wire").forEach(el=>el.addEventListener("click",()=>editWire(el.dataset.w)));
+  const on=(id,f)=>{const b=document.getElementById(id);if(b)b.addEventListener("click",f)};
+  on("check",check);on("clear",()=>{if(G.phase==="win")return;G.wires=[];G.flags={};G.fx=[];G.errors=null;render()});
+  on("hint",()=>{if(!G.hint){G.hint=true;render()}});
+  on("man",()=>{G.manualOpen=!G.manualOpen;render()});
+  on("solve",showSolution);
+  if(G.phase==="win")animateDevices();
+}
+function tapTerm(id){
+  if(G.phase==="win")return;
+  if(!G.sel){G.sel=id;render();return}
+  if(G.sel===id){G.sel=null;render();return}
+  const a=T(G.sel),b=T(id);
+  const kinds=[a.kind,b.kind].sort().join("-");
+  if(kinds==="ch-dev")openSheet({a:a.kind==="ch"?a.id:b.id,b:a.kind==="ch"?b.id:a.id,type:"pair"});
+  else if(kinds==="pw-pw")openSheet({a:a.id,b:b.id,type:"single"});
+  else{G.sel=id;render();toast(a.kind==="dev"&&b.kind==="dev"?"התקן מתחבר לערוץ ב־PDH, לא להתקן אחר":a.kind==="ch"&&b.kind==="ch"?"מחברים ערוץ להתקן, לא ערוץ לערוץ":"ערוצי ה־PDH מתחברים להתקנים, לא לסוללה");return}
+}
+function editWire(wid){if(G.phase==="win")return;const w=G.wires.find(x=>x.id===wid);openSheet(Object.assign({},w),true)}
+function openSheet(w,existing){
+  closeSheet();
+  w.color=w.color||(w.type==="single"?null:undefined);w.gauge=w.gauge||null;
+  const a=T(w.a),b=T(w.b);
+  const el=document.createElement("div");el.className="sheet";el.setAttribute("role","dialog");el.setAttribute("aria-label","הגדרת חוט");
+  const draw=()=>{
+    el.innerHTML=`<div class="in"><h3 style="font-size:18px">${existing?"עריכת חוט":"חוט חדש"}: ${a.name} ← ${b.name}</h3>
+    ${w.type==="single"?`<div><p style="margin:0 0 6px" class="muted">צבע</p><div class="chips">
+      <button class="chip" data-c="red" aria-pressed="${w.color==="red"}">אדום<span class="sw" style="background:var(--wire-red)"></span></button>
+      <button class="chip" data-c="black" aria-pressed="${w.color==="black"}">שחור<span class="sw" style="background:var(--wire-black)"></span></button></div></div>`
+      :`<p style="margin:0" class="muted">כבל זוגי: אדום לפלוס, שחור למינוס.</p>`}
+    <div><p style="margin:0 0 6px" class="muted">עובי (AWG)</p><div class="chips">${GAUGES.map(g=>`<button class="chip" data-g="${g}" aria-pressed="${w.gauge===g}">${g}</button>`).join("")}</div></div>
+    <div class="row"><button class="btn" id="ok" ${(w.gauge&&(w.type==="pair"||w.color))?"":"disabled"}>${existing?"שמור":"חבר"}</button>
+      ${existing?`<button class="btn ghost" id="del" style="color:var(--bad)">מחק חוט</button>`:""}
+      <button class="btn ghost" id="cancel">ביטול</button></div></div>`;
+    el.querySelectorAll("[data-c]").forEach(c=>c.onclick=()=>{w.color=c.dataset.c;draw()});
+    el.querySelectorAll("[data-g]").forEach(c=>c.onclick=()=>{w.gauge=+c.dataset.g;draw()});
+    el.querySelector("#cancel").onclick=()=>{closeSheet();G.sel=null;render()};
+    const d=el.querySelector("#del");if(d)d.onclick=()=>{G.wires=G.wires.filter(x=>x.id!==w.id);clearFx();closeSheet();render()};
+    el.querySelector("#ok").onclick=()=>{
+      if(existing){const i=G.wires.findIndex(x=>x.id===w.id);G.wires[i]=w}
+      else{w.id="w"+(++G.n);G.wires.push(w)}
+      G.sel=null;clearFx();closeSheet();render()};
+  };
+  draw();document.body.appendChild(el);sheet=el;
+  const first=el.querySelector(".chip");if(first)first.focus();
+}
+function closeSheet(){if(sheet){sheet.remove();sheet=null}}
+function clearFx(){G.flags={};G.fx=[];G.errors=null}
+function toast(msg){let t=document.querySelector(".toast");if(!t){t=document.createElement("div");t.className="toast";t.setAttribute("role","status");document.body.appendChild(t)}
+  t.textContent=msg;clearTimeout(toastT);toastT=setTimeout(()=>t.remove(),2600)}
+
+/* union-find over power terminals */
+function nets(wires,withBreaker){
+  const p={};const f=x=>{p[x]=p[x]||x;return p[x]===x?x:(p[x]=f(p[x]))};const u=(a,b)=>{p[f(a)]=f(b)};
+  wires.forEach(w=>u(w.a,w.b));if(withBreaker)u("BR1","BR2");return (a,b)=>f(a)===f(b);
+}
+function evaluate(){
+  const L=G.L,errs=[],flags={},fx=[];
+  const mark=(ids,cls)=>ids.forEach(i=>flags[i]=(flags[i]?flags[i]+" ":"")+cls);
+  const mid=w=>{const a=T(w.a),b=T(w.b);return{x:(a.x+b.x)/2,y:(a.y+b.y)/2}};
+  if(L.power){
+    const pw=G.wires.filter(w=>w.type==="single");
+    const same=nets(pw,true),sameNoBr=nets(pw,false);
+    if(same("B+","B-")){
+      errs.push({text:"<b>קצר!</b> הפלוס של הסוללה מחובר ישר למינוס. בסוללה אמיתית זה מאות אמפרים בשבריר שנייה: חוטים נמסים ויכולה להתחיל שריפה."});
+      mark(pw.map(w=>w.id),"bad");["B+","B-"].forEach(id=>{const t=T(id);fx.push(sparkAt(t.x,t.y))});
+    }else{
+      if(same("P+","B-")||same("P-","B+")){errs.push({text:"<b>קוטביות הפוכה.</b> ה־PDH מקבל מינוס איפה שצריך פלוס. ככה שורפים את ה־PDH ואת הבקרים."});mark(pw.map(w=>w.id),"bad")}
+      else{
+        if(!same("P+","B+"))errs.push({text:"ה־PDH לא מקבל פלוס מהסוללה. הפלוס צריך להגיע אליו דרך המפסק הראשי."});
+        if(!same("P-","B-"))errs.push({text:"המינוס של ה־PDH לא חוזר לסוללה. בלי מעגל סגור לא זורם זרם."});
+      }
+      const direct=pw.filter(w=>[w.a,w.b].sort().join()==="BR1,BR2");
+      if(direct.length){errs.push({text:"<b>חוט בין שני הברגים של המפסק</b> עוקף אותו. המפסק כבר לא יכול לכבות את הרובוט."});mark(direct.map(w=>w.id),"bad")}
+      else if(sameNoBr("B+","P+")){errs.push({text:"<b>עקפת את המפסק הראשי.</b> בלי מפסק אין דרך לכבות את הרובוט בחירום, והוא לא יעבור ביקורת."});mark(pw.filter(w=>w.a==="B+"||w.b==="B+").map(w=>w.id),"bad")}
+      const thin=pw.filter(w=>w.gauge>6);
+      if(thin.length){errs.push({text:`חוט ${thin.map(w=>w.gauge+" AWG").join(", ")} דק מדי לנתיב הראשי. כל הזרם של הרובוט עובר פה, לפעמים יותר מ־100A. צריך <b class="mono">6 AWG</b> או עבה יותר.`});
+        mark(thin.map(w=>w.id),"hot");thin.forEach(w=>fx.push(smokeAt(mid(w))))}
+      const posSide=id=>same(id,"B+"),wrongCol=pw.filter(w=>(posSide(w.a)&&w.color!=="red")||(!posSide(w.a)&&same(w.a,"B-")&&w.color!=="black"));
+      if(wrongCol.length){errs.push({sev:"w",text:"<b>צבע לא נכון.</b> פלוס בחוט אדום, מינוס בחוט שחור, כדי שכל מי שמסתכל על הלוח יבין מה הוא רואה. זה גם נבדק בביקורת."});mark(wrongCol.map(w=>w.id),"bad")}
+    }
+  }
+  const pairs=G.wires.filter(w=>w.type==="pair");
+  const chs=L.terms.filter(t=>t.kind==="ch"),devs=L.terms.filter(t=>t.kind==="dev");
+  chs.forEach(c=>{const ws=pairs.filter(w=>w.a===c.id);if(ws.length>1){errs.push({text:`<b>${c.name}</b> מזין יותר מהתקן אחד. כל התקן מקבל ערוץ ונתיך משלו.`});mark(ws.map(w=>w.id),"bad")}});
+  devs.forEach(d=>{
+    const ws=pairs.filter(w=>w.b===d.id);
+    if(!ws.length){errs.push({text:`<b>${d.name}</b> לא מחובר לשום ערוץ.`});return}
+    if(ws.length>1){errs.push({text:`<b>${d.name}</b> מחובר ליותר מערוץ אחד.`});mark(ws.map(w=>w.id),"bad");return}
+    const w=ws[0],c=T(w.a);
+    if(c.amps<d.need){errs.push({text:`<b>${d.name}</b> צריך נתיך ${d.need}A וחיברת אותו לערוץ עם ${c.amps}A. הנתיך יקפוץ באמצע מקצה והמנוע ייכבה.`});mark([w.id],"bad")}
+    else if(c.amps>d.need){errs.push({text:`<b>${d.name}</b> צריך נתיך ${d.need}A וחיברת אותו לערוץ עם ${c.amps}A. נתיך גדול מדי לא מגן: אם יהיה קצר, החוט יישרף לפני שהנתיך יקפוץ.`});mark([w.id],"bad")}
+    const req=GAUGE_FOR[c.amps];
+    if(w.gauge>req){errs.push({text:`כבל <span class="mono">${w.gauge} AWG</span> אל ${d.name} דק מדי לנתיך ${c.amps}A. צריך לפחות <b class="mono">${req} AWG</b>. החוט מתחמם לפני שהנתיך מספיק לקפוץ.`});mark([w.id],"hot");fx.push(smokeAt(mid(w)))}
+  });
+  return {errs,flags,fx};
+}
+function sparkAt(x,y){let s="";for(let i=0;i<8;i++){const a=i*Math.PI/4;s+=`<line class="spark" style="transform-origin:${x}px ${y}px" x1="${x+Math.cos(a)*8}" y1="${y+Math.sin(a)*8}" x2="${x+Math.cos(a)*20}" y2="${y+Math.sin(a)*20}"/>`}return s}
+function smokeAt(p){return [0,1,2].map(i=>`<circle class="smoke" cx="${p.x+(i-1)*7}" cy="${p.y-4}" r="6" style="animation-delay:${i*.45}s;transform-box:fill-box;transform-origin:center"/>`).join("")}
+function check(){
+  closeSheet();G.attempts++;G.sel=null;
+  const {errs,flags,fx}=evaluate();
+  G.flags=flags;G.fx=fx;G.errors=errs;
+  if(!errs.length){win(false);return}
+  render();
+  const r=app.querySelector(".result");if(r)r.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function win(shown){
+  G.phase="win";G.shown=shown;G.errors=null;G.fx=[];
+  G.wires.forEach(w=>G.flags[w.id]="live");
+  let st=shown?0:G.attempts===1?3:G.attempts<=3?2:1;if(G.hint&&st>1)st--;
+  G.earned=st;const prev=S.m[G.id]||{stars:0,attempts:0};
+  const gain=shown?0:Math.max(0,(st*30+10)-(prev.done?prev.stars*30+10:0));
+  G.gain=gain;S.xp+=gain;
+  S.m[G.id]={done:true,stars:Math.max(prev.stars||0,st),attempts:(prev.attempts||0)+1,at:Date.now()};
+  save();render();
+  const r=app.querySelector(".win");if(r)r.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function showSolution(){
+  G.wires=G.L.solution.map((s,i)=>Object.assign({id:"s"+i,type:s.color?"single":"pair"},s));
+  win(true);
+}
+function animateDevices(){
+  app.querySelectorAll(".dv .rotor").forEach(r=>r.classList.add("spin"));
+  app.querySelectorAll(".dv .led").forEach((r,i)=>{r.classList.add("ledon");r.style.animationDelay=(i*.15)+"s"});
+}
+/* track failed attempts for the mentor view */
+function recordAttempt(){if(!G||G.phase==="win")return;const r=S.m[G.id]||{stars:0,attempts:0};r.attempts=(r.attempts||0)+1;S.m[G.id]=r;save()}
+
+/* ---------- mentor (preview with sample students) ---------- */
+const DEMO=[
+  ["נועה כ.",{m1:3,m2:2,m3:2,can:"p"},310],["איתי ב.",{m1:3,m2:"s"},130],["מאיה ל.",{m1:2,m2:3,m3:3,can:3,insp:"p"},460],
+  ["עומר ד.",{m1:1},50],["שירה א.",{m1:3,m2:3,m3:2,can:2,insp:2,batt:3,lic:"p"},720],["יונתן מ.",{m1:"s"},0],
+  ["תמר ש.",{m1:2,m2:2,m3:"s"},180],["אורי ח.",{},0]
+];
+function mentorView(){
+  const cols=MISSIONS.map(m=>(LEVELS[m.id]||m).title);
+  const me=S.user?[S.user.name+" (אתה)",Object.fromEntries(MISSIONS.map(m=>{const r=S.m[m.id];return[m.id,r?(r.done?r.stars||"✓":(r.attempts>=3?"s":"p")):undefined]})),S.xp]:null;
+  const rows=(me?[me]:[]).concat(DEMO);
+  const cell=v=>v===undefined?`<span class="pill p-none">–</span>`:v==="s"?`<span class="pill p-stuck">תקוע</span>`:v==="p"?`<span class="pill p-prog">בתהליך</span>`:`<span class="pill p-done">✓ ${typeof v==="number"?"★".repeat(v):""}</span>`;
+  const stuck=rows.filter(r=>Object.values(r[1]).includes("s"));
+  const avg=Math.round(rows.reduce((a,r)=>a+r[2],0)/rows.length);
+  return `<section style="display:flex;flex-direction:column;gap:6px;padding-top:8px">
+    <span class="eyebrow">תצוגת מנטור</span><h1 style="font-size:28px">עולם החשמל</h1>
+    <p class="muted" style="margin:0">השורה הראשונה היא ההתקדמות שלך במכשיר הזה. שאר השורות הן <span class="demo">נתוני דוגמה</span> כדי להראות איך זה ייראה עם 20 תלמידים.</p></section>
+    <div class="stats">
+      <div class="card stat"><span class="muted">תלמידים</span><b class="mono">${rows.length}</b></div>
+      <div class="card stat"><span class="muted">XP ממוצע</span><b class="mono">${avg}</b></div>
+      <div class="card stat"><span class="muted">תקועים עכשיו</span><b class="mono" style="color:var(--bad)">${stuck.length}</b><span class="note">${stuck.map(r=>esc(r[0])).join(", ")||"אף אחד"}</span></div>
+      <div class="card stat"><span class="muted">הכי הרבה נכשלים ב</span><b style="font-size:18px">נתיך וכבל לכל מנוע</b><span class="note">בדרך כלל: כבל דק מדי לנתיך 40A</span></div>
+    </div>
+    <div class="tablebox"><table class="m"><thead><tr><th>תלמיד</th>${cols.map(c=>`<th>${c}</th>`).join("")}<th>XP</th><th>רישיון חשמל</th></tr></thead><tbody>
+    ${rows.map((r,i)=>`<tr><td><b>${esc(r[0])}</b></td>${MISSIONS.map(m=>`<td>${cell(r[1][m.id])}</td>`).join("")}<td class="mono">${r[2]}</td>
+      <td>${r[1].lic==="p"?`<button class="btn small" data-lic="${i}">אשר רישיון</button>`:`<span class="note">${r[1].lic?"אושר":"עוד לא"}</span>`}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="note" style="margin:0">בגרסה האמיתית: נתונים מכל המכשירים, ייצוא לאקסל לסימון ב־AttendX, והוספת תלמיד עם קוד אישי.</p>
+    <div class="row"><button class="btn ghost small" id="logout">החלף משתמש</button><button class="btn ghost small" id="reset">אפס את ההתקדמות שלי</button></div>`;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- global clicks ---------- */
+app.addEventListener("click",e=>{
+  const go=e.target.closest("[data-go]");if(go){closeSheet();view=go.dataset.go;render();window.scrollTo(0,0);return}
+  const pl=e.target.closest("[data-play]");if(pl&&!pl.disabled){const m=MISSIONS.find(x=>x.id===pl.dataset.play);if(m&&m.play)startGame(m.id);return}
+  const lic=e.target.closest("[data-lic]");if(lic){lic.outerHTML='<span class="pill p-done">אושר</span>';toast("הרישיון אושר (בתצוגה בלבד)");return}
+  if(e.target.id==="logout"){S.user=null;save();view="home";render();return}
+  if(e.target.id==="reset"){if(e.target.dataset.sure){S={user:S.user,xp:0,m:{}};save();render();toast("ההתקדמות אופסה")}else{e.target.dataset.sure="1";e.target.textContent="בטוח? לחץ שוב לאיפוס"}}
+});
+/* count a failed check as an attempt for the mentor view */
+const _check=check;
+check=function(){_check();if(G.phase!=="win")recordAttempt()};
+render();
+</script>
+
+</body></html>

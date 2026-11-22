@@ -1,0 +1,9 @@
+---
+// A photo, or a clearly marked empty slot until the team sends a real one.
+interface Props { src?: string; alt: string; ratio?: string; label?: string; class?: string }
+const { src, alt, ratio = '3/2', label, class: cls = '' } = Astro.props;
+import { u } from '../lib';
+---
+{src
+  ? <img class={cls} src={u(src)} alt={alt} loading="lazy" decoding="async" style={`aspect-ratio:${ratio};width:100%;object-fit:cover;display:block`} />
+  : <div class={`photo ${cls}`} style={`aspect-ratio:${ratio}`} role="img" aria-label={alt}><span class="ph">{label ?? 'מקום לתמונה'}</span></div>}

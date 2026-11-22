@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib';
+---
+<Base title="מגרש האימונים" description="ככה The Y 3211 מכשירה תלמידים חדשים: משימות קצרות ורישיונות.">
+  <div class="w">
+    <header class="page-head"><span class="lbl">איך אנחנו מכשירים תלמידים</span><h1>לומדים לבנות רובוט דרך משימות, לא מצגות.</h1>
+      <p>כל נושא הוא עולם של משימות קצרות. טעות מקבלת הסבר, תשובה נכונה מקבלת XP, ובסוף כל עולם יש רישיון שמנטור מאשר בסדנה.</p></header>
+    <section class="sec two">
+      <ul class="list">
+        <li>חשמל וחיווט<span>פתוח</span></li><li>סדנה ראשונה<span>בקרוב</span></li><li>מנועים ותמסורות<span>בקרוב</span></li>
+        <li>קונספטים מכניים<span>בקרוב</span></li><li>הדפסת FDM<span>בקרוב</span></li><li>אסטרטגיה<span>בקרוב</span></li>
+      </ul>
+      <div><h2 style="font-size:30px;margin:0 0 12px">נסו את משימת מסלול ההספק</h2>
+        <p style="color:var(--soft)">חברו סוללה, מפסק ראשי ו־PDH, בחרו צבע ועובי לכל חוט, ובדקו אם הרובוט נדלק.</p>
+        <a class="btn" href={u('/train/app/')}>כניסה למגרש האימונים</a></div>
+    </section>
+  </div>
+</Base>

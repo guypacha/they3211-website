@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import { CONTACT, u } from '../lib';
+---
+<Base title="הצטרפו" description="איך מצטרפים ל־The Y 3211: כיתות ט׳ עד י״ב מכל בתי הספר בירוחם.">
+  <div class="w">
+    <header class="page-head"><span class="lbl">לתלמידים ולהורים</span><h1>לא צריך לדעת לבנות רובוט. בשביל זה אנחנו כאן.</h1>
+      <p>כל מי שלומד בכיתות ט׳ עד י״ב בירוחם יכול להצטרף, מכל בית ספר. מתחילים מסדנה ראשונה, בונים זרוע עץ, ומשם ממשיכים למכניקה, חשמל, תכנות, אסטרטגיה או מדיה.</p></header>
+    <section class="sec two">
+      <div><ul class="list">
+        <li>מי<span>כיתות ט׳–י״ב, מכל בתי הספר בירוחם</span></li>
+        <li>מתי נרשמים<span>פעמיים בשנה: במאי ובאוקטובר</span></li>
+        <li>איפה<span>{CONTACT.address}</span></li>
+        <li>כמה זה עולה<span>[ממתין לתוכן]</span></li>
+      </ul>
+      <p style="margin-top:24px"><a class="btn" href={`mailto:${CONTACT.email}?subject=הרשמה לקבוצה`}>אני רוצה להצטרף</a></p>
+      <p style="color:var(--soft)">או קודם לנסות: <a class="link" href={u('/train')}>משימה ראשונה במגרש האימונים ←</a></p></div>
+      <Photo alt="תלמידים בסדנה" ratio="4/3" label="תמונה של תלמידים בסדנה" />
+    </section>
+  </div>
+</Base>
