@@ -130,3 +130,32 @@ form.f input,form.f textarea,form.f select{border-radius:12px}
 .page-head{border-bottom:0}
 @media(max-width:860px){.facts div:nth-child(3){padding-inline-start:24px}.paths a+a{border-top:0!important}.tiers div+div{border-top:0!important}.paths{gap:12px}}
 .paths .link{align-self:flex-start;margin-top:auto}.paths a{height:100%}.band-light .sec{padding-bottom:0}
+
+/* ---- organic v2: arches, curves, capsules ---- */
+:root{--r:28px;--r-lg:48px}
+nav{background:transparent;backdrop-filter:none;padding-top:10px}
+nav .w{height:60px;border-bottom:0;background:rgba(22,37,58,.92);backdrop-filter:blur(8px);border-radius:999px;max-width:1200px;padding-inline:22px}
+.btn,nav .join,.chips li{border-radius:999px}
+.link{border-bottom:0;background:linear-gradient(var(--blue),var(--blue)) 0 100%/100% 1px no-repeat;padding-bottom:4px}
+/* hero: deep elliptical bottom curve */
+.h2g{border-radius:0;clip-path:ellipse(140% 100% at 50% 0%)}
+/* robots: arch-topped photos */
+.seasons .photo,.robot .photo{border-radius:999px 999px var(--r) var(--r)}
+/* facts: capsules */
+.band-blue .facts{background:transparent;padding:0;gap:12px}
+.facts div{background:var(--bg2);border-radius:999px;padding:18px 32px;align-items:center;text-align:center}
+.facts div+div{padding-inline-start:32px}
+/* light bands: wave top and bottom */
+.band-light{margin-inline:0;border-radius:0;position:relative;margin-block:60px}
+.band-light::before,.band-light::after{content:"";position:absolute;left:0;right:0;height:60px;background:var(--paper);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V34C240 4 480 0 720 22s480 34 720 6v32z'/%3E%3C/svg%3E") 0 0/100% 100%;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V34C240 4 480 0 720 22s480 34 720 6v32z'/%3E%3C/svg%3E") 0 0/100% 100%}
+.band-light::before{top:-59px}
+.band-light::after{bottom:-59px;transform:scaleY(-1) scaleX(-1)}
+.paths a,.tiers div{border-radius:var(--r)}
+.paths a:nth-child(2){border-radius:var(--r-lg) var(--r) var(--r-lg) var(--r)}
+.spons span{border-radius:999px}
+figure img,.ax img,.shots img{border-radius:var(--r)}
+.ax figure img{border-radius:var(--r-lg) var(--r) var(--r-lg) var(--r)}
+@media(max-width:860px){.facts div{padding:16px 20px}.facts div+div{padding-inline-start:20px}nav .w{margin-inline:10px}.h2g{clip-path:ellipse(220% 100% at 50% 0%)}}
+@media(max-width:860px){nav .links{top:76px;inset-inline:10px;border-radius:24px;border:0;background:var(--bg2)}nav .links a:first-child{border-top:0}}

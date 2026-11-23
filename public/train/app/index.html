@@ -168,6 +168,7 @@ table.m th{font-size:12px;color:var(--muted);font-weight:700}
 .stat{display:flex;flex-direction:column;gap:2px}
 .stat b{font-family:var(--f-head);font-size:26px}
 .demo{display:inline-block;background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700}
+/*CSS*/
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -247,10 +248,10 @@ const LEVELS={
 };
 const MISSIONS=[
   {id:"m1",play:true},{id:"m2",play:true},{id:"m3",play:true},
-  {id:"can",title:"שרשרת CAN",short:"מחברים התקנים בשרשרת ולא שוכחים טרמינציה"},
-  {id:"insp",title:"ביקורת טכנית",short:"מוצאים 5 טעויות בלוח חשמל אמיתי"},
-  {id:"batt",title:"נהג על סוללה גמורה",short:"נוהגים ורואים את המתח צונח עד ברואנאאוט"},
-  {id:"lic",title:"מבחן רישיון חשמל",short:"מבחן במשחק + משימה מעשית שמנטור מאשר"}
+  {id:"can",play:true,title:"שרשרת CAN",short:"שרשרת אחת, טרמינציה בסוף, ומספר ID לכל מנוע"},
+  {id:"insp",play:true,title:"ביקורת טכנית",short:"מוצאים 5 תקלות בלוח לפני שהשופט מוצא"},
+  {id:"batt",play:true,title:"דחיפה על סוללה",short:"בוחרים סוללה והגבלת זרם, ושורדים 15 שניות בלי בראון־אאוט"},
+  {id:"lic",play:true,title:"מבחן רישיון חשמל",short:"עשר שאלות, ואז משימה מעשית שמנטור מאשר"}
 ];
 
 /* ---------- SVG drawing helpers ---------- */
@@ -376,7 +377,8 @@ function worldView(){
       return `<button class="mission ${st}" ${st==="lock"?"disabled":""} data-play="${m.id}">
         <span class="node">${st==="done"?"✓":i+1}</span><span><h3>${L.title}</h3><p>${L.short}</p></span>${right}</button>`}).join("")}</div>`;
 }
-function gameView(){
+function gameView(){return MODS[G.id]?MODS[G.id].view():wireView()}
+function wireView(){
   const L=G.L;
   const wires=G.wires.map((w,k)=>{
     const a=T(w.a),b=T(w.b),d=wirePath(a,b,k),cls=["wire",G.flags[w.id]||""].join(" ");
@@ -431,9 +433,11 @@ function gameView(){
 /* ---------- game logic ---------- */
 function startGame(id){
   G={id,L:LEVELS[id],wires:[],sel:null,attempts:0,hint:false,errors:null,flags:{},fx:[],phase:"play",n:0};
+  if(MODS[id])MODS[id].init();
   view="game";render();window.scrollTo(0,0);
 }
 function bindGame(){
+  if(MODS[G.id]){MODS[G.id].bind();return}
   const svg=app.querySelector(".board");if(!svg)return;
   svg.querySelectorAll(".term").forEach(el=>{
     const f=()=>tapTerm(el.dataset.t);
@@ -568,6 +572,7 @@ function animateDevices(){
 /* track failed attempts for the mentor view */
 function recordAttempt(){if(!G||G.phase==="win")return;const r=S.m[G.id]||{stars:0,attempts:0};r.attempts=(r.attempts||0)+1;S.m[G.id]=r;save()}
 
+/*MODS*/
 /* ---------- mentor (preview with sample students) ---------- */
 const DEMO=[
   ["נועה כ.",{m1:3,m2:2,m3:2,can:"p"},310],["איתי ב.",{m1:3,m2:"s"},130],["מאיה ל.",{m1:2,m2:3,m3:3,can:3,insp:"p"},460],
@@ -576,7 +581,7 @@ const DEMO=[
 ];
 function mentorView(){
   const cols=MISSIONS.map(m=>(LEVELS[m.id]||m).title);
-  const me=S.user?[S.user.name+" (אתה)",Object.fromEntries(MISSIONS.map(m=>{const r=S.m[m.id];return[m.id,r?(r.done?r.stars||"✓":(r.attempts>=3?"s":"p")):undefined]})),S.xp]:null;
+  const me=S.user?[S.user.name+" (אתה)",Object.fromEntries(MISSIONS.map(m=>{const r=S.m[m.id];return[m.id,r?(m.id==="lic"&&r.done&&!r.approved?"p":r.done?r.stars||"✓":(r.attempts>=3?"s":"p")):undefined]})),S.xp]:null;
   const rows=(me?[me]:[]).concat(DEMO);
   const cell=v=>v===undefined?`<span class="pill p-none">–</span>`:v==="s"?`<span class="pill p-stuck">תקוע</span>`:v==="p"?`<span class="pill p-prog">בתהליך</span>`:`<span class="pill p-done">✓ ${typeof v==="number"?"★".repeat(v):""}</span>`;
   const stuck=rows.filter(r=>Object.values(r[1]).includes("s"));
