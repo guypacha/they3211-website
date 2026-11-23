@@ -5,9 +5,9 @@ import { getCollection, render } from 'astro:content';
 const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.data.year);
 const items = await Promise.all(robots.map(async r => ({ r, Content: (await render(r)).Content })));
 ---
-<Base title="רובוטים" description="כל הרובוטים של The Y 3211 לפי עונה.">
+<Base title="רובוטים" description="כל הרובוטים של קבוצה 3211 מירוחם, לפי עונה.">
   <div class="w">
-    <header class="page-head"><span class="lbl">רובוטים</span><h1>רובוט חדש בכל עונה.</h1><p>כל רובוט נבנה מאפס למשחק של אותה שנה. הקוד של כל עונה פתוח ב־GitHub.</p></header>
+    <header class="page-head"><span class="lbl">רובוטים</span><h1>רובוט חדש בכל עונה.</h1><p>כל רובוט נבנה מאפס למשחק של אותה שנה. הקוד של כל עונה פתוח לכולם באתר <bdi>GitHub</bdi>.</p></header>
     {items.map(({ r, Content }) => (
       <article class="robot" id={`y${r.data.year}`}>
         <Photo src={r.data.photo} alt={`הרובוט של ${r.data.year}`} ratio="4/5" label="תמונת רובוט" />
@@ -17,7 +17,7 @@ const items = await Promise.all(robots.map(async r => ({ r, Content: (await rend
           {r.data.mechanisms.length > 0 && <ul class="chips">{r.data.mechanisms.map(m => <li>{m}</li>)}</ul>}
           <div class="prose"><Content /></div>
           {r.data.results.length > 0 && <ul class="list">{r.data.results.map(x => <li>{x}</li>)}</ul>}
-          {r.data.code && <p><a class="link" href={r.data.code} rel="noopener">הקוד של העונה ב־GitHub ↗</a></p>}
+          {r.data.code && <p><a class="link" href={r.data.code} rel="noopener">לקוד של העונה ↗</a></p>}
         </div>
       </article>))}
   </div>

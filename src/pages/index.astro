@@ -5,26 +5,28 @@ import { getCollection } from 'astro:content';
 import { u } from '../lib';
 const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.data.year).slice(0, 4);
 ---
-<Base title="בית" description="The Y 3211: קבוצת הרובוטיקה FRC של תלמידי ירוחם מאז 2009.">
+<Base title="בית" description="קבוצת הרובוטיקה של תלמידי ירוחם, מתחרה בליגת FRC מאז 2009.">
   <header class="h2g photo">
     <span class="ph" style="align-items:start;padding-top:22%">תמונה אמיתית במסך מלא: הרובוט במקצה</span>
     <div class="w inner">
       <div class="num" aria-hidden="true">3211</div>
       <div class="txt">
         <h1>רובוטים מירוחם.</h1>
-        <p>The Y היא קבוצת ה־FRC של תלמידי ירוחם מאז 2009. עשרים תלמידים, חמישה מנטורים, ורובוט חדש בכל עונה.</p>
+        <p><bdi>The Y</bdi> היא קבוצת הרובוטיקה של תלמידי ירוחם, ומתחרה בליגת <bdi>FRC</bdi> מאז שנת 2009. עשרים תלמידים, חמישה מנטורים ורובוט חדש בכל עונה.</p>
         <div class="cta"><a class="link" href={u('/join')}>הצטרפו לקבוצה ←</a><a class="link q" style="color:var(--ink)" href={u('/support')}>תמכו בנו ←</a></div>
       </div>
       <span class="m coord">30.99°N 34.93°E · YERUHAM</span>
     </div>
   </header>
-  <div class="w">
+  <section class="band-blue"><div class="w">
     <div class="facts">
       <div><b>2009</b><span class="lbl">שנת הקמה</span></div>
-      <div><b>20</b><span class="lbl">תלמידים, כיתות ט׳–י״ב</span></div>
+      <div><b>20</b><span class="lbl">תלמידים מכיתות ט׳ עד י״ב</span></div>
       <div><b>5</b><span class="lbl">מנטורים</span></div>
-      <div><b>52</b><span class="lbl">מחסן הסדנה, אזור התעשייה</span></div>
+      <div><b>52</b><span class="lbl">מספר המחסן של הסדנה</span></div>
     </div>
+  </div></section>
+  <div class="w">
 
     <section class="sec">
       <div class="head"><h2>הרובוטים</h2><a class="link q" href={u('/robots')}>כל הרובוטים ←</a></div>
@@ -37,31 +39,32 @@ const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.da
       </div>
     </section>
 
-    <section class="sec"><div class="paths">
-      <a href={u('/join')}><span class="lbl">לתלמידים ולהורים</span><h3>הצטרפו לקבוצה</h3><p>כיתות ט׳ עד י״ב מכל בתי הספר בירוחם. ההרשמה נפתחת במאי ובאוקטובר, ולא צריך ניסיון.</p><span class="link">איך מצטרפים ←</span></a>
-      <a href={u('/support')}><span class="lbl">לחברות ולתורמים</span><h3>תמכו בנו</h3><p>התמיכה שלכם קונה ציוד, מממנת נסיעות ותחרויות ומשפצת את הסדנה במחסן 52.</p><span class="link">איך תומכים ←</span></a>
-      <a href={u('/train')}><span class="lbl">לחברי הקבוצה</span><h3>מגרש האימונים</h3><p>ככה תלמיד חדש לומד חשמל, מכניקה ואסטרטגיה: משימות קצרות, ורישיון בסוף כל נושא.</p><span class="link">לנסות משימה ←</span></a>
-    </div></section>
-
+  </div>
+  <section class="band band-light"><div class="w"><section class="sec" style="padding-top:72px"><div class="paths">
+      <a href={u('/join')}><span class="lbl acc">לתלמידים ולהורים</span><h3>הצטרפו לקבוצה</h3><p>כיתות ט׳ עד י״ב מכל בתי הספר בירוחם. ההרשמה נפתחת במאי ובאוקטובר, ולא צריך ניסיון.</p><span class="link">איך מצטרפים ←</span></a>
+      <a href={u('/support')}><span class="lbl acc">לחברות ולתורמים</span><h3>תמכו בנו</h3><p>התמיכה שלכם קונה ציוד, מממנת נסיעות ותחרויות ומשפצת את הסדנה שלנו.</p><span class="link">איך תומכים ←</span></a>
+      <a href={u('/train')}><span class="lbl acc">לחברי הקבוצה</span><h3>מגרש האימונים</h3><p>כאן תלמידים חדשים לומדים חשמל, מכניקה ואסטרטגיה דרך משימות קצרות, ובסוף כל נושא מקבלים רישיון.</p><span class="link">לנסות משימה ←</span></a>
+    </div></section></div></section>
+  <div class="w">
     <section class="sec ax">
-      <div><span class="lbl">תוכנה שבנינו</span><h2>AttendX</h2>
-        <p>אפליקציה לניהול קבוצת רובוטיקה, במקום הגיליון שגדל לשונית אחרי לשונית. בשימוש יומיומי אצלנו ואצל DaVinci 4744.</p>
+      <div><span class="lbl acc">תוכנה שבנינו</span><h2><bdi>AttendX</bdi></h2>
+        <p>אפליקציה לניהול קבוצת רובוטיקה, במקום הגיליון שגדל לשונית אחרי לשונית. אנחנו משתמשים בה כל יום, וגם קבוצת <bdi>DaVinci 4744</bdi>.</p>
         <ul><li>נוכחות<span>לפי מחלקות</span></li><li>אימונים והסמכות<span>מי מוסמך למה</span></li><li>מלאי, הזמנות ותקציב<span>חי ומשותף</span></li><li>שעות קהילה<span>לכל תלמיד</span></li></ul>
         <a class="link" href={u('/attendx')}>על האפליקציה ←</a></div>
       <figure style="margin:0"><img src={u('/assets/dashboard.jpg')} alt="מסך הבית של AttendX עם נתוני דוגמה" width="800" height="515" loading="lazy" /><figcaption><span>מסך הבית, עם נתוני דוגמה</span><span class="m">REACT · FIREBASE</span></figcaption></figure>
     </section>
 
-    <section class="sec"><div class="head"><h2>תודה לתומכים שלנו</h2><a class="link q" href={u('/support')}>הצטרפו אליהם ←</a></div>
-      <div class="spons"><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span></div></section>
   </div>
+  <section class="band band-light" style="margin-top:88px"><div class="w"><section class="sec" style="padding-top:72px"><div class="head"><h2>תודה לתומכים שלנו</h2><a class="link q" href={u('/support')}>הצטרפו אליהם ←</a></div>
+      <div class="spons"><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span></div></section></div></section>
 </Base>
 <style is:global>
 .h2g{min-height:min(86vh,760px);display:flex;align-items:flex-end;position:relative;margin-top:-68px;padding-top:68px}
-.h2g::after{content:"";position:absolute;inset:40% 0 0 0;background:linear-gradient(transparent,rgba(11,11,12,.92))}
+.h2g::after{content:"";position:absolute;inset:40% 0 0 0;background:linear-gradient(transparent,rgba(12,35,64,.94))}
 .h2g .inner{position:relative;z-index:1;width:100%;display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:end;padding-block:0 48px}
 .num{font-family:var(--n);font-weight:700;font-size:clamp(120px,19vw,260px);line-height:.78;letter-spacing:-.01em;direction:ltr}
 .h2g h1{font-size:clamp(30px,3.6vw,46px);font-weight:900;letter-spacing:-.02em;margin:0 0 12px}
-.h2g p{color:#C9CAC6;margin:0 0 24px;max-width:44ch}.cta{display:flex;gap:28px;flex-wrap:wrap}
+.h2g p{color:#D5DEE8;margin:0 0 24px;max-width:44ch}.cta{display:flex;gap:28px;flex-wrap:wrap}
 .coord{position:absolute;top:-40px;left:max(24px,env(safe-area-inset-left));color:var(--soft)}
 @media(max-width:860px){.h2g .inner{grid-template-columns:1fr;gap:12px}.coord{position:static}}
 </style>

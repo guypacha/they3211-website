@@ -2,9 +2,9 @@
 import Base from '../layouts/Base.astro';
 import { u, CONTACT } from '../lib';
 ---
-<Base title="AttendX" description="AttendX: אפליקציה לניהול קבוצת FRC ו־FTC, שנבנתה על ידי The Y 3211.">
+<Base title="AttendX" description="AttendX היא אפליקציה לניהול קבוצות רובוטיקה, שבנינו בקבוצה 3211 בירוחם.">
   <div class="w">
-    <header class="page-head"><span class="lbl">תוכנה שבנינו</span><h1>AttendX. כל הקבוצה במקום אחד, במקום הגיליון.</h1>
+    <header class="page-head"><span class="lbl">תוכנה שבנינו · <bdi>AttendX</bdi></span><h1>כל הקבוצה באפליקציה אחת.</h1>
       <p>נוכחות, אימונים, הסמכות, שעות קהילה, מלאי, הזמנות ותקציב. אפליקציה אחת שמחליפה את הגיליון שגדל לשונית אחרי לשונית, ונותנת לכל תלמיד מקום משלו לראות את ההתקדמות שלו.</p></header>
     <section class="sec two">
       <ul class="list">
@@ -15,17 +15,17 @@ import { u, CONTACT } from '../lib';
         <li>תקציב<span>חי ומשותף למנטורים</span></li>
         <li>משימות<span>לוח, יומן ועומס לכל תלמיד</span></li>
       </ul>
-      <figure style="margin:0"><img src={u('/assets/dashboard.jpg')} alt="מסך הבית של AttendX עם נתוני דוגמה" width="800" height="515" loading="lazy" /><figcaption><span>מסך הבית</span><span>נתוני דוגמה</span></figcaption></figure>
+      <figure style="margin:0"><img src={u('/assets/dashboard.jpg')} alt="מסך הבית של האפליקציה, עם נתוני דוגמה" width="800" height="515" loading="lazy" /><figcaption><span>מסך הבית</span><span>נתוני דוגמה</span></figcaption></figure>
     </section>
     <section class="sec"><div class="shots">
       <figure style="margin:0"><img src={u('/assets/attendance.jpg')} alt="מסך נוכחות עם נתוני דוגמה" loading="lazy" /><figcaption><span>נוכחות</span></figcaption></figure>
       <figure style="margin:0"><img src={u('/assets/tasks-board.jpg')} alt="לוח משימות עם נתוני דוגמה" loading="lazy" /><figcaption><span>לוח משימות</span></figcaption></figure>
       <figure style="margin:0"><img src={u('/assets/student-tasks.jpg')} alt="המשימות של תלמיד, עם נתוני דוגמה" loading="lazy" /><figcaption><span>המסך של התלמיד</span></figcaption></figure>
-    </div><p class="note" style="color:var(--dim);font-size:14px;margin-top:16px">כל המסכים כאן מציגים קבוצת דוגמה. הנתונים של The Y לא מוצגים באתר.</p></section>
+    </div><p class="note" style="color:var(--dim);font-size:14px;margin-top:16px">כל המסכים כאן מציגים קבוצת דוגמה. הנתונים האמיתיים של הקבוצה לא מוצגים באתר.</p></section>
     <section class="sec two">
-      <div><h2 style="font-size:30px;margin:0 0 12px">בשימוש אצל</h2><ul class="list"><li>The Y<span class="m">3211</span></li><li>DaVinci<span class="m">4744</span></li></ul></div>
-      <div><h2 style="font-size:30px;margin:0 0 12px">רוצים את AttendX לקבוצה שלכם?</h2>
-        <p style="color:var(--soft)">האפליקציה מתאימה לקבוצות FRC ו־FTC ורצה על Firebase בחינם. כתבו לנו מי אתם וכמה תלמידים יש בקבוצה, ונחזור אליכם.</p>
+      <div><h2 style="font-size:30px;margin:0 0 12px">בשימוש אצל</h2><ul class="list"><li><bdi>The Y</bdi><span class="m">3211</span></li><li><bdi>DaVinci</bdi><span class="m">4744</span></li></ul></div>
+      <div><h2 style="font-size:30px;margin:0 0 12px">רוצים את <bdi>AttendX</bdi> לקבוצה שלכם?</h2>
+        <p style="color:var(--soft)">האפליקציה מתאימה לקבוצות <bdi>FRC</bdi> וגם <bdi>FTC</bdi>, ורצה בחינם על <bdi>Firebase</bdi> של גוגל. כתבו לנו מי אתם וכמה תלמידים יש בקבוצה, ונחזור אליכם.</p>
         <a class="btn" href={`mailto:${CONTACT.email}?subject=AttendX`}>כתבו לנו</a>
         <p class="m" style="margin-top:12px;color:var(--soft);font-size:14px">{CONTACT.email}</p></div>
     </section>

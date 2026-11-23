@@ -13,7 +13,7 @@ const path = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, 
   <title>{title === 'בית' ? 'The Y 3211 · קבוצת הרובוטיקה של ירוחם' : `${title} · The Y 3211`}</title>
   <meta name="description" content={description} />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} />
-  <meta name="theme-color" content="#0B0B0C" />
+  <meta name="theme-color" content="#0C2340" />
   <link rel="icon" href={u('/assets/logo.jpg')} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,9 +34,9 @@ const path = Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, 
   </div></nav>
   <main id="main"><slot /></main>
   <footer><div class="w">
-    <div><b>The Y · FRC 3211</b>{CONTACT.address}</div>
+    <div><b><bdi>The Y · FRC 3211</bdi></b>{CONTACT.address}</div>
     <div><b>יצירת קשר</b><a class="m" style="font-size:14px" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></div>
-    <div><b>עקבו</b>{CONTACT.social}</div>
+    <div><b>עקבו</b><bdi>{CONTACT.social}</bdi></div>
   </div></footer>
   <script>
     const b = document.getElementById('menu'), n = document.getElementById('nav');
