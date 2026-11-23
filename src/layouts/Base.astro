@@ -55,6 +55,11 @@ const ICON: Record<string, string> = {
       <button class="menu" aria-expanded="false" aria-controls="links" id="menu">{en ? 'Menu' : 'תפריט'}</button>
     </div>
   </div></nav>
+  {!(path === '/' || path === '/en') && <div class="ih" id="ih" aria-hidden="true">
+    <canvas class="ih-sand"></canvas>
+    {[0, 1, 2].map(i => <svg class={`ih-bird b${i}`} viewBox="0 0 24 10"><path d="M1 6q5-6 11 0q6-6 11 0" /></svg>)}
+    <div class="ih-car">{[0, 1, 2].map(i => <svg viewBox="0 0 100 70" style={`width:${20 - i * 3}px`}><path d="M10 40C10 30 18 24 26 22C32 8 46 6 52 20C56 26 60 28 66 26C70 24 72 18 74 12C75 8 78 6 82 7L90 9C92 10 92 13 89 13L82 13C80 18 79 26 76 34C74 40 70 42 68 44L68 66H65L64 46H61L60 66H57L57 46C50 47 36 47 28 46L27 66H24L23 47H20L19 66H16L16 44C12 43 10 42 10 40Z" /></svg>)}</div>
+  </div>}
   <main id="main"><slot /></main>
   <footer><div class="w">
     <div><b><bdi>The Y · FRC 3211</bdi></b>{CONTACT.address[lang]}</div>
@@ -65,7 +70,7 @@ const ICON: Record<string, string> = {
   <script>
     // Reveal on scroll (skipped for reduced motion); content is visible without JS.
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-      const els = document.querySelectorAll<HTMLElement>('.page-head > *, .sec .head, .facts > div, .seasons > a, .paths > a, .ax > *, .spons > span, .robot, .tiers > div, .two > *, .shots > figure, .list li');
+      const els = document.querySelectorAll<HTMLElement>('.rv, .page-head > *, .acc-card, .acc-side > *, .faq details, .two-links > a, .sec .head, .facts > div, .seasons > a, .paths > a, .ax > *, .spons > span, .robot, .tiers > div, .two > *, .shots > figure, .list li');
       const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const el = e.target as HTMLElement; el.classList.add('in'); io.unobserve(el);
         const n = el.querySelector<HTMLElement>('[data-count]'); if (n) { const to = +n.dataset.count!, from = to > 1000 ? to - 40 : 0, t0 = performance.now();
           const tick = (t: number) => { const k = Math.min(1, (t - t0) / 1100), e2 = 1 - Math.pow(1 - k, 3); n.textContent = String(Math.round(from + (to - from) * e2)); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); } }), { rootMargin: '0px 0px -8% 0px' });
@@ -75,5 +80,26 @@ const ICON: Record<string, string> = {
     b?.addEventListener('click', () => { const o = n!.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
   </script>
 <script is:inline>(function(){try{var a=JSON.parse(localStorage.getItem('y3211-account')||'null'),l=document.getElementById('nav-login');if(a&&a.name&&l){l.textContent=a.name;l.href=l.dataset.account;l.classList.add('in')}}catch(e){}})();</script>
+<script>
+  // inner pages: move the small desert scene under the page title, and blow some sand
+  const ih = document.getElementById('ih'), ph = document.querySelector('.inner .page-head');
+  if (ih && ph) {
+    ph.prepend(ih);
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cv = ih.querySelector('canvas')!;
+    if (!still) {
+      const cx = cv.getContext('2d')!; let W = 0, H = 0, vis = true, t = 0;
+      const fit = () => { const r = cv.getBoundingClientRect(); W = cv.width = r.width * devicePixelRatio; H = cv.height = r.height * devicePixelRatio; };
+      fit(); addEventListener('resize', fit);
+      const g = Array.from({ length: innerWidth < 700 ? 40 : 90 }, () => ({ x: Math.random(), y: 0.55 + Math.random() * 0.45, v: 0.0005 + Math.random() * 0.0014, s: 0.6 + Math.random() * 1.4, p: Math.random() * 6 }));
+      new IntersectionObserver(e => { vis = e[0].isIntersecting; if (vis) requestAnimationFrame(draw); }).observe(cv);
+      function draw() { if (!vis) return; t++; cx.clearRect(0, 0, W, H); const gust = 1 + 0.8 * Math.max(0, Math.sin(t / 240));
+        for (const q of g) { q.x -= q.v * gust; if (q.x < -0.02) { q.x = 1.02; q.y = 0.55 + Math.random() * 0.45; }
+          cx.fillStyle = `rgba(214,190,140,${0.14 + q.s * 0.1})`; cx.fillRect(q.x * W, (q.y + Math.sin(t / 50 + q.p) * 0.006) * H, q.s * devicePixelRatio, q.s * devicePixelRatio * 0.7); }
+        requestAnimationFrame(draw); }
+      requestAnimationFrame(draw);
+    }
+  }
+</script>
 </body>
 </html>
