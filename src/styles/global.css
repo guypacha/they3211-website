@@ -204,3 +204,7 @@ html[dir=ltr] .dots{left:auto;right:max(24px,env(safe-area-inset-right))}
 .tl-card{display:flex;flex-direction:column;gap:8px;padding:30px 32px;border-radius:var(--r-lg);background:var(--bg2);text-decoration:none;color:var(--ink);transition:transform .25s}
 .tl-card b{font-size:22px;font-weight:700}.tl-card:hover{transform:translateY(-3px)}
 @media(max-width:700px){.two-links{grid-template-columns:1fr}}
+/* login link in nav */
+nav .login{color:var(--soft);display:inline-flex;align-items:center;gap:6px}nav .login:hover,nav .login[aria-current="page"]{color:var(--ink)}
+nav .login::before{content:"";width:16px;height:16px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4 4-6 8-6s8 2 8 6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4 4-6 8-6s8 2 8 6'/%3E%3C/svg%3E") center/contain no-repeat}
+@media(max-width:520px){nav .login{font-size:0;gap:0;min-width:40px;min-height:40px;justify-content:center}nav .login::before{width:20px;height:20px}}

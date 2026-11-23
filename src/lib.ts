@@ -19,3 +19,6 @@ export const SOCIAL: { id: 'instagram' | 'facebook' | 'youtube' | 'github' | 'tb
   { id: 'github', label: 'GitHub', url: 'https://github.com/yteam3211' },
   { id: 'tba', label: 'The Blue Alliance', url: 'https://www.thebluealliance.com/team/3211' },
 ];
+
+// AttendX inside the site (planned). Change if it ends up on its own address.
+export const APP = { student: '/app/student-login', mentor: '/app/login' };
