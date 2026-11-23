@@ -348,7 +348,7 @@ let view="home";
 function topbar(){
   const lv=level(S.xp),pct=Math.round((S.xp%150)/150*100);
   return `<header class="bar">
-    <button class="brand" data-go="home" aria-label="מסך הבית"><span class="mark">3211</span><span><b>מגרש האימונים</b><small>The Y · ירוחם</small></span></button>
+    <button class="brand" data-go="home" aria-label="מסך הבית"><span class="mark">3211</span><span><b>מגרש האימונים</b><small>The Y Team · ירוחם</small></span></button>
     <div class="xp" title="${S.xp} XP"><span class="lvl">רמה ${lv}</span><span class="track"><span class="fill" style="width:${pct}%;display:block"></span></span><span class="mono">${S.xp} XP</span></div>
     <a class="tabbtn site" href="../../" aria-label="חזרה לאתר הקבוצה">→ לאתר</a>
     <button class="tabbtn" data-go="mentor" aria-pressed="${view==="mentor"}">מנטור</button>
@@ -377,7 +377,7 @@ function render(){
 function loginView(){
   return `<section class="login">
     <a class="tabbtn site" href="../../">→ חזרה לאתר</a>
-    <div class="hero"><span class="eyebrow">The Y · 3211 · ירוחם</span>
+    <div class="hero"><span class="eyebrow">The Y Team · 3211 · ירוחם</span>
       <h1>מגרש האימונים</h1>
       <p class="muted">כל מה שצריך לדעת כדי לבנות רובוט, במשימות קצרות. מתחילים מחשמל.</p></div>
     <form class="card" id="lf" style="display:grid;gap:14px">
