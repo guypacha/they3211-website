@@ -19,9 +19,8 @@ Data (Firestore): `users/{uid}` (username, name, role, disabled), `usernames/{us
 5. **Firestore › Rules:** paste the content of `firebase/firestore.rules` and **Publish**.
 6. **Project settings (gear) › General › Your apps › Web (</>)**, nickname `website`, no hosting.
    Copy `apiKey`, `authDomain`, `projectId`, `appId`.
-7. In GitHub: **repo › Settings › Secrets and variables › Actions › Variables tab › New repository variable**,
-   add `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, `FIREBASE_APP_ID`.
-   (These are public web settings that end up in the page anyway. Security comes from the rules.)
+7. Put those four values in `.env.production` in the repo (already done for project `they3211-site`).
+   They are public web settings that end up in the page anyway. Security comes from the rules.
 8. The first mentor invite, by hand: **Firestore › Start collection** `invites`, document ID = a code
    you choose (10 capital letters/digits, e.g. `GUYSTART26`), fields:
    `role` (string) `mentor`, `name` (string) your name, `createdBy` (string) `console`,
