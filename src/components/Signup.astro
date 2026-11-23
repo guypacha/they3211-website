@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib';
+import { A } from '../i18n/account';
+const { lang = 'he' } = Astro.props as { lang?: 'he' | 'en' };
+const he = lang === 'he';
+const P = (p: string) => u((he ? '' : '/en') + p);
+const a = A[lang];
+const t = he
+  ? { title: 'פתיחת חשבון', desc: 'פתיחת חשבון באתר של קבוצה 3211 עם קוד הזמנה.', lbl: 'פתיחת חשבון', h: 'פותחים חשבון עם קוד.', p: 'את הקוד מקבלים ממנטור. הוא עובד פעם אחת בלבד, ומחבר את החשבון אליכם.', check: 'המשך', go: 'פתיחת החשבון', for: 'הזמנה עבור', as: 'בתור', uhint: 'אותיות באנגלית, ספרות, נקודה, מקף או קו תחתון. 3 עד 20 תווים.', phint: 'לפחות 6 תווים.', have: 'כבר יש לכם חשבון?', login: 'לכניסה' }
+  : { title: 'Open an account', desc: 'Open an account on the team 3211 website with an invite code.', lbl: 'Open an account', h: 'Open an account with a code.', p: 'You get the code from a mentor. It works once, and ties the account to you.', check: 'Continue', go: 'Open account', for: 'Invite for', as: 'as', uhint: 'English letters, digits, dot, dash or underscore. 3 to 20 characters.', phint: 'At least 6 characters.', have: 'Already have an account?', login: 'Log in' };
+---
+<Base title={t.title} description={t.desc} lang={lang}>
+  <div class="w">
+    <header class="page-head"><span class="lbl">{t.lbl}</span><h1>{t.h}</h1><p>{t.p}</p></header>
+    <section class="acc-grid" id="acc" data-lang={lang} data-next={P('/account')} data-roles={JSON.stringify(a.role)}>
+      <div class="acc-card">
+        <p class="acc-soon" hidden>{a.soon}</p>
+        <form class="f" id="code-form" novalidate>
+          <label>{a.code}<input name="code" required autocomplete="off" autocapitalize="characters" spellcheck="false" dir="ltr" class="m" maxlength="12" /></label>
+          <p class="acc-err" role="alert" hidden></p>
+          <button class="btn" type="submit">{t.check}</button>
+        </form>
+        <form class="f" id="signup-form" novalidate hidden>
+          <p class="acc-inv"><span>{t.for}</span> <b class="inv-name"></b> <span>{t.as}</span> <b class="inv-role"></b> · <bdi class="m inv-code"></bdi></p>
+          <label>{a.name}<input name="name" required maxlength="60" autocomplete="name" /></label>
+          <label>{a.user}<input name="username" required autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" maxlength="20" /><small>{t.uhint}</small></label>
+          <div class="row2">
+            <label>{a.pass}<input name="password" type="password" required minlength="6" autocomplete="new-password" dir="ltr" /><small>{t.phint}</small></label>
+            <label>{a.pass2}<input name="password2" type="password" required autocomplete="new-password" dir="ltr" /></label>
+          </div>
+          <p class="acc-err" role="alert" hidden></p>
+          <button class="btn" type="submit">{t.go}</button>
+        </form>
+      </div>
+      <aside class="acc-side"><div><b>{t.have}</b><p><a class="link" href={P('/login')}>{t.login}</a></p></div></aside>
+    </section>
+  </div>
+</Base>
+<script>
+  import { enabled, readInvite, signup } from '../scripts/account';
+  import { errText } from '../i18n/account';
+  const root = document.getElementById('acc')!;
+  const lang = root.dataset.lang as 'he' | 'en';
+  const roles = JSON.parse(root.dataset.roles!);
+  const f1 = document.getElementById('code-form') as HTMLFormElement;
+  const f2 = document.getElementById('signup-form') as HTMLFormElement;
+  const show = (f: HTMLFormElement, x: unknown) => { const e = f.querySelector('.acc-err') as HTMLElement; e.textContent = errText(lang, x); e.hidden = false; };
+  let code = '';
+  async function check(c: string) {
+    (f1.querySelector('.acc-err') as HTMLElement).hidden = true;
+    const inv = await readInvite(c).catch(() => null);
+    if (!inv) return show(f1, { code: 'app/no-invite' });
+    if (inv.used) return show(f1, { code: 'app/invite-used' });
+    code = c.trim().toUpperCase();
+    f2.querySelector('.inv-name')!.textContent = inv.name || '—';
+    f2.querySelector('.inv-role')!.textContent = roles[inv.role];
+    f2.querySelector('.inv-code')!.textContent = code;
+    (f2.elements.namedItem('name') as HTMLInputElement).value = inv.name || '';
+    f1.hidden = true; f2.hidden = false;
+    (f2.elements.namedItem('username') as HTMLInputElement).focus();
+  }
+  if (!enabled) { (root.querySelector('.acc-soon') as HTMLElement).hidden = false; f1.hidden = true; }
+  else {
+    const q = new URLSearchParams(location.search).get('code');
+    if (q) { (f1.elements.namedItem('code') as HTMLInputElement).value = q; check(q); }
+    f1.addEventListener('submit', e => { e.preventDefault(); check(String(new FormData(f1).get('code') || '')); });
+    f2.addEventListener('submit', async e => {
+      e.preventDefault(); (f2.querySelector('.acc-err') as HTMLElement).hidden = true;
+      const fd = new FormData(f2);
+      if (fd.get('password') !== fd.get('password2')) return show(f2, { code: 'app/mismatch' });
+      const btn = f2.querySelector('button')!; btn.disabled = true;
+      try { await signup(code, String(fd.get('username')), String(fd.get('password')), String(fd.get('name'))); location.replace(root.dataset.next!); }
+      catch (x) { show(f2, x); btn.disabled = false; }
+    });
+  }
+</script>

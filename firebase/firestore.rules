@@ -1,0 +1,66 @@
+rules_version = '2';
+// Accounts for the team website. Roles: student, mentor. Guests need no account.
+// Every account starts from a one-time invite code that a mentor creates.
+// The very first mentor invite is created by hand in the Firebase console (see firebase/README.md).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isMentor() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && me().role == 'mentor' && me().get('disabled', false) == false;
+    }
+    function validUsername(u) { return u is string && u.matches('^[a-z0-9._-]{3,20}$'); }
+
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || isMentor());
+      allow list: if isMentor();
+      // Sign-up: one batch writes this doc, claims the invite and reserves the username.
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['username', 'name', 'role', 'invite', 'createdAt'])
+        && validUsername(request.resource.data.username)
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 60
+        && request.resource.data.createdAt == request.time
+        && get(/databases/$(database)/documents/invites/$(request.resource.data.invite)).data.usedBy == null
+        && getAfter(/databases/$(database)/documents/invites/$(request.resource.data.invite)).data.usedBy == uid
+        && request.resource.data.role == get(/databases/$(database)/documents/invites/$(request.resource.data.invite)).data.role
+        && getAfter(/databases/$(database)/documents/usernames/$(request.resource.data.username)).data.uid == uid;
+      // You may change your display name. Mentors may change role or disable an account (not their own).
+      allow update: if (signedIn() && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name'])
+          && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 60)
+        || (isMentor() && request.auth.uid != uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'disabled'])
+          && request.resource.data.role in ['student', 'mentor']
+          && request.resource.data.get('disabled', false) is bool);
+      allow delete: if false;
+    }
+
+    match /usernames/{username} {
+      allow get: if true;            // the sign-up form checks if a name is free
+      allow list: if false;
+      allow create: if signedIn() && validUsername(username)
+        && request.resource.data.keys().hasOnly(['uid']) && request.resource.data.uid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.username == username;
+      allow update, delete: if false;
+    }
+
+    match /invites/{code} {
+      allow get: if true;            // the code itself is the secret (10 random characters)
+      allow list: if isMentor();
+      allow create: if isMentor()
+        && request.resource.data.keys().hasOnly(['role', 'name', 'createdBy', 'createdAt', 'usedBy'])
+        && request.resource.data.role in ['student', 'mentor']
+        && request.resource.data.name is string && request.resource.data.name.size() <= 60
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.usedBy == null;
+      // Claimed exactly once, by the account being created in the same batch.
+      allow update: if signedIn() && resource.data.usedBy == null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usedBy'])
+        && request.resource.data.usedBy == request.auth.uid
+        && existsAfter(/databases/$(database)/documents/users/$(request.auth.uid));
+      allow delete: if isMentor() && resource.data.usedBy == null;
+    }
+  }
+}

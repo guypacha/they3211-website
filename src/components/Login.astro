@@ -1,46 +1,52 @@
 ---
 import Base from '../layouts/Base.astro';
-import { u, APP } from '../lib';
+import { u } from '../lib';
+import { A } from '../i18n/account';
 const { lang = 'he' } = Astro.props as { lang?: 'he' | 'en' };
 const he = lang === 'he';
-const L = (p: string) => u((he ? '' : '/en') + p);
+const P = (p: string) => u((he ? '' : '/en') + p);
+const a = A[lang];
 const t = he
-  ? { title: 'כניסה', desc: 'כניסה לחשבון של תלמידים ומנטורים בקבוצה 3211.', lbl: 'כניסה', h: 'כניסה לחשבון שלכם.', p: 'החשבון פותח את AttendX: נוכחות, משימות, שעות קהילה והזמנות. כדי לקרוא על הקבוצה או לשחק במגרש האימונים לא צריך להתחבר.',
-      st: ['תלמיד או תלמידה', 'שעות קהילה, משימות, הפרופיל שלי והרישיונות שלי.', 'כניסת תלמידים'], mn: ['מנטור', 'ניהול הקבוצה: נוכחות, הכשרות, מלאי, הזמנות ותקציב.', 'כניסת מנטורים'],
-      no: 'אין לכם חשבון?', nop: 'חשבון לתלמיד פותחים עם קוד הזמנה שמקבלים ממנטור בסדנה.', guest: ['להמשיך כאורחים', 'למגרש האימונים'] }
-  : { title: 'Log in', desc: 'Log in for students and mentors of team 3211.', lbl: 'Log in', h: 'Log in to your account.', p: 'Your account opens AttendX: attendance, tasks, community hours and orders. You do not need to log in to read about the team or play in the training ground.',
-      st: ['Student', 'Community hours, tasks, my profile and my licenses.', 'Student login'], mn: ['Mentor', 'Running the team: attendance, trainings, inventory, orders and budget.', 'Mentor login'],
-      no: 'No account yet?', nop: 'Students open an account with an invite code from a mentor at the workshop.', guest: ['Continue as a guest', 'To the training ground'] };
+  ? { title: 'כניסה', desc: 'כניסה לחשבון של תלמידים ומנטורים בקבוצה 3211.', lbl: 'כניסה', h: 'כניסה לחשבון שלכם.', p: 'לתלמידים ולמנטורים של הקבוצה. כדי לקרוא על הקבוצה או לשחק במגרש האימונים לא צריך להתחבר.', go: 'כניסה', no: 'אין לכם חשבון?', nop: 'חשבון פותחים עם קוד הזמנה שמקבלים ממנטור בסדנה.', signup: 'פתיחת חשבון עם קוד', guest: 'להמשיך כאורחים', train: 'למגרש האימונים', forgot: 'שכחתם סיסמה? מנטור ייתן לכם קוד חדש.' }
+  : { title: 'Log in', desc: 'Log in for students and mentors of team 3211.', lbl: 'Log in', h: 'Log in to your account.', p: 'For the team’s students and mentors. You do not need to log in to read about the team or play in the training ground.', go: 'Log in', no: 'No account yet?', nop: 'You open an account with an invite code from a mentor at the workshop.', signup: 'Open an account with a code', guest: 'Continue as a guest', train: 'To the training ground', forgot: 'Forgot your password? A mentor will give you a new code.' };
 ---
 <Base title={t.title} description={t.desc} lang={lang}>
   <div class="w">
     <header class="page-head"><span class="lbl">{t.lbl}</span><h1>{t.h}</h1><p>{t.p}</p></header>
-    <section class="lg">
-      {[[t.st, APP.student, 'st'], [t.mn, APP.mentor, 'mn']].map(([x, href, k]) => (
-        <a class:list={['lg-c rv', k]} href={u(href as string)}>
-          <span class="lg-i" aria-hidden="true">{k === 'st'
-            ? <svg viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/></svg>
-            : <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/><path d="M16 4l2-2M18 6h3"/></svg>}</span>
-          <h2>{(x as string[])[0]}</h2><p>{(x as string[])[1]}</p><span class="lg-go">{(x as string[])[2]} {he ? '←' : '→'}</span>
-        </a>))}
-    </section>
-    <section class="lg-foot rv">
-      <div><b>{t.no}</b><p>{t.nop}</p></div>
-      <div><b>{t.guest[0]}</b><p><a class="link" href={L('/train')}>{t.guest[1]}</a></p></div>
+    <section class="acc-grid" id="acc" data-lang={lang} data-next={P('/account')}>
+      <div class="acc-card">
+        <p class="acc-soon" hidden>{a.soon}</p>
+        <form class="f" id="login-form" novalidate>
+          <label>{a.user}<input name="username" required autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" /></label>
+          <label>{a.pass}<input name="password" type="password" required autocomplete="current-password" dir="ltr" /></label>
+          <p class="acc-err" role="alert" hidden></p>
+          <button class="btn" type="submit">{t.go}</button>
+          <small class="acc-hint">{t.forgot}</small>
+        </form>
+      </div>
+      <aside class="acc-side">
+        <div><b>{t.no}</b><p>{t.nop}</p><a class="link" href={P('/signup')}>{t.signup}</a></div>
+        <div><b>{t.guest}</b><p><a class="link" href={P('/train')}>{t.train}</a></p></div>
+      </aside>
     </section>
   </div>
 </Base>
-<style>
-.lg{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding-top:56px}
-.lg-c{display:flex;flex-direction:column;gap:8px;padding:34px 36px;border-radius:var(--r-lg,36px);background:var(--bg2);color:var(--ink);text-decoration:none;transition:transform .25s,background .25s;min-height:260px}
-.lg-c:hover{transform:translateY(-3px)}
-.lg-c.mn{background:var(--ink);color:var(--bg)}.lg-c.mn p{color:#4F5D70}
-.lg-i svg{width:40px;height:40px;fill:none;stroke:var(--blue);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.lg-c.mn .lg-i svg{stroke:#1F6FAE}
-.lg-c h2{margin:10px 0 0;font-size:30px;font-weight:700}
-.lg-c p{margin:0;color:var(--soft)}
-.lg-go{margin-top:auto;font-weight:500}
-.lg-foot{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:40px 0 24px}
-.lg-foot p{margin:4px 0 0;color:var(--soft)}
-@media(max-width:700px){.lg,.lg-foot{grid-template-columns:1fr}.lg-c{min-height:0;padding:28px}}
-</style>
+<script>
+  import { enabled, login, watch } from '../scripts/account';
+  import { errText } from '../i18n/account';
+  const root = document.getElementById('acc')!;
+  const lang = root.dataset.lang as 'he' | 'en';
+  const form = document.getElementById('login-form') as HTMLFormElement;
+  const err = root.querySelector('.acc-err') as HTMLElement;
+  if (!enabled) { (root.querySelector('.acc-soon') as HTMLElement).hidden = false; form.hidden = true; }
+  else {
+    const stop = watch(p => { if (p && !p.disabled) location.replace(root.dataset.next!); });
+    form.addEventListener('submit', async e => {
+      e.preventDefault(); err.hidden = true;
+      const fd = new FormData(form), btn = form.querySelector('button')!;
+      btn.disabled = true;
+      try { stop(); await login(String(fd.get('username')), String(fd.get('password'))); location.replace(root.dataset.next!); }
+      catch (x) { err.textContent = errText(lang, x); err.hidden = false; btn.disabled = false; }
+    });
+  }
+</script>

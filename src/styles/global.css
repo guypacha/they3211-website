@@ -208,3 +208,34 @@ html[dir=ltr] .dots{left:auto;right:max(24px,env(safe-area-inset-right))}
 nav .login{color:var(--soft);display:inline-flex;align-items:center;gap:6px}nav .login:hover,nav .login[aria-current="page"]{color:var(--ink)}
 nav .login::before{content:"";width:16px;height:16px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4 4-6 8-6s8 2 8 6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4 4-6 8-6s8 2 8 6'/%3E%3C/svg%3E") center/contain no-repeat}
 @media(max-width:520px){nav .login{font-size:0;gap:0;min-width:40px;min-height:40px;justify-content:center}nav .login::before{width:20px;height:20px}}
+/* accounts */
+.acc-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;padding-top:48px;align-items:start}
+.sec .acc-grid{padding-top:0}
+.acc-card{background:var(--bg2);border-radius:var(--r-lg);padding:32px}
+.acc-card h3{margin:0 0 6px;font-size:22px}
+.acc-card form.f input,.acc-card form.f select{background:var(--bg)}
+.acc-card form.f label small,.acc-hint{font-size:13px;color:var(--dim)}
+.acc-side{display:grid;gap:28px;padding:8px 4px}.acc-side p{margin:4px 0 8px;color:var(--soft)}
+.acc-err{margin:0;padding:10px 14px;border-radius:12px;background:rgba(224,92,92,.12);color:#F0A5A5;font-size:15px}
+.acc-soon{margin:0;color:var(--soft)}
+.acc-inv{margin:0;padding:12px 16px;border-radius:14px;background:rgba(74,155,214,.12);font-size:15px}
+.acc-chip{display:inline-block;font-size:12px;padding:3px 10px;border-radius:99px;background:rgba(74,155,214,.14);color:var(--blue);vertical-align:middle}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:99px;min-height:40px;padding:0 18px;font-size:15px}
+.btn[disabled]{opacity:.6}
+.page-head #logout{margin-top:20px}
+.acc-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.acc-tile{display:flex;flex-direction:column;gap:6px;padding:28px;border-radius:var(--r-lg);background:var(--bg2);color:var(--ink);text-decoration:none;min-height:170px}
+.acc-tile h3{margin:0;font-size:24px}.acc-tile p{margin:0;color:var(--soft)}
+.acc-tile.soon{border:1px dashed var(--line);background:transparent}.acc-tile .acc-chip{align-self:flex-start}
+a.acc-tile:hover{transform:translateY(-3px)}a.acc-tile{transition:transform .25s}
+.acc-made{display:grid;gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}.acc-made p{margin:0;color:var(--soft)}
+.acc-made b{font-size:28px;letter-spacing:.08em}.acc-made input{font:inherit;font-size:13px;color:var(--soft);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px}
+.acc-list{list-style:none;margin:12px 0 0;padding:0}.acc-list li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:15px}
+.acc-x{font:inherit;font-size:13px;background:none;border:1px solid var(--line);color:var(--soft);border-radius:99px;padding:4px 12px;cursor:pointer;min-height:32px}.acc-x:hover{color:var(--ink)}
+.acc-h3{font-size:22px;margin:40px 0 14px}
+.acc-table-wrap{overflow-x:auto;border-radius:var(--r);background:var(--bg2)}
+.acc-table{width:100%;border-collapse:collapse;font-size:15px}.acc-table th{text-align:start;font-weight:500;color:var(--dim);font-size:13px}
+.acc-table th,.acc-table td{padding:12px 18px;border-bottom:1px solid var(--line)}.acc-table tr:last-child td{border-bottom:0}
+.acc-table select{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 8px}
+@media(max-width:760px){.acc-grid{grid-template-columns:minmax(0,1fr)}.acc-card{padding:24px}}
+[hidden]{display:none!important}

@@ -50,7 +50,7 @@ const ICON: Record<string, string> = {
     <div class="right">
       <a class="lang" href={u(other)} hreflang={en ? 'he' : 'en'} lang={en ? 'he' : 'en'}>{en ? 'עברית' : 'EN'}</a>
       <a class="sup" href={L('/support')} aria-current={bare === '/support' ? 'page' : undefined}>{en ? 'Support us' : 'תמכו בנו'}</a>
-      <a class="login" href={L('/login')} aria-current={bare === '/login' ? 'page' : undefined}>{en ? 'Log in' : 'כניסה'}</a>
+      <a class="login" id="nav-login" href={L('/login')} data-account={L('/account')} aria-current={bare === '/login' || bare === '/account' ? 'page' : undefined}>{en ? 'Log in' : 'כניסה'}</a>
       <a class="join" href={L('/join')}>{en ? 'Join' : 'הצטרפו'}</a>
       <button class="menu" aria-expanded="false" aria-controls="links" id="menu">{en ? 'Menu' : 'תפריט'}</button>
     </div>
@@ -74,5 +74,6 @@ const ICON: Record<string, string> = {
     const b = document.getElementById('menu'), n = document.getElementById('nav');
     b?.addEventListener('click', () => { const o = n!.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
   </script>
+<script is:inline>(function(){try{var a=JSON.parse(localStorage.getItem('y3211-account')||'null'),l=document.getElementById('nav-login');if(a&&a.name&&l){l.textContent=a.name;l.href=l.dataset.account;l.classList.add('in')}}catch(e){}})();</script>
 </body>
 </html>

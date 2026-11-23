@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib';
+import { A } from '../i18n/account';
+const { lang = 'he' } = Astro.props as { lang?: 'he' | 'en' };
+const he = lang === 'he';
+const P = (p: string) => u((he ? '' : '/en') + p);
+const a = A[lang];
+const t = he
+  ? { title: 'החשבון שלי', desc: 'אזור החברים של קבוצה 3211.', lbl: 'החשבון שלי', hi: 'שלום', out: 'יציאה', area: 'אזור החברים', soon: 'בקרוב',
+      ax: ['AttendX', 'נוכחות, משימות, שעות קהילה והזמנות. יתחבר לחשבון הזה.'], tr: ['מגרש האימונים', 'המשימות והרישיונות שלכם.'],
+      mt: 'כלים למנטורים', inv: 'הזמנה חדשה', invp: 'צרו קוד לתלמיד או למנטור. הקוד עובד פעם אחת. גם סיסמה שנשכחה מחליפים בקוד חדש.', invName: 'שם (לא חובה)', make: 'יצירת קוד',
+      made: 'הקוד מוכן. שלחו אותו או את הקישור:', copy: 'העתקת הקישור', copied: 'הועתק', pending: 'קודים שעוד לא נוצלו', none: 'אין.', del: 'מחיקה',
+      members: 'חברים באתר', user: 'משתמש', role: 'תפקיד', status: 'מצב', active: 'פעיל', off: 'מושבת', disable: 'השבתה', enable: 'הפעלה', you: 'אתם' }
+  : { title: 'My account', desc: 'Team 3211 members area.', lbl: 'My account', hi: 'Hello', out: 'Log out', area: 'Members area', soon: 'Soon',
+      ax: ['AttendX', 'Attendance, tasks, community hours and orders. Will connect to this account.'], tr: ['Training ground', 'Your missions and licenses.'],
+      mt: 'Mentor tools', inv: 'New invite', invp: 'Create a code for a student or a mentor. It works once. A forgotten password is also replaced with a new code.', invName: 'Name (optional)', make: 'Create code',
+      made: 'The code is ready. Send it, or the link:', copy: 'Copy link', copied: 'Copied', pending: 'Unused codes', none: 'None.', del: 'Delete',
+      members: 'Website members', user: 'User', role: 'Role', status: 'Status', active: 'Active', off: 'Disabled', disable: 'Disable', enable: 'Enable', you: 'You' };
+---
+<Base title={t.title} description={t.desc} lang={lang}>
+  <div class="w" id="acc" data-lang={lang} data-login={P('/login')} data-home={P('/')} data-signup={new URL(P('/signup'), 'https://x').pathname} data-t={JSON.stringify({ ...t, roles: a.role })}>
+    <header class="page-head"><span class="lbl">{t.lbl}</span><h1><span>{t.hi}</span>, <span id="who">…</span></h1>
+      <p><span id="role-chip" class="acc-chip"></span> <bdi class="m" id="uname"></bdi></p>
+      <button class="btn ghost" id="logout" type="button">{t.out}</button></header>
+    <section class="sec">
+      <div class="head"><h2>{t.area}</h2></div>
+      <div class="acc-tiles">
+        <div class="acc-tile soon"><span class="acc-chip">{t.soon}</span><h3><bdi>{t.ax[0]}</bdi></h3><p>{t.ax[1]}</p></div>
+        <a class="acc-tile" href={P('/train')}><h3>{t.tr[0]}</h3><p>{t.tr[1]}</p></a>
+      </div>
+    </section>
+    <section class="sec" id="mentor" hidden>
+      <div class="head"><h2>{t.mt}</h2></div>
+      <div class="acc-grid">
+        <div class="acc-card">
+          <h3>{t.inv}</h3><p class="acc-hint">{t.invp}</p>
+          <form class="f" id="inv-form">
+            <div class="row2">
+              <label>{t.invName}<input name="name" maxlength="60" /></label>
+              <label>{t.role}<select name="role"><option value="student">{a.role.student}</option><option value="mentor">{a.role.mentor}</option></select></label>
+            </div>
+            <button class="btn" type="submit">{t.make}</button>
+            <p class="acc-err" role="alert" hidden></p>
+          </form>
+          <div class="acc-made" id="made" hidden><p>{t.made}</p><b class="m" id="made-code"></b><input class="m" id="made-link" readonly dir="ltr" /><button class="btn ghost" id="copy" type="button">{t.copy}</button></div>
+        </div>
+        <div class="acc-card">
+          <h3>{t.pending}</h3><ul class="acc-list" id="invites"></ul>
+        </div>
+      </div>
+      <h3 class="acc-h3">{t.members}</h3>
+      <div class="acc-table-wrap"><table class="acc-table"><thead><tr><th>{a.name}</th><th>{t.user}</th><th>{t.role}</th><th>{t.status}</th></tr></thead><tbody id="members"></tbody></table></div>
+    </section>
+  </div>
+</Base>
+<script>
+  import { enabled, watch, logout, createInvite, listInvites, deleteInvite, listMembers, setMember, type Profile } from '../scripts/account';
+  import { errText } from '../i18n/account';
+  const root = document.getElementById('acc')!;
+  const lang = root.dataset.lang as 'he' | 'en';
+  const t = JSON.parse(root.dataset.t!);
+  const $ = (id: string) => document.getElementById(id)!;
+  const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+  if (!enabled) location.replace(root.dataset.login!);
+  let me: Profile | null = null;
+  watch(async p => {
+    if (!p || p.disabled) { location.replace(root.dataset.login!); return; }
+    me = p;
+    $('who').textContent = p.name; $('uname').textContent = '@' + p.username;
+    $('role-chip').textContent = t.roles[p.role];
+    if (p.role === 'mentor') { $('mentor').hidden = false; await refresh(); }
+  });
+  $('logout').addEventListener('click', async () => { await logout(); location.replace(root.dataset.home!); });
+  const link = (code: string) => location.origin + root.dataset.signup.replace(/\/?$/, '/') + '?code=' + code;
+  async function refresh() {
+    const inv = (await listInvites()).filter(i => !i.usedBy);
+    $('invites').innerHTML = inv.length ? inv.map(i => `<li><span><b class="m">${i.code}</b> · ${esc(i.name || '—')} · ${t.roles[i.role]}</span><button class="acc-x" data-del="${i.code}" type="button">${t.del}</button></li>`).join('') : `<li class="acc-hint">${t.none}</li>`;
+    const ms = await listMembers();
+    $('members').innerHTML = ms.map(m => {
+      const self = m.uid === me!.uid;
+      return `<tr><td>${esc(m.name)}${self ? ` <span class="acc-chip">${t.you}</span>` : ''}</td><td><bdi class="m">@${esc(m.username)}</bdi></td>
+        <td>${self ? t.roles[m.role] : `<select data-role="${m.uid}"><option value="student"${m.role === 'student' ? ' selected' : ''}>${t.roles.student}</option><option value="mentor"${m.role === 'mentor' ? ' selected' : ''}>${t.roles.mentor}</option></select>`}</td>
+        <td>${m.disabled ? t.off : t.active}${self ? '' : ` <button class="acc-x" type="button" data-dis="${m.uid}" data-v="${m.disabled ? '0' : '1'}">${m.disabled ? t.enable : t.disable}</button>`}</td></tr>`;
+    }).join('');
+  }
+  $('invites').addEventListener('click', async e => { const c = (e.target as HTMLElement).dataset.del; if (c) { await deleteInvite(c); refresh(); } });
+  $('members').addEventListener('click', async e => { const b = e.target as HTMLElement; if (b.dataset.dis) { await setMember(b.dataset.dis, { disabled: b.dataset.v === '1' }); refresh(); } });
+  $('members').addEventListener('change', async e => { const s = e.target as HTMLSelectElement; if (s.dataset.role) { await setMember(s.dataset.role, { role: s.value as 'student' | 'mentor' }); refresh(); } });
+  const form = $('inv-form') as HTMLFormElement;
+  form.addEventListener('submit', async e => {
+    e.preventDefault(); const err = form.querySelector('.acc-err') as HTMLElement; err.hidden = true;
+    const fd = new FormData(form);
+    try {
+      const code = await createInvite(fd.get('role') as 'student' | 'mentor', String(fd.get('name') || ''));
+      $('made-code').textContent = code; ($('made-link') as HTMLInputElement).value = link(code); $('made').hidden = false; form.reset(); refresh();
+    } catch (x) { err.textContent = errText(lang, x); err.hidden = false; }
+  });
+  $('copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(($('made-link') as HTMLInputElement).value); $('copy').textContent = t.copied; } catch { ($('made-link') as HTMLInputElement).select(); } });
+</script>
