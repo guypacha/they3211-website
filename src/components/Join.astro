@@ -1,0 +1,77 @@
+---
+// Join page in both languages: sign-up form (sent to the team email through FormSubmit) and a parents' FAQ.
+import Base from '../layouts/Base.astro';
+import { CONTACT, u, type Lang } from '../lib';
+interface Props { lang?: Lang }
+const { lang = 'he' } = Astro.props;
+const en = lang === 'en';
+const L = (p: string) => u((en ? '/en' : '') + p);
+const site = (Astro.site?.toString() ?? '').replace(/\/$/, '') + import.meta.env.BASE_URL.replace(/\/$/, '');
+const thanks = `${site}${en ? '/en' : ''}/join/thanks/`;
+const t = en ? {
+  title: 'Join', desc: 'How to join The Y 3211: grades 9 to 12 from every school in Yeruham.',
+  lbl: 'Students and parents', h1: 'You don’t need to know how to build a robot. That’s what we’re here for.',
+  lead: 'Anyone in grades 9 to 12 in Yeruham can join, from any school. You start with a first workshop and build a wooden arm, then go on to mechanical, electrical, programming, strategy or media.',
+  formH: 'Sign up', formP: 'Fill this in and a mentor will get back to you. Registration opens in May and October.',
+  name: 'Student’s name', grade: 'Grade', school: 'School', phone: 'Parent’s phone', email: 'Email', note: 'What interests you? (optional)',
+  grades: ['9', '10', '11', '12'], choose: 'Choose', send: 'Send', subject: 'New sign-up from the website',
+  orTry: 'Or try first:', tryA: 'a first mission in the training ground',
+  faqH: 'Questions parents ask',
+  faq: [
+    ['Does it cost anything?', '[Waiting for content]'],
+    ['When and where do you meet?', `At our workshop: ${CONTACT.address.en}. Days and hours: [waiting for content].`],
+    ['Does my child need experience?', 'No. Everyone starts from a first workshop, and mentors teach everything from scratch.'],
+    ['How much time does it take?', 'There are regular meetings all year. The busiest time is the build season, from January when the game is announced until the competitions in late winter and spring.'],
+    ['Is it safe?', 'Students learn each tool before they use it, wear safety glasses in the workshop, and work with mentors around.'],
+    ['Is there transport?', '[Waiting for content]'],
+  ],
+} : {
+  title: 'הצטרפו', desc: 'איך מצטרפים לקבוצת הרובוטיקה של ירוחם: כיתות ט׳ עד י״ב מכל בתי הספר.',
+  lbl: 'לתלמידים ולהורים', h1: 'לא צריך לדעת לבנות רובוט. בשביל זה אנחנו כאן.',
+  lead: 'כל מי שלומד בכיתות ט׳ עד י״ב בירוחם יכול להצטרף, מכל בית ספר. מתחילים בסדנה ראשונה ובונים זרוע מעץ, ומשם ממשיכים למכניקה, לחשמל, לתכנות, לאסטרטגיה או למדיה.',
+  formH: 'הרשמה', formP: 'ממלאים, ומנטור חוזר אליכם. ההרשמה נפתחת במאי ובאוקטובר.',
+  name: 'שם התלמיד או התלמידה', grade: 'כיתה', school: 'בית ספר', phone: 'טלפון של הורה', email: 'מייל', note: 'מה מעניין אותך? (לא חובה)',
+  grades: ['ט׳', 'י׳', 'י״א', 'י״ב'], choose: 'בחרו', send: 'שליחה', subject: 'הרשמה חדשה מהאתר',
+  orTry: 'או קודם לנסות:', tryA: 'משימה ראשונה במגרש האימונים',
+  faqH: 'שאלות של הורים',
+  faq: [
+    ['כמה זה עולה?', '[ממתין לתוכן]'],
+    ['מתי ואיפה נפגשים?', `בסדנה שלנו: ${CONTACT.address.he}. ימים ושעות: [ממתין לתוכן].`],
+    ['צריך ניסיון קודם?', 'לא. כולם מתחילים מסדנה ראשונה, והמנטורים מלמדים הכול מההתחלה.'],
+    ['כמה זמן זה לוקח?', 'נפגשים באופן קבוע לאורך כל השנה. התקופה העמוסה היא עונת הבנייה: מינואר, כשהמשחק מתפרסם, ועד התחרויות בסוף החורף ובאביב.'],
+    ['זה בטוח?', 'כל תלמיד לומד להשתמש בכלי לפני שהוא עובד איתו, עובדים עם משקפי מגן, ומנטורים נמצאים בסדנה.'],
+    ['יש הסעות?', '[ממתין לתוכן]'],
+  ],
+};
+---
+<Base title={t.title} description={t.desc} lang={lang}>
+  <div class="w">
+    <header class="page-head"><span class="lbl">{t.lbl}</span><h1>{t.h1}</h1><p>{t.lead}</p></header>
+    <section class="sec two">
+      <div>
+        <h2 style="font-size:28px;margin:0 0 8px">{t.formH}</h2>
+        <p style="color:var(--soft);margin:0 0 20px">{t.formP}</p>
+        <form class="f" action={`https://formsubmit.co/${CONTACT.email}`} method="POST">
+          <input type="hidden" name="_subject" value={t.subject} />
+          <input type="hidden" name="_next" value={thanks} />
+          <input type="hidden" name="_template" value="table" />
+          <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <label>{t.name}<input name="name" required autocomplete="name" /></label>
+          <div class="row2">
+            <label>{t.grade}<select name="grade" required><option value="">{t.choose}</option>{t.grades.map(g => <option>{g}</option>)}</select></label>
+            <label>{t.school}<input name="school" required /></label>
+          </div>
+          <div class="row2">
+            <label>{t.phone}<input name="phone" type="tel" inputmode="tel" required autocomplete="tel" dir="ltr" /></label>
+            <label>{t.email}<input name="email" type="email" autocomplete="email" dir="ltr" /></label>
+          </div>
+          <label>{t.note}<textarea name="note"></textarea></label>
+          <p style="margin:0"><button class="btn" type="submit">{t.send}</button></p>
+        </form>
+        <p style="color:var(--soft)">{t.orTry} <a class="link" href={L('/train')}>{t.tryA} {en ? '→' : '←'}</a></p>
+      </div>
+      <div><h2 style="font-size:28px;margin:0 0 16px">{t.faqH}</h2>
+        <div class="faq">{t.faq.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}</div></div>
+    </section>
+  </div>
+</Base>

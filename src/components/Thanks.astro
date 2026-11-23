@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import { u, type Lang } from '../lib';
+interface Props { lang?: Lang }
+const { lang = 'he' } = Astro.props;
+const en = lang === 'en';
+---
+<Base title={en ? 'Thanks' : 'תודה'} description={en ? 'We got your sign-up.' : 'קיבלנו את ההרשמה.'} lang={lang}>
+  <div class="w"><header class="page-head"><span class="lbl">{en ? 'Sign-up' : 'הרשמה'}</span>
+    <h1>{en ? 'Got it. A mentor will get back to you soon.' : 'קיבלנו. מנטור יחזור אליכם בקרוב.'}</h1>
+    <p>{en ? 'Meanwhile, you can try a first mission in the training ground.' : 'בינתיים אפשר לנסות משימה ראשונה במגרש האימונים.'}</p>
+    <p style="margin-top:24px"><a class="btn" href={u('/train/app/')}>{en ? 'Training ground' : 'למגרש האימונים'}</a></p></header></div>
+</Base>

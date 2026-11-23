@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import Photo from '../../components/Photo.astro';
+---
+<Base title="Team" description="Who we are: the robotics team of Yeruham high school students, since 2009." lang="en">
+  <div class="w">
+    <header class="page-head"><span class="lbl">The team</span><h1>Twenty students, five mentors, one workshop in Yeruham.</h1>
+      <p>[The team’s story in three or four sentences: how we started in 2009, and what makes a team from Yeruham special. Waiting for content.]</p></header>
+    <section class="sec two">
+      <div class="prose"><h2 style="margin-top:0">What is FRC?</h2>
+        <p>FIRST Robotics Competition is an international robotics competition for high school students. Every January a new game is announced, and teams have a few weeks to design and build a robot that plays it. Then they compete against teams from all over the world.</p>
+        <h2>How the team works</h2>
+        <ul class="list"><li>Mechanical<span>design, manufacturing and assembly</span></li><li>Electrical<span>wiring, controllers and batteries</span></li><li>Programming<span>Java with WPILib</span></li><li>Strategy<span>game analysis and scouting</span></li><li>Media and business<span>content, sponsors and community</span></li></ul>
+      </div>
+      <Photo alt="The team in the workshop" ratio="4/3" label="Photo of the whole team" />
+    </section>
+    <section class="sec"><div class="head"><h2>Mentors</h2></div>
+      <ul class="list"><li>[Name]<span>[Role]</span></li><li>[Name]<span>[Role]</span></li><li>[Name]<span>[Role]</span></li><li>[Name]<span>[Role]</span></li><li>[Name]<span>[Role]</span></li></ul>
+    </section>
+    <section class="sec two"><div><h2 style="font-size:30px;margin:0 0 12px">The workshop: Warehouse 52</h2><p style="color:var(--soft)">In the Yeruham industrial zone. This is where we design, print, cut, wire and test. The workshop has Bambu Lab 3D printers and a Markforged printer for strong carbon-fiber parts.</p></div>
+      <Photo alt="The workshop in Warehouse 52" ratio="16/9" label="Workshop photo" /></section>
+  </div>
+</Base>

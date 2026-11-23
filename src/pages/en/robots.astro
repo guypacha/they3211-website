@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import Photo from '../../components/Photo.astro';
+import { getCollection } from 'astro:content';
+const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.data.year);
+---
+<Base title="Robots" description="Every robot of team 3211 from Yeruham, by season." lang="en">
+  <div class="w">
+    <header class="page-head"><span class="lbl">Robots</span><h1>A new robot every season.</h1><p>Every robot is built from scratch for that year’s game. The code for every season is open on GitHub.</p></header>
+    {robots.map(r => (
+      <article class="robot" id={`y${r.data.year}`}>
+        <Photo src={r.data.photo} alt={`Robot of ${r.data.year}`} ratio="4/5" label="Robot photo" />
+        <div>
+          <span class="m">{r.data.year} · {r.data.game}</span>
+          <h2>{r.data.name.replace('[שם הרובוט]', '[Robot name]')}</h2>
+          <div class="prose"><p>[A few sentences about the robot and the season. Waiting for content.]</p></div>
+          {r.data.code && <p><a class="link" href={r.data.code} rel="noopener">Season code ↗</a></p>}
+        </div>
+      </article>))}
+  </div>
+</Base>

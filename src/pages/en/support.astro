@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import { CONTACT } from '../../lib';
+---
+<Base title="Support us" description="How to support the robotics team of Yeruham, and what your support makes possible." lang="en">
+  <div class="w">
+    <header class="page-head"><span class="lbl">Companies and donors</span><h1>Every robot we build exists because someone believed in the students of Yeruham.</h1>
+      <p>Every donation goes straight to the workshop, the competitions and the students.</p></header>
+    <section class="sec"><div class="head"><h2>Where the money goes</h2></div>
+      <ul class="list"><li>Parts and equipment<span>motors, controllers, aluminum and printing material</span></li><li>Competitions<span>entry fees and travel</span></li><li>The workshop<span>renovating Warehouse 52</span></li><li>Recruiting<span>more students from every school in Yeruham</span></li><li>Community<span>demos and activities in town</span></li></ul></section>
+    <section class="sec"><div class="head"><h2>Sponsorship levels</h2><span class="lbl">[Amounts waiting for approval]</span></div>
+      <div class="tiers">
+        <div><span class="lbl">Supporter</span><b>[ ]</b><p style="color:var(--soft);margin:0">Logo on the website and a thank-you on social media.</p></div>
+        <div><span class="lbl">Partner</span><b>[ ]</b><p style="color:var(--soft);margin:0">Logo on the robot and on team shirts.</p></div>
+        <div><span class="lbl">Main partner</span><b>[ ]</b><p style="color:var(--soft);margin:0">Name on the robot, a workshop visit and a demo at your place.</p></div>
+      </div></section>
+    <section class="sec two"><div><h2 style="font-size:30px;margin:0 0 12px">Let’s talk</h2><p style="color:var(--soft)">We’d love to invite you to the workshop, show you the robot and introduce the students.</p></div>
+      <div><ul class="list"><li>Contact<span>Liron Gori</span></li><li>Email<span class="m" style="font-size:14px">{CONTACT.email}</span></li></ul>
+        <p style="margin-top:20px"><a class="btn" href={`mailto:${CONTACT.email}?subject=Sponsorship`}>Write to us</a></p></div></section>
+  </div>
+</Base>

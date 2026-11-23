@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import { u } from '../../lib';
+---
+<Base title="Training ground" description="How we train new students: short missions and licenses." lang="en">
+  <div class="w">
+    <header class="page-head"><span class="lbl">How we train students</span><h1>Learning to build robots through missions, not slides.</h1>
+      <p>Every topic is a world of short missions. Every mistake gets an explanation, every right answer earns points, and each world ends with a license that a mentor signs off in the workshop.</p></header>
+    <section class="sec two">
+      <ul class="list">
+        <li>Electrical and wiring<span>open</span></li><li>First workshop<span>soon</span></li><li>Motors and gearboxes<span>soon</span></li>
+        <li>Mechanical concepts<span>soon</span></li><li>3D printing<span>soon</span></li><li>Strategy<span>soon</span></li>
+      </ul>
+      <div><h2 style="font-size:30px;margin:0 0 12px">Try the power path mission</h2>
+        <p style="color:var(--soft)">Connect a battery, a main breaker and a power distribution hub, pick a color and gauge for every wire, and see if the robot turns on. The missions are in Hebrew, since they are made for our students.</p>
+        <a class="btn" href={u('/train/app/')}>Open the training ground</a></div>
+    </section>
+  </div>
+</Base>

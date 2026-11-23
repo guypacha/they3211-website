@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import { u, CONTACT } from '../../lib';
+---
+<Base title="AttendX" description="AttendX is a team management app for robotics teams, built by team 3211 in Yeruham." lang="en">
+  <div class="w">
+    <header class="page-head"><span class="lbl">Software we built · AttendX</span><h1>The whole team in one app.</h1>
+      <p>Attendance, training, certifications, community hours, inventory, orders and budget. One app instead of the spreadsheet that keeps growing tabs, with a page for every student to see their own progress.</p></header>
+    <section class="sec two">
+      <ul class="list">
+        <li>Attendance<span>present, late, absent or excused, by department</span></li>
+        <li>Training and certifications<span>who passed what, and who may use which tool</span></li>
+        <li>Community hours<span>a goal for every student</span></li>
+        <li>Inventory and orders<span>what’s in the box and what was ordered</span></li>
+        <li>Budget<span>live and shared with mentors</span></li>
+        <li>Tasks<span>board, calendar and workload per student</span></li>
+      </ul>
+      <figure style="margin:0"><img src={u('/assets/dashboard.jpg')} alt="AttendX home screen with sample data" width="800" height="515" loading="lazy" /><figcaption><span>Home screen</span><span>Sample data</span></figcaption></figure>
+    </section>
+    <section class="sec"><div class="shots">
+      <figure style="margin:0"><img src={u('/assets/attendance.jpg')} alt="Attendance screen with sample data" loading="lazy" /><figcaption><span>Attendance</span></figcaption></figure>
+      <figure style="margin:0"><img src={u('/assets/tasks-board.jpg')} alt="Task board with sample data" loading="lazy" /><figcaption><span>Task board</span></figcaption></figure>
+      <figure style="margin:0"><img src={u('/assets/student-tasks.jpg')} alt="A student’s tasks, with sample data" loading="lazy" /><figcaption><span>Student view</span></figcaption></figure>
+    </div><p style="color:var(--dim);font-size:14px;margin-top:16px">All screens here show a sample team. The team’s real data is not shown on this site.</p></section>
+    <section class="sec two">
+      <div><h2 style="font-size:30px;margin:0 0 12px">Used by</h2><ul class="list"><li>The Y<span class="m">3211</span></li><li>DaVinci<span class="m">4744</span></li></ul></div>
+      <div><h2 style="font-size:30px;margin:0 0 12px">Want AttendX for your team?</h2>
+        <p style="color:var(--soft)">The app works for FRC and FTC teams and runs free on Google’s Firebase. Tell us who you are and how many students you have, and we’ll get back to you.</p>
+        <a class="btn" href={`mailto:${CONTACT.email}?subject=AttendX`}>Write to us</a>
+        <p class="m" style="margin-top:12px;color:var(--soft);font-size:14px">{CONTACT.email}</p></div>
+    </section>
+  </div>
+</Base>
