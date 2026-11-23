@@ -1,4 +1,4 @@
-/* Shared by B1/B2: black, off-white, one blue used only for links and one accent. No gradients, no glows, 2px radius max. */
+/* Soft shapes: rounded photos and floating panels (radius tokens), few hairlines. 
 /* Palette: 2 main colours (deep navy, paper white) + 1 accent (logo blue, used sparingly). Flat, thin rules, weight 700 max for headings. */
 :root{--bg:#0F1B2D;--bg2:#16253A;--ink:#EEF1F5;--soft:#A4B0C0;--dim:#7D8A9C;--blue:#4A9BD6;--acc:#4A9BD6;--line:#243349;--paper:#F6F6F4;
 --f:"Heebo",system-ui,sans-serif;--n:"Barlow Condensed","Heebo",sans-serif;--m:"JetBrains Mono",ui-monospace,monospace}
@@ -100,3 +100,33 @@ img{max-width:100%}
 .band-light .link{border-color:var(--blue)}
 .lbl.acc{color:var(--blue);font-weight:500;letter-spacing:.02em}
 bdi{white-space:nowrap}
+
+/* ---- organic shapes ---- */
+:root{--r:22px;--r-lg:36px}
+.photo,figure img,.ax img,.shots img,.robot .photo,.seasons .photo{border-radius:var(--r);overflow:hidden}
+figure img,.ax img,.shots img{border:0}
+.btn{border-radius:14px}
+nav .join{border-radius:12px}
+form.f input,form.f textarea,form.f select{border-radius:12px}
+.skip{border-radius:10px}
+/* hero: curved bottom edge */
+.h2g{border-radius:0 0 var(--r-lg) var(--r-lg);overflow:hidden}
+/* facts: floating rounded panel, no dividers */
+.band-blue{background:transparent;margin-top:-1px}
+.band-blue .facts{background:var(--bg2);border-radius:var(--r-lg);margin-top:28px;padding-inline:12px}
+.facts div{padding:26px 24px}
+.facts div+div{border-inline-start:0;padding-inline-start:24px}
+/* light bands float as big rounded panels */
+.band-light{margin-inline:clamp(8px,1.5vw,20px);border-radius:var(--r-lg)}
+/* paths become soft cards */
+.paths{border-top:0;gap:16px}
+.paths a{background:#fff;border-radius:var(--r);padding:28px!important;border:0!important;transition:transform .2s ease}
+.paths a:hover{transform:translateY(-3px)}
+.spons{border-top:0}
+.spons span{background:#fff;border-radius:16px;padding:14px 22px}
+.tiers{border-top:0;gap:16px}
+.tiers div{background:var(--bg2);border-radius:var(--r);padding:28px!important;border:0!important}
+.chips li{border-radius:999px}
+.page-head{border-bottom:0}
+@media(max-width:860px){.facts div:nth-child(3){padding-inline-start:24px}.paths a+a{border-top:0!important}.tiers div+div{border-top:0!important}.paths{gap:12px}}
+.paths .link{align-self:flex-start;margin-top:auto}.paths a{height:100%}.band-light .sec{padding-bottom:0}
