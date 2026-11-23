@@ -53,18 +53,20 @@ const EN: typeof HE = {
   th: 'Thank you to our supporters', thj: 'Join them', thl: 'Our supporters',
 };
 const t = en ? EN : HE;
+// Only real photos rotate. Until there are two, show one slide and no dots.
+const live = slides.some(s => s.src) ? slides.filter(s => s.src) : slides.slice(0, 1);
 ---
 <Base title={t.title} description={t.desc} lang={lang} alt={en ? "/" : "/en"}>
   <header class="h2g photo">
     <div class="slides" aria-roledescription={en ? "carousel" : "מצגת"} aria-label={t.slidesLbl}>
-      {slides.map((sl, i) => (
+      {live.map((sl, i) => (
         <div class={`slide${i === 0 ? ' on' : ''}`} aria-hidden={i === 0 ? 'false' : 'true'}>
           {sl.src ? <img src={u(sl.src)} alt={sl[lang]} /> : <span class="ph" style="align-items:start;padding-top:22%">{sl[lang]}</span>}
         </div>))}
     </div>
-    <div class="dots" role="group" aria-label={t.dotsLbl}>
-      {slides.map((_, i) => <button type="button" aria-label={`${t.dot} ${i + 1}`} aria-pressed={i === 0 ? 'true' : 'false'} data-i={i}></button>)}
-    </div>
+    {live.length > 1 && <div class="dots" role="group" aria-label={t.dotsLbl}>
+      {live.map((_, i) => <button type="button" aria-label={`${t.dot} ${i + 1}`} aria-pressed={i === 0 ? 'true' : 'false'} data-i={i}></button>)}
+    </div>}
     <div class="w inner">
       <div class="num" aria-hidden="true">3211</div>
       <div class="txt">
