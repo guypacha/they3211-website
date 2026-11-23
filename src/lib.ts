@@ -13,9 +13,9 @@ export const CONTACT = {
 };
 // Footer icons. Add the team's Instagram / Facebook / YouTube addresses here and their icons appear.
 export const SOCIAL: { id: 'instagram' | 'facebook' | 'youtube' | 'github' | 'tba'; label: string; url: string }[] = [
-  { id: 'instagram', label: 'Instagram', url: '' },
-  { id: 'facebook', label: 'Facebook', url: '' },
-  { id: 'youtube', label: 'YouTube', url: '' },
+  { id: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/y_team_3211/' },
+  { id: 'facebook', label: 'Facebook', url: 'https://www.facebook.com/frc.3211' },
+  { id: 'youtube', label: 'YouTube', url: 'https://www.youtube.com/@yeruham3211' },
   { id: 'github', label: 'GitHub', url: 'https://github.com/yteam3211' },
   { id: 'tba', label: 'The Blue Alliance', url: 'https://www.thebluealliance.com/team/3211' },
 ];
