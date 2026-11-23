@@ -199,3 +199,8 @@ form.f .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .hp{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0}
 @media(max-width:860px){nav .sup{display:none}form.f .row2{grid-template-columns:1fr}.inner .page-head{padding-bottom:96px}}
 html[dir=ltr] .dots{left:auto;right:max(24px,env(safe-area-inset-right))}
+/* team sub-pages links */
+.two-links{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.tl-card{display:flex;flex-direction:column;gap:8px;padding:30px 32px;border-radius:var(--r-lg);background:var(--bg2);text-decoration:none;color:var(--ink);transition:transform .25s}
+.tl-card b{font-size:22px;font-weight:700}.tl-card:hover{transform:translateY(-3px)}
+@media(max-width:700px){.two-links{grid-template-columns:1fr}}

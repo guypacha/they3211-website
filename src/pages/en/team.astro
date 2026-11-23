@@ -1,11 +1,13 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { u } from '../../lib';
+import TeamTabs from '../../components/TeamTabs.astro';
 import Photo from '../../components/Photo.astro';
 ---
 <Base title="Team" description="Who we are: the robotics team of Yeruham high school students, since 2009." lang="en">
   <div class="w">
     <header class="page-head"><span class="lbl">The team</span><h1>Twenty students, five mentors, one workshop in Yeruham.</h1>
-      <p>[The team’s story in three or four sentences: how we started in 2009, and what makes a team from Yeruham special. Waiting for content.]</p></header>
+      <p>[The team’s story in three or four sentences: how we started in 2009, and what makes a team from Yeruham special. Waiting for content.]</p><TeamTabs lang="en" cur="team" /></header>
     <section class="sec two">
       <div class="prose"><h2 style="margin-top:0">What is FRC?</h2>
         <p>FIRST Robotics Competition is an international robotics competition for high school students. Every January a new game is announced, and teams have a few weeks to design and build a robot that plays it. Then they compete against teams from all over the world.</p>
@@ -14,9 +16,7 @@ import Photo from '../../components/Photo.astro';
       </div>
       <Photo alt="The team in the workshop" ratio="4/3" label="Photo of the whole team" />
     </section>
-    <section class="sec"><div class="head"><h2>Mentors</h2></div>
-      <ul class="list"><li>[Name]<span>[Role]</span></li><li>[Name]<span>[Role]</span></li><li>[Name]<span>[Role]</span></li><li>[Name]<span>[Role]</span></li><li>[Name]<span>[Role]</span></li></ul>
-    </section>
+    <section class="sec two-links"><a class="tl-card" href={u('/en/team/mentors')}><span class="lbl acc">Mentors</span><b>The people behind the team →</b></a><a class="tl-card" href={u('/en/team/structure')}><span class="lbl acc">Team structure</span><b>Leadership, captains and five departments →</b></a></section>
     <section class="sec two"><div><h2 style="font-size:30px;margin:0 0 12px">The workshop: Warehouse 52</h2><p style="color:var(--soft)">In the Yeruham industrial zone. This is where we design, print, cut, wire and test. The workshop has Bambu Lab 3D printers and a Markforged printer for strong carbon-fiber parts.</p></div>
       <Photo alt="The workshop in Warehouse 52" ratio="16/9" label="Workshop photo" /></section>
   </div>

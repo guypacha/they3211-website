@@ -45,7 +45,7 @@ const ICON: Record<string, string> = {
   <nav id="nav"><div class="w">
     <a href={L('/')} aria-label={en ? 'The Y 3211, home' : 'The Y 3211, דף הבית'}><img src={u('/assets/logo.jpg')} alt="" width="58" height="34" /></a>
     <div class="links" id="links">
-      {NAV.map(n => <a href={L(n.href)} aria-current={bare === n.href ? 'page' : undefined}>{n[lang]}</a>)}
+      {NAV.map(n => <a href={L(n.href)} aria-current={bare === n.href || bare.startsWith(n.href + '/') ? 'page' : undefined}>{n[lang]}</a>)}
     </div>
     <div class="right">
       <a class="lang" href={u(other)} hreflang={en ? 'he' : 'en'} lang={en ? 'he' : 'en'}>{en ? 'עברית' : 'EN'}</a>

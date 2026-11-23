@@ -1,0 +1,73 @@
+---
+import { seasons, totals } from '../data/seasons';
+const { lang = 'he' } = Astro.props as { lang?: 'he' | 'en' };
+const he = lang === 'he';
+const t = he
+  ? { lbl: 'עונות', h: 'מתחרים מאז 2010.', p: 'התוצאות והפרסים מכל עונה, לפי נתוני FIRST.', aw: 'פרסים', ch: 'פעמים באליפות העולם', ev: 'תחרויות', cap: 'קפטן ברית', rank: 'מקום', src: 'מקור: אתר התחרויות של FIRST. עונות נוספות יתווספו בקרוב.' }
+  : { lbl: 'Seasons', h: 'Competing since 2010.', p: 'Results and awards from every season, from FIRST event data.', aw: 'Awards', ch: 'World championships', ev: 'Events', cap: 'Alliance captain', rank: 'Rank', src: 'Source: FIRST event results. More seasons coming soon.' };
+---
+<section class="tl" id="seasons" aria-labelledby="tl-h">
+  <header class="tl-head rv">
+    <span class="lbl acc">{t.lbl}</span>
+    <h2 id="tl-h">{t.h}</h2>
+    <p>{t.p}</p>
+    <dl class="tl-tot">
+      <div><dt>{t.aw}</dt><dd data-count={totals.awards}>{totals.awards}</dd></div>
+      <div><dt>{t.ch}</dt><dd data-count={totals.champs}>{totals.champs}</dd></div>
+      <div><dt>{t.ev}</dt><dd data-count={totals.events}>{totals.events}</dd></div>
+    </dl>
+  </header>
+  <ol class="tl-list">
+    {seasons.map(s => (
+      <li class:list={['tl-s rv', { top: s.top }]} id={`s${s.year}`}>
+        <div class="tl-y"><bdi>{s.year}</bdi><span class="tl-g"><bdi>{s.game}</bdi></span></div>
+        <div class="tl-b">
+          <p class="tl-n">{s.note[lang]}</p>
+          {s.events.length > 0 && <ul class="tl-ev">{s.events.map(e => (
+            <li><span>{e.name[lang]}{e.captain && <em>{t.cap}</em>}</span>
+              <span class="tl-r">{e.rank && <bdi class="tl-rk">{t.rank} {e.rank}</bdi>}{e.result && <b>{e.result[lang]}</b>}</span></li>))}</ul>}
+          {s.awards.length > 0 && <ul class="tl-aw">{[...new Set(s.awards)].map(a => { const n = s.awards.filter(x => x === a).length; return <li><bdi>{a}{n > 1 && ` ×${n}`}</bdi></li>; })}</ul>}
+        </div>
+      </li>))}
+  </ol>
+  <p class="tl-src">{t.src}</p>
+</section>
+<style>
+.tl{padding-block:72px 24px;border-bottom:1px solid var(--line)}
+.tl-head{display:grid;gap:10px;max-width:820px;margin-bottom:40px}
+.tl-head h2{font-size:clamp(30px,4vw,44px);font-weight:700;margin:0;line-height:1.15}
+.tl-head p{margin:0;color:var(--soft)}
+.tl-tot{display:flex;gap:40px;margin:18px 0 0;flex-wrap:wrap}
+.tl-tot div{display:flex;flex-direction:column-reverse}
+.tl-tot dt{font-size:14px;color:var(--soft)}
+.tl-tot dd{margin:0;font-family:var(--n);font-weight:700;font-size:52px;line-height:1;color:var(--ink)}
+.tl-list{list-style:none;margin:0;padding:0;position:relative}
+.tl-list::before{content:"";position:absolute;inset-block:8px;inset-inline-start:7px;width:2px;background:linear-gradient(var(--line),var(--line) 92%,transparent);border-radius:2px}
+.tl-s{display:grid;grid-template-columns:200px minmax(0,1fr);gap:36px;padding:28px 0 28px 0;padding-inline-start:40px;position:relative}
+.tl-s::before{content:"";position:absolute;inset-inline-start:0;top:38px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--dim)}
+.tl-s.top::before{border-color:var(--blue);background:var(--blue);box-shadow:0 0 0 5px rgba(74,155,214,.15)}
+.tl-y>bdi{display:block;font-family:var(--n);font-weight:700;font-size:56px;line-height:1;color:var(--ink)}
+.tl-s:not(.top) .tl-y>bdi{color:var(--soft)}
+.tl-g bdi{white-space:normal}.tl-g{display:block;margin-top:8px;font-family:var(--m);font-size:12px;letter-spacing:.04em;color:var(--dim)}
+.tl-b{background:var(--bg2);border-radius:var(--r,22px);padding:22px 26px}
+.tl-n{margin:0 0 14px;font-size:19px;font-weight:500;color:var(--ink)}
+.tl-ev{list-style:none;margin:0;padding:0}
+.tl-ev li{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-top:1px solid var(--line);font-size:15px;color:var(--soft)}
+.tl-ev em{font-style:normal;font-size:12px;color:var(--blue);border:1px solid currentColor;border-radius:99px;padding:1px 9px;margin-inline-start:10px;white-space:nowrap}
+.tl-r{display:flex;gap:14px;align-items:baseline;white-space:nowrap}
+.tl-rk{font-size:13px;color:var(--dim)}
+.tl-r b{font-weight:500;color:var(--ink)}
+.tl-aw{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.tl-aw li{font-size:13px;padding:5px 12px 5px 12px;border-radius:99px;background:rgba(74,155,214,.12);color:var(--ink);display:flex;align-items:center;gap:7px}
+.tl-aw li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--blue);flex:none}
+.tl-src{font-size:13px;color:var(--dim);margin:24px 0 0;padding-inline-start:40px}
+@media(max-width:760px){
+  .tl-s{grid-template-columns:minmax(0,1fr);gap:12px;padding-block:22px}
+  .tl-r{white-space:normal;flex-wrap:wrap}.tl-aw li{white-space:normal}
+  .tl-s::before{top:30px}
+  .tl-y{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}.tl-y>bdi{font-size:42px}.tl-g{margin:0}
+  .tl-b{padding:18px}
+  .tl-ev li{flex-direction:column;gap:2px}
+  .tl-tot{gap:28px}.tl-tot dd{font-size:42px}
+}
+</style>

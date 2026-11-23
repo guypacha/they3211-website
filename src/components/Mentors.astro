@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import Photo from './Photo.astro';
+import TeamTabs from './TeamTabs.astro';
+import { mentors } from '../data/people';
+const { lang = 'he' } = Astro.props as { lang?: 'he' | 'en' };
+const he = lang === 'he';
+const t = he
+  ? { title: 'המנטורים', desc: 'המנטורים של קבוצה 3211 מירוחם, ועל מה כל אחד אחראי.', lbl: 'המנטורים', h: 'האנשים שמלווים את הקבוצה.', p: 'מהנדסים, סטודנטים ובוגרי הקבוצה, שמגיעים לסדנה ארבע פעמים בשבוע. התלמידים מתכננים ובונים, ואנחנו עוזרים להם לעשות את זה נכון.', ph: 'תמונת מנטור', own: 'תחומי אחריות', cta: 'רוצים להצטרף כמנטורים?', ctap: 'אנחנו תמיד מחפשים מהנדסים, מתכנתים ואנשי עסקים שרוצים ללמד. כתבו לנו.', mail: 'כתבו לנו' }
+  : { title: 'Mentors', desc: 'The mentors of team 3211 from Yeruham, and what each one is responsible for.', lbl: 'Mentors', h: 'The people behind the team.', p: 'Engineers, students and team alumni who come to the workshop four times a week. The students design and build, and we help them do it right.', ph: 'Mentor photo', own: 'Responsible for', cta: 'Want to mentor with us?', ctap: 'We are always looking for engineers, programmers and business people who want to teach. Write to us.', mail: 'Write to us' };
+---
+<Base title={t.title} description={t.desc} lang={lang}>
+  <div class="w">
+    <header class="page-head"><span class="lbl">{t.lbl}</span><h1>{t.h}</h1><p>{t.p}</p><TeamTabs lang={lang} cur="mentors" /></header>
+    <ul class="mentors">
+      {mentors.map(m => (
+        <li class="mn rv">
+          <Photo src={m.photo} alt={m.name[lang]} ratio="4/5" label={t.ph} class="mn-ph" />
+          <div class="mn-b">
+            <span class="lbl acc">{m.role[lang]}</span>
+            <h2>{m.name[lang]}</h2>
+            <p>{m.bio[lang]}</p>
+            <span class="mn-own">{t.own}</span>
+            <ul class="mn-tags">{m.owns.map(o => <li>{o[lang]}</li>)}</ul>
+          </div>
+        </li>))}
+    </ul>
+    <section class="mn-cta rv"><div><h2>{t.cta}</h2><p>{t.ctap}</p></div><a class="btn" href="mailto:yer.3211@gmail.com">{t.mail}</a></section>
+  </div>
+</Base>
+<style>
+.mentors{list-style:none;margin:0;padding:56px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.mn{display:flex;flex-direction:column;background:var(--bg2);border-radius:var(--r-lg,36px);overflow:hidden}
+.mn :global(.mn-ph){border-radius:0!important;border:0!important}
+.mn-b{padding:22px 24px 26px;display:flex;flex-direction:column;gap:6px;flex:1}
+.mn h2{font-size:24px;font-weight:700;margin:0}
+.mn p{margin:0 0 10px;color:var(--soft);font-size:15px}
+.mn-own{font-size:12px;color:var(--dim);margin-top:auto}
+.mn-tags{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.mn-tags li{font-size:13px;padding:4px 12px;border-radius:99px;background:rgba(74,155,214,.12);color:var(--ink)}
+.mn-cta{margin:72px 0 24px;padding:36px 40px;border-radius:var(--r-lg,36px);border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:28px;flex-wrap:wrap}
+.mn-cta h2{margin:0 0 6px;font-size:26px}.mn-cta p{margin:0;color:var(--soft);max-width:560px}
+@media(max-width:600px){.mn-cta{padding:26px 22px}}
+</style>

@@ -1,0 +1,19 @@
+---
+import { u } from '../lib';
+const { lang = 'he', cur } = Astro.props as { lang?: 'he' | 'en'; cur: string };
+const p = lang === 'en' ? '/en' : '';
+const tabs = [
+  { k: 'team', href: '/team', he: 'הקבוצה', en: 'About' },
+  { k: 'mentors', href: '/team/mentors', he: 'המנטורים', en: 'Mentors' },
+  { k: 'structure', href: '/team/structure', he: 'מבנה הקבוצה', en: 'Structure' },
+];
+---
+<nav class="tabs" aria-label={lang === 'en' ? 'Team pages' : 'עמודי הקבוצה'}>
+  {tabs.map(t => <a href={u(p + t.href)} aria-current={cur === t.k ? 'page' : undefined}>{t[lang]}</a>)}
+</nav>
+<style>
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:28px 0 0}
+.tabs a{padding:8px 18px;border-radius:99px;border:1px solid var(--line);color:var(--soft);font-size:15px;text-decoration:none;min-height:40px;display:inline-flex;align-items:center}
+.tabs a:hover{color:var(--ink);border-color:var(--soft)}
+.tabs a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+</style>

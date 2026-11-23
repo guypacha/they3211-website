@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Timeline from '../components/Timeline.astro';
 import Photo from '../components/Photo.astro';
 import { getCollection, render } from 'astro:content';
 const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.data.year);
@@ -8,6 +9,7 @@ const items = await Promise.all(robots.map(async r => ({ r, Content: (await rend
 <Base title="רובוטים" description="כל הרובוטים של קבוצה 3211 מירוחם, לפי עונה.">
   <div class="w">
     <header class="page-head"><span class="lbl">רובוטים</span><h1>רובוט חדש בכל עונה.</h1><p>כל רובוט נבנה מאפס למשחק של אותה שנה. הקוד של כל עונה פתוח לכולם באתר <bdi>GitHub</bdi>.</p></header>
+    <Timeline />
     {items.map(({ r, Content }) => (
       <article class="robot" id={`y${r.data.year}`}>
         <Photo src={r.data.photo} alt={`הרובוט של ${r.data.year}`} ratio="4/5" label="תמונת רובוט" />

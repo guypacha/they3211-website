@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import TeamTabs from './TeamTabs.astro';
+import { leadership, depts } from '../data/people';
+const { lang = 'he' } = Astro.props as { lang?: 'he' | 'en' };
+const he = lang === 'he';
+const t = he
+  ? { title: 'מבנה הקבוצה', desc: 'איך קבוצה 3211 בנויה: הנהלה, קפטנים וחמש מחלקות.', lbl: 'מבנה הקבוצה', h: 'איך הקבוצה עובדת.', p: 'כל תלמיד שייך למחלקה אחת לפחות. בכל מחלקה יש ראש מחלקה מהתלמידים ומנטור שמלווה אותה. הקפטנים מחברים בין המחלקות, והמנטור הראשי אחראי על התמונה הכוללת.', lead: 'ראש מחלקה', mentor: 'מנטור', depts: 'המחלקות', flow: 'איך מתקבלות החלטות', steps: [['כל שבוע', 'הקפטנים וראשי המחלקות קובעים יעדים לשבוע ובודקים מה נתקע.'], ['כל החלטה גדולה', 'ראשי המחלקות מציגים אפשרויות, הקבוצה מצביעה, והמנטורים מאשרים בטיחות ותקציב.'], ['כל עונה', 'בסוף העונה בוחרים קפטנים וראשי מחלקות חדשים לשנה הבאה.']] }
+  : { title: 'Team structure', desc: 'How team 3211 is organized: leadership, captains and five departments.', lbl: 'Team structure', h: 'How the team works.', p: 'Every student belongs to at least one department. Each department has a student lead and a mentor. The captains connect the departments, and the lead mentor looks after the whole picture.', lead: 'Student lead', mentor: 'Mentor', depts: 'Departments', flow: 'How decisions are made', steps: [['Every week', 'Captains and department leads set the goals for the week and check what is stuck.'], ['Every big decision', 'Department leads present options, the team votes, and mentors sign off on safety and budget.'], ['Every season', 'At the end of the season we choose new captains and department leads for next year.']] };
+---
+<Base title={t.title} description={t.desc} lang={lang}>
+  <div class="w">
+    <header class="page-head"><span class="lbl">{t.lbl}</span><h1>{t.h}</h1><p>{t.p}</p><TeamTabs lang={lang} cur="structure" /></header>
+    <section class="org" aria-label={t.lbl}>
+      <div class="org-top rv">
+        {[leadership.head, leadership.captains].map((x, i) => (
+          <div class:list={['org-n', { lead: i === 0 }]}><span class="lbl acc">{x.title[lang]}</span><b>{x.who[lang]}</b><p>{x.does[lang]}</p></div>))}
+      </div>
+      <h2 class="org-h">{t.depts}</h2>
+      <ul class="org-d">
+        {depts.map((d, i) => (
+          <li class="rv">
+            <span class="org-i"><bdi>0{i + 1}</bdi></span>
+            <h3>{d.name[lang]}</h3>
+            <ul class="org-does">{d.does.map(x => <li>{x[lang]}</li>)}</ul>
+            <dl><div><dt>{t.lead}</dt><dd>{d.lead[lang]}</dd></div><div><dt>{t.mentor}</dt><dd>{d.mentor[lang]}</dd></div></dl>
+          </li>))}
+      </ul>
+    </section>
+    <section class="sec"><div class="head"><h2>{t.flow}</h2></div>
+      <ol class="flow">{t.steps.map(([a, b]) => <li class="rv"><b>{a}</b><p>{b}</p></li>)}</ol>
+    </section>
+  </div>
+</Base>
+<style>
+.org{padding-top:56px}
+.org-top{display:grid;grid-template-columns:1fr 1fr;gap:20px;position:relative}
+.org-n{background:var(--bg2);border-radius:var(--r-lg,36px);padding:28px 32px;display:flex;flex-direction:column;gap:6px}
+.org-n.lead{background:var(--ink);color:var(--bg)}.org-n.lead .lbl{color:#1F6FAE}.org-n.lead p{color:#4F5D70}
+.org-n b{font-size:24px;font-weight:700}
+.org-n p{margin:0;color:var(--soft);font-size:15px}
+.org-h{font-size:15px;font-weight:500;color:var(--soft);margin:44px 0 16px;display:flex;align-items:center;gap:14px}
+.org-h::after{content:"";flex:1;height:1px;background:var(--line)}
+.org-d{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.org-d>li{background:var(--bg2);border-radius:var(--r,28px);padding:22px 20px;display:flex;flex-direction:column;gap:10px;position:relative}
+.org-i{font-family:var(--n);font-weight:700;font-size:15px;color:var(--blue)}
+.org-d h3{margin:0;font-size:21px;font-weight:700}
+.org-does{list-style:none;margin:0;padding:0;color:var(--soft);font-size:14px;display:grid;gap:2px}
+.org-d dl{margin:auto 0 0;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:8px}
+.org-d dt{font-size:12px;color:var(--dim)}.org-d dd{margin:0;font-size:15px}
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:f}
+.flow li{border-top:2px solid var(--blue);padding-top:16px}
+.flow b{font-size:19px}.flow p{margin:6px 0 0;color:var(--soft)}
+@media(max-width:1000px){.org-d{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.org-top,.flow{grid-template-columns:1fr}.org-d{grid-template-columns:minmax(0,1fr)}.org-n{padding:24px}}
+</style>
