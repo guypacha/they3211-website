@@ -138,7 +138,7 @@ nav .w{height:60px;border-bottom:0;background:rgba(22,37,58,.92);backdrop-filter
 .btn,nav .join,.chips li{border-radius:999px}
 .link{border-bottom:0;background:linear-gradient(var(--blue),var(--blue)) 0 100%/100% 1px no-repeat;padding-bottom:4px}
 /* hero: deep elliptical bottom curve */
-.h2g{border-radius:0;clip-path:ellipse(140% 100% at 50% 0%)}
+.h2g{border-radius:0}
 /* robots: arch-topped photos */
 .seasons .photo,.robot .photo{border-radius:999px 999px var(--r) var(--r)}
 /* facts: capsules */
@@ -157,5 +157,10 @@ nav .w{height:60px;border-bottom:0;background:rgba(22,37,58,.92);backdrop-filter
 .spons span{border-radius:999px}
 figure img,.ax img,.shots img{border-radius:var(--r)}
 .ax figure img{border-radius:var(--r-lg) var(--r) var(--r-lg) var(--r)}
-@media(max-width:860px){.facts div{padding:16px 20px}.facts div+div{padding-inline-start:20px}nav .w{margin-inline:10px}.h2g{clip-path:ellipse(220% 100% at 50% 0%)}}
+@media(max-width:860px){.facts div{padding:16px 20px}.facts div+div{padding-inline-start:20px}nav .w{margin-inline:10px}.birds{width:100px;right:6%}}
 @media(max-width:860px){nav .links{top:76px;inset-inline:10px;border-radius:24px;border:0;background:var(--bg2)}nav .links a:first-child{border-top:0}}
+
+/* ---- desert v3: mesa ridgeline on top of light bands, dune at the bottom ---- */
+.band-light::before{-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V38L110 34 170 20 290 18 340 30 520 34 600 14 720 12 770 26 960 30 1040 16 1150 14 1190 28 1330 32 1440 26V60z'/%3E%3C/svg%3E") 0 0/100% 100%;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V38L110 34 170 20 290 18 340 30 520 34 600 14 720 12 770 26 960 30 1040 16 1150 14 1190 28 1330 32 1440 26V60z'/%3E%3C/svg%3E") 0 0/100% 100%}
+.band-light::after{-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V40C200 40 330 8 560 8S900 44 1100 40 1360 22 1440 26V60z'/%3E%3C/svg%3E") 0 0/100% 100%;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V40C200 40 330 8 560 8S900 44 1100 40 1360 22 1440 26V60z'/%3E%3C/svg%3E") 0 0/100% 100%;transform:scaleY(-1)}
+.spons .logo{padding:10px 22px;display:inline-flex;align-items:center}.spons .logo img{height:56px;width:auto;display:block}

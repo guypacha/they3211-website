@@ -17,6 +17,12 @@ const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.da
       </div>
       <span class="m coord">30.99°N 34.93°E · YERUHAM</span>
     </div>
+    <svg class="birds" viewBox="0 0 160 60" aria-hidden="true"><path d="M8 30q6-7 12 0q6-7 12 0"/><path d="M52 14q4-5 8 0q4-5 8 0"/><path d="M96 34q5-6 10 0q5-6 10 0"/><path d="M128 20q3-4 6 0q3-4 6 0"/></svg>
+    <svg class="ridge" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path class="back" d="M0 120V70L90 62 160 66 230 48 320 46 360 58 470 60 540 40 640 38 700 52 820 56 900 44 1010 42 1060 30 1150 28 1200 46 1300 50 1380 62 1440 58V120Z"/>
+      <path class="front" d="M0 120V92C120 86 200 80 300 84L380 72 470 70 520 82C620 90 760 88 860 80L930 66 1010 64 1060 76C1160 86 1300 84 1440 78V120Z"/>
+    </svg>
+    <svg class="camel" viewBox="0 0 100 70" aria-hidden="true"><path d="M10 40C10 30 18 24 26 22C32 8 46 6 52 20C56 26 60 28 66 26C70 24 72 18 74 12C75 8 78 6 82 7L90 9C92 10 92 13 89 13L82 13C80 18 79 26 76 34C74 40 70 42 68 44L68 66H65L64 46H61L60 66H57L57 46C50 47 36 47 28 46L27 66H24L23 47H20L19 66H16L16 44C12 43 10 42 10 40Z"/><path d="M10 38C7 42 6 48 7 52" fill="none" stroke-width="1.6"/></svg>
   </header>
   <section class="band-blue"><div class="w">
     <div class="facts">
@@ -56,15 +62,20 @@ const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.da
 
   </div>
   <section class="band band-light" style="margin-top:72px;margin-bottom:24px"><div class="w"><section class="sec" style="padding-top:72px"><div class="head"><h2>תודה לתומכים שלנו</h2><a class="link q" href={u('/support')}>הצטרפו אליהם ←</a></div>
-      <div class="spons"><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span></div></section></div></section>
+      <div class="spons"><span class="logo"><img src={u('/assets/partners/yeruham.png')} alt="המועצה המקומית ירוחם" height="56" /></span><span class="logo"><img src={u('/assets/partners/science-center.png')} alt="מרכז מדעים ירוחם" height="56" /></span><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span></div></section></div></section>
 </Base>
 <style is:global>
 .h2g{min-height:min(86vh,760px);display:flex;align-items:flex-end;position:relative;margin-top:-68px;padding-top:68px}
 .h2g::after{content:"";position:absolute;inset:40% 0 0 0;background:linear-gradient(transparent,rgba(15,27,45,.95))}
-.h2g .inner{position:relative;z-index:1;width:100%;display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:end;padding-block:0 48px}
+.h2g .inner{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:end;padding-block:0 120px}
 .num{font-family:var(--n);font-weight:600;font-size:clamp(120px,19vw,260px);line-height:.78;letter-spacing:-.01em;direction:ltr}
 .h2g h1{font-size:clamp(28px,3.2vw,42px);font-weight:700;letter-spacing:-.01em;margin:0 0 12px}
 .h2g p{color:#D5DEE8;margin:0 0 24px;max-width:44ch}.cta{display:flex;gap:28px;flex-wrap:wrap}
 .coord{position:absolute;top:-40px;left:max(24px,env(safe-area-inset-left));color:var(--soft)}
+.ridge{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:120px;z-index:1}
+.ridge .back{fill:#1A2B44}.ridge .front{fill:var(--bg)}
+.camel{position:absolute;bottom:31px;left:48%;width:54px;z-index:1;fill:var(--bg);stroke:var(--bg)}
+.birds{position:absolute;top:18%;right:12%;width:150px;z-index:1;fill:none;stroke:var(--soft);stroke-width:1.6;stroke-linecap:round;opacity:.7;animation:drift 18s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-40px,8px)}}
 @media(max-width:860px){.h2g .inner{grid-template-columns:1fr;gap:12px}.coord{position:static}}
 </style>
