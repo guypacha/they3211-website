@@ -60,10 +60,10 @@ const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.da
 </Base>
 <style is:global>
 .h2g{min-height:min(86vh,760px);display:flex;align-items:flex-end;position:relative;margin-top:-68px;padding-top:68px}
-.h2g::after{content:"";position:absolute;inset:40% 0 0 0;background:linear-gradient(transparent,rgba(12,35,64,.94))}
+.h2g::after{content:"";position:absolute;inset:40% 0 0 0;background:linear-gradient(transparent,rgba(15,27,45,.95))}
 .h2g .inner{position:relative;z-index:1;width:100%;display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:end;padding-block:0 48px}
-.num{font-family:var(--n);font-weight:700;font-size:clamp(120px,19vw,260px);line-height:.78;letter-spacing:-.01em;direction:ltr}
-.h2g h1{font-size:clamp(30px,3.6vw,46px);font-weight:900;letter-spacing:-.02em;margin:0 0 12px}
+.num{font-family:var(--n);font-weight:600;font-size:clamp(120px,19vw,260px);line-height:.78;letter-spacing:-.01em;direction:ltr}
+.h2g h1{font-size:clamp(28px,3.2vw,42px);font-weight:700;letter-spacing:-.01em;margin:0 0 12px}
 .h2g p{color:#D5DEE8;margin:0 0 24px;max-width:44ch}.cta{display:flex;gap:28px;flex-wrap:wrap}
 .coord{position:absolute;top:-40px;left:max(24px,env(safe-area-inset-left));color:var(--soft)}
 @media(max-width:860px){.h2g .inner{grid-template-columns:1fr;gap:12px}.coord{position:static}}
