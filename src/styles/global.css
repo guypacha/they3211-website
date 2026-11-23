@@ -164,3 +164,7 @@ figure img,.ax img,.shots img{border-radius:var(--r)}
 .band-light::before{-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V38L110 34 170 20 290 18 340 30 520 34 600 14 720 12 770 26 960 30 1040 16 1150 14 1190 28 1330 32 1440 26V60z'/%3E%3C/svg%3E") 0 0/100% 100%;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V38L110 34 170 20 290 18 340 30 520 34 600 14 720 12 770 26 960 30 1040 16 1150 14 1190 28 1330 32 1440 26V60z'/%3E%3C/svg%3E") 0 0/100% 100%}
 .band-light::after{-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V40C200 40 330 8 560 8S900 44 1100 40 1360 22 1440 26V60z'/%3E%3C/svg%3E") 0 0/100% 100%;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 60' preserveAspectRatio='none'%3E%3Cpath d='M0 60V40C200 40 330 8 560 8S900 44 1100 40 1360 22 1440 26V60z'/%3E%3C/svg%3E") 0 0/100% 100%;transform:scaleY(-1)}
 .spons .logo{padding:10px 22px;display:inline-flex;align-items:center}.spons .logo img{height:56px;width:auto;display:block}
+/* scroll reveal */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.camel{transition:transform .2s linear}

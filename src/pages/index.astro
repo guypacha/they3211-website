@@ -4,10 +4,24 @@ import Photo from '../components/Photo.astro';
 import { getCollection } from 'astro:content';
 import { u } from '../lib';
 const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.data.year).slice(0, 4);
+// Hero slideshow: put photos in public/photos and set src, e.g. '/photos/hero-1.jpg'.
+const slides: { src?: string; label: string }[] = [
+  { label: 'תמונה במסך מלא: הרובוט במקצה' },
+  { label: 'תמונה במסך מלא: הסדנה במחסן 52' },
+  { label: 'תמונה במסך מלא: הקבוצה בתחרות' },
+];
 ---
 <Base title="בית" description="קבוצת הרובוטיקה של תלמידי ירוחם, מתחרה בליגת FRC מאז 2009.">
   <header class="h2g photo">
-    <span class="ph" style="align-items:start;padding-top:22%">תמונה אמיתית במסך מלא: הרובוט במקצה</span>
+    <div class="slides" aria-roledescription="מצגת" aria-label="תמונות מהקבוצה">
+      {slides.map((sl, i) => (
+        <div class={`slide${i === 0 ? ' on' : ''}`} aria-hidden={i === 0 ? 'false' : 'true'}>
+          {sl.src ? <img src={u(sl.src)} alt={sl.label} /> : <span class="ph" style="align-items:start;padding-top:22%">{sl.label}</span>}
+        </div>))}
+    </div>
+    <div class="dots" role="group" aria-label="בחירת תמונה">
+      {slides.map((_, i) => <button type="button" aria-label={`תמונה ${i + 1}`} aria-pressed={i === 0 ? 'true' : 'false'} data-i={i}></button>)}
+    </div>
     <div class="w inner">
       <div class="num" aria-hidden="true">3211</div>
       <div class="txt">
@@ -26,10 +40,10 @@ const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.da
   </header>
   <section class="band-blue"><div class="w">
     <div class="facts">
-      <div><b>2009</b><span class="lbl">שנת הקמה</span></div>
-      <div><b>20</b><span class="lbl">תלמידים מכיתות ט׳ עד י״ב</span></div>
-      <div><b>5</b><span class="lbl">מנטורים</span></div>
-      <div><b>52</b><span class="lbl">מספר המחסן של הסדנה</span></div>
+      <div><b data-count="2009">2009</b><span class="lbl">שנת הקמה</span></div>
+      <div><b data-count="20">20</b><span class="lbl">תלמידים מכיתות ט׳ עד י״ב</span></div>
+      <div><b data-count="5">5</b><span class="lbl">מנטורים</span></div>
+      <div><b data-count="52">52</b><span class="lbl">מספר המחסן של הסדנה</span></div>
     </div>
   </div></section>
   <div class="w">
@@ -64,6 +78,23 @@ const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.da
   <section class="band band-light" style="margin-top:72px;margin-bottom:24px"><div class="w"><section class="sec" style="padding-top:72px"><div class="head"><h2>תודה לתומכים שלנו</h2><a class="link q" href={u('/support')}>הצטרפו אליהם ←</a></div>
       <div class="spons"><span class="logo"><img src={u('/assets/partners/yeruham.png')} alt="המועצה המקומית ירוחם" height="56" /></span><span class="logo"><img src={u('/assets/partners/science-center.png')} alt="מרכז מדעים ירוחם" height="56" /></span><span>[לוגו]</span><span>[לוגו]</span><span>[לוגו]</span></div></section></div></section>
 </Base>
+<script>
+  const root = document.querySelector('.h2g');
+  const slides = [...document.querySelectorAll('.slide')], dots = [...document.querySelectorAll('.dots button')];
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur = 0, timer: number | undefined;
+  const show = (i: number) => { cur = (i + slides.length) % slides.length;
+    slides.forEach((s, k) => { s.classList.toggle('on', k === cur); s.setAttribute('aria-hidden', String(k !== cur)); });
+    dots.forEach((d, k) => d.setAttribute('aria-pressed', String(k === cur))); };
+  const play = () => { if (!still && slides.length > 1) { clearInterval(timer); timer = window.setInterval(() => show(cur + 1), 5500); } };
+  dots.forEach(d => d.addEventListener('click', () => { show(+d.dataset.i!); play(); }));
+  root?.addEventListener('mouseenter', () => clearInterval(timer)); root?.addEventListener('mouseleave', play);
+  play();
+  // camel walks and birds drift as you scroll
+  const camel = document.querySelector<SVGElement>('.camel'), back = document.querySelector<SVGElement>('.ridge .back');
+  if (!still && camel) { let q = false; addEventListener('scroll', () => { if (q) return; q = true; requestAnimationFrame(() => { const y = Math.min(scrollY, 600);
+    camel.style.transform = `translateX(${-y * 0.25}px)`; back?.setAttribute('transform', `translate(${y * 0.08} 0)`); q = false; }); }, { passive: true }); }
+</script>
 <style is:global>
 .h2g{min-height:min(86vh,760px);display:flex;align-items:flex-end;position:relative;margin-top:-68px;padding-top:68px}
 .h2g::after{content:"";position:absolute;inset:40% 0 0 0;background:linear-gradient(transparent,rgba(15,27,45,.95))}
@@ -72,6 +103,16 @@ const robots = (await getCollection('robots')).sort((a, b) => b.data.year - a.da
 .h2g h1{font-size:clamp(28px,3.2vw,42px);font-weight:700;letter-spacing:-.01em;margin:0 0 12px}
 .h2g p{color:#D5DEE8;margin:0 0 24px;max-width:44ch}.cta{display:flex;gap:28px;flex-wrap:wrap}
 .coord{position:absolute;top:-40px;left:max(24px,env(safe-area-inset-left));color:var(--soft)}
+.slides{position:absolute;inset:0}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
+.slide.on{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 7s ease-out}
+.slide.on img{transform:scale(1)}
+.slide:nth-child(2){background:#1C2E47}.slide:nth-child(3){background:#203450}
+.dots{position:absolute;z-index:3;bottom:132px;left:max(24px,env(safe-area-inset-left));display:flex;gap:4px}
+.dots button{width:28px;height:28px;border:0;background:none;padding:0;display:grid;place-items:center}
+.dots button::after{content:"";width:8px;height:8px;border-radius:999px;background:var(--soft);opacity:.5;transition:width .3s,opacity .3s}
+.dots button[aria-pressed="true"]::after{width:22px;opacity:1;background:var(--ink)}
 .ridge{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:120px;z-index:1}
 .ridge .back{fill:#1A2B44}.ridge .front{fill:var(--bg)}
 .camel{position:absolute;bottom:31px;left:48%;width:54px;z-index:1;fill:var(--bg);stroke:var(--bg)}
