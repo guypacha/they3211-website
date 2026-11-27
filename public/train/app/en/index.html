@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" dir="ltr"><head><meta charset="utf-8"><script>try{var y3=localStorage.getItem("y3211-theme");if(y3==="light"||y3==="dark")document.documentElement.dataset.theme=y3}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<html lang="en" dir="ltr"><head><meta charset="utf-8"><script>try{var y3=localStorage.getItem("y3211-theme");if(y3==="light"||y3==="dark")document.documentElement.dataset.theme=y3}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script type="module" src="../../sync.js"></script></head><body>
 <title>Training Grounds 3211</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -209,7 +209,7 @@ table.m th{font-size:12px;color:var(--muted);font-weight:700}
 .why{background:var(--accent-soft);border-radius:12px;padding:12px 14px;margin:0}
 
 .world{cursor:pointer}.world.full{border-color:var(--good)}
-.tabbtn.site{color:inherit;text-decoration:none;display:inline-flex;align-items:center;min-height:32px;white-space:nowrap}.bar .tabbtn.site{margin-inline-start:auto}.login>.tabbtn.site{justify-self:start;margin-bottom:8px}.bar .tabbtn.lang{margin-inline-start:0}.tabbtn.lang{font-family:var(--f-mono);font-weight:700}
+.tabbtn.site{color:inherit;text-decoration:none;display:inline-flex;align-items:center;min-height:32px;white-space:nowrap}.bar .tabbtn.site{margin-inline-start:auto}.login>.tabbtn.site{justify-self:start;margin-bottom:8px}.bar .tabbtn.lang{margin-inline-start:0}.tabbtn.back{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700;white-space:nowrap;min-height:32px}@media (max-width:460px){.bar:has(.back) .xp{display:none}}.tabbtn.lang{font-family:var(--f-mono);font-weight:700}
 @media (max-width:460px){.xp .mono,.brand small{display:none}}
 @media (max-width:380px){.xp{display:none}}
 /* ==== WORLDS CSS ==== */
@@ -475,6 +475,7 @@ function topbar(){
   const lv=level(S.xp),pct=Math.round((S.xp%150)/150*100);
   return `<header class="bar">
     <button class="brand" data-go="home" aria-label="Home screen"><span class="mark">3211</span><span><b>Training Grounds</b><small>The Y Team · Yeruham</small></span></button>
+    ${view==="game"||view==="world"?`<button class="tabbtn back" data-go="${view==="game"?"world":"home"}" aria-label="${view==="game"?"Back to the mission path":"Back to all worlds"}">← Back</button>`:""}
     <div class="xp" title="${S.xp} XP"><span class="lvl">Level ${lv}</span><span class="track"><span class="fill" style="width:${pct}%;display:block"></span></span><span class="mono">${S.xp} XP</span></div>
     <a class="tabbtn site" href="../../../en/" aria-label="Back to the team site">← Site</a>
     <a class="tabbtn site lang" href="../" lang="he" dir="rtl" aria-label="עברית">עברית</a>

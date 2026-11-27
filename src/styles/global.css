@@ -283,3 +283,9 @@ html[data-theme=light] footer{--bg:#0F1B2D;--bg2:#16253A;--ink:#EEF1F5;--soft:#A
 .theme svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .theme .moon{display:none}html[data-theme=light] .theme .sun{display:none}html[data-theme=light] .theme .moon{display:block}
 @media(max-width:520px){nav .right{gap:12px}}
+/* progress board */
+.acc-table.board td,.acc-table.board th{white-space:nowrap}.acc-table .wcol{text-align:center}
+.brow{cursor:pointer}.brow:hover td{background:rgba(74,155,214,.06)}.brow:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.mchips{display:flex;flex-wrap:wrap;gap:6px;white-space:normal}.mchip{font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--soft)}.mchip.ok{border-color:rgba(74,155,214,.5);color:var(--ink)}
+.acc-chip.wait{background:rgba(226,190,18,.14);color:#E2BE12}.acc-chip.flag,.mchip.flag{background:rgba(224,92,92,.14);color:#F0A5A5;border-color:rgba(224,92,92,.4)}
+.licc{white-space:normal!important;min-width:180px}.acc-pub{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:24px;padding:24px 28px}.acc-pub h3{margin:0 0 4px}.acc-pub p{margin:0}

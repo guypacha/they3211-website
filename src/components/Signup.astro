@@ -52,6 +52,7 @@ const t = he
     const inv = await readInvite(c).catch(() => null);
     if (!inv) return show(f1, { code: 'app/no-invite' });
     if (inv.used) return show(f1, { code: 'app/invite-used' });
+    if (inv.expired) return show(f1, { code: 'app/invite-expired' });
     code = c.trim().toUpperCase();
     f2.querySelector('.inv-name')!.textContent = inv.name || '—';
     f2.querySelector('.inv-role')!.textContent = roles[inv.role];
