@@ -116,7 +116,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .term .hit{fill:transparent}
 .term .stud{stroke:var(--comp-edge);stroke-width:2;fill:#C7CFD8}
 .term.pos .ring{stroke:var(--wire-red)} .term.neg .ring{stroke:var(--wire-black)}
-.term .ring{fill:none;stroke-width:2.5;stroke:var(--accent)}
+.term .ring{fill:none;stroke-width:2.5;stroke:#8A939E}
 .term.sel .stud{fill:var(--accent-2)}
 .term.sel .halo{opacity:1}
 .term .halo{fill:none;stroke:var(--accent-2);stroke-width:3;opacity:0;animation:pulse 1s infinite}
@@ -931,7 +931,7 @@ const INSP={
     {id:"cu",cap:"Screw on the PDH",bad:true,why:"<b>Exposed copper.</b> A wire end with no insulation next to other screws is a short waiting to happen. Trim, re-strip to the right length and clamp."},
     {id:"f30",cap:"Channel 7",bad:false,why:"<b>A 30A fuse with a 12 AWG cable is fine.</b> A thicker cable than needed is allowed. Only thinner is not."},
     {id:"can",cap:"CAN to roboRIO",bad:false,why:"<b>CAN in yellow and green is fine.</b> Yellow is CAN High and green is CAN Low."},
-    {id:"rsl",cap:"Light RSL",bad:false,why:"<b>The light is fine.</b> The signal light (RSL) is orange, mounted and visible from outside. When the robot is on it’s solid, and when it’s Enabled it blinks. Blinking = the robot can move, so step back."},
+    {id:"rsl",cap:"Light RSL",bad:false,why:"<b>The light is fine.</b> The <bdi>RSL - Robot Status Light</bdi> is orange, mounted and visible from outside. When the robot is on it’s solid, and when it’s Enabled it blinks. Blinking = the robot can move, so step back."},
     {id:"main",cap:"The main path",bad:false,why:"<b>The main path is fine.</b> Red 6 AWG wire from the battery to the breaker."}
   ],
   init(){G.marks={};G.res=null},
@@ -1354,7 +1354,7 @@ const LEARN={
     {h:"What you need",p:`CAN wires (a twisted yellow and green pair), connectors the team uses, and a ${M_("120Ω")} for the end.`}],
   insp:[{h:"What inspection is",p:`Before you’re allowed on the field, an inspector checks the robot against the manual. A robot that fails inspection doesn’t play.`},
     {h:"What’s checked on the electrical board",p:`A secured battery that doesn’t move. A main breaker that’s easy to reach. Correct colors. Wire gauge that matches the fuse. No exposed copper. An RSL light visible from outside.`},
-    {h:"The RSL",p:`An orange light. When the robot is on it’s solid, and when it’s Enabled it blinks. Blinking = the robot can move, so step back.`},
+    {h:"The <bdi>RSL - Robot Status Light</bdi>",p:`An orange light. When the robot is on it’s solid, and when it’s Enabled it blinks. Blinking = the robot can move, so step back.`},
     {h:"How to search",p:`Go in order, one by one, and ask about each thing: what does the manual say about it? Not everything that looks odd is a fault.`}],
   batt:[{h:"Voltage drops when you draw current",p:`Every battery has a small internal resistance. When the motors draw a lot of current, the voltage the robot gets drops. An old or uncharged battery drops more.`,art:L_ART.sag},
     {h:"Brownout",p:`When the voltage drops too low, the roboRIO cuts the motors so it doesn’t shut itself off. Mid-push that means the robot just stops.`},
@@ -1444,7 +1444,7 @@ function learnView(){
   return `<section class="gamehead"><div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 280px">
     <button class="btn ghost small" data-go="world" style="align-self:flex-start">← Mission path</button>
     <span class="eyebrow">Before the mission · ${WN().name}</span><h2>${title}: what you need to know</h2></div></section>
-    <div class="learn">${cards.map((c,i)=>`<article class="card lcard"><h3><span class="lnum mono">${i+1}</span>${c.h}</h3><p>${c.p}</p>${c.art?`<div class="lart">${c.art}</div>`:""}</article>`).join("")}</div>
+    <div class="learn">${cards.map((c,i)=>`<article class="card lcard"><h3><span class="lnum mono">${i+1}</span><span>${c.h}</span></h3><p>${c.p}</p>${c.art?`<div class="lart">${c.art}</div>`:""}</article>`).join("")}</div>
     <div class="row"><button class="btn" id="learned">Got it, to the task →</button></div>`;
 }
 
@@ -1692,7 +1692,7 @@ const MOD_EFAULT=makeQuiz("efault",{title:"Fault detective",pass:5,
     {art:DS(true,true,true,`<text x="230" y="72" style="font-size:12px;fill:#F2B01E;font-family:var(--f-mono)">CAN: ID 3 not found</text>`),q:"Everything is green, but one motor won’t move, and the log says ID 3 can’t be found.",o:["Check that motor’s CAN connection and its ID","Swap the battery","Redeploy the code"],a:0,w:"One motor missing from CAN: a loose CAN connector, or a wrong ID on the controller. Start there."},
     {art:DS(true,true,true,`<text x="230" y="72" style="font-size:12px;fill:#F2B01E;font-family:var(--f-mono)">CAN: IDs 4,5,6 missing</text>`),q:"Three motors at the end of the CAN chain disappeared together.",o:["The break in the chain before the first missing motor","All three broke at the same moment","The code"],a:0,w:"When several devices in a row vanish, the chain broke at one point. Look for the connector between the last one that works and the first one that doesn’t."},
     {art:DS(true,true,true,`<path d="M230 120 l16 -40 l16 30 l16 -50 l16 60" stroke="#F2B01E" stroke-width="2" fill="none"/><text x="230" y="140" style="font-size:11px;fill:#F2B01E;font-family:var(--f-mono)">voltage dips</text>`),q:"When pushing the robot stutters, and the voltage graph shows sharp dips.",o:["Brownout: a weak battery or no current limit","A broken CAN chain","A loose joystick"],a:0,w:"This is exactly what we saw in the battery mission. Check the battery and add a current limit."},
-    {art:`<svg viewBox="0 0 400 170" aria-hidden="true"><rect x="160" y="40" width="80" height="80" rx="12" fill="#F2A23B"><animate attributeName="opacity" values="1;.25;1" dur="0.8s" repeatCount="indefinite"/></rect><text x="200" y="146" text-anchor="middle" style="font-size:12px;fill:#5A6B7F">Blinking RSL light</text></svg>`,q:"The RSL light is blinking. What does it mean?",o:["The robot is enabled, careful approaching","The robot is off","There’s a short"],a:0,w:"RSL Solid when the robot is on but not enabled, and blinking when it’s enabled. If it’s blinking, keep your hands out."}],
+    {art:`<svg viewBox="0 0 400 170" aria-hidden="true"><rect x="160" y="40" width="80" height="80" rx="12" fill="#F2A23B"><animate attributeName="opacity" values="1;.25;1" dur="0.8s" repeatCount="indefinite"/></rect><text x="200" y="146" text-anchor="middle" style="font-size:12px;fill:#5A6B7F">Blinking RSL light</text></svg>`,q:"The <bdi>RSL - Robot Status Light</bdi> is blinking. What does it mean?",o:["The robot is enabled, careful approaching","The robot is off","There’s a short"],a:0,w:"RSL Solid when the robot is on but not enabled, and blinking when it’s enabled. If it’s blinking, keep your hands out."}],
   lesson:"A good detective checks from simple to complex: power, link, code, then a single device. And when several things fail together, look for the one thing they share."});
 Object.assign(MODS,{ecrimp:MOD_ECRIMP,eroute:MOD_EROUTE,efault:MOD_EFAULT});
 

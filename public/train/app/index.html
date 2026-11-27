@@ -116,7 +116,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .term .hit{fill:transparent}
 .term .stud{stroke:var(--comp-edge);stroke-width:2;fill:#C7CFD8}
 .term.pos .ring{stroke:var(--wire-red)} .term.neg .ring{stroke:var(--wire-black)}
-.term .ring{fill:none;stroke-width:2.5;stroke:var(--accent)}
+.term .ring{fill:none;stroke-width:2.5;stroke:#8A939E}
 .term.sel .stud{fill:var(--accent-2)}
 .term.sel .halo{opacity:1}
 .term .halo{fill:none;stroke:var(--accent-2);stroke-width:3;opacity:0;animation:pulse 1s infinite}
@@ -931,7 +931,7 @@ const INSP={
     {id:"cu",cap:"בורג ב־PDH",bad:true,why:"<b>נחושת חשופה.</b> קצה חוט בלי בידוד ליד ברגים אחרים הוא קצר שמחכה לקרות. מקצרים, מפשיטים מחדש באורך הנכון ומהדקים."},
     {id:"f30",cap:"ערוץ 7",bad:false,why:"<b>נתיך 30A עם כבל 12 AWG זה תקין.</b> מותר כבל עבה יותר ממה שצריך. אסור רק דק יותר."},
     {id:"can",cap:"CAN ל־roboRIO",bad:false,why:"<b>CAN בצהוב וירוק זה תקין.</b> צהוב הוא CAN High וירוק הוא CAN Low."},
-    {id:"rsl",cap:"נורית RSL",bad:false,why:"<b>הנורית תקינה.</b> נורית האות (RSL) כתומה, מותקנת ונראית מבחוץ. כשהרובוט דלוק היא דולקת קבוע, וכשהוא Enabled היא מהבהבת. מהבהבת = הרובוט יכול לזוז, ומתרחקים."},
+    {id:"rsl",cap:"נורית RSL",bad:false,why:"<b>הנורית תקינה.</b> נורית ה־<bdi>RSL - Robot Status Light</bdi> כתומה, מותקנת ונראית מבחוץ. כשהרובוט דלוק היא דולקת קבוע, וכשהוא Enabled היא מהבהבת. מהבהבת = הרובוט יכול לזוז, ומתרחקים."},
     {id:"main",cap:"הנתיב הראשי",bad:false,why:"<b>הנתיב הראשי תקין.</b> חוט אדום בעובי 6 AWG מהסוללה למפסק."}
   ],
   init(){G.marks={};G.res=null},
@@ -1354,7 +1354,7 @@ const LEARN={
     {h:"מה צריך",p:`חוטי CAN (זוג צהוב וירוק שזורים), מחברים לפי מה שהקבוצה משתמשת, ונגד ${M_("120Ω")} לקצה.`}],
   insp:[{h:"מה זו ביקורת",p:`לפני שמותר לעלות למגרש, שופט עובר על הרובוט מול המניואל. רובוט שלא עובר ביקורת לא משחק.`},
     {h:"מה בודקים בלוח החשמל",p:`סוללה מחוזקת שלא זזה. מפסק ראשי שקל להגיע אליו. צבעים נכונים. עובי חוט שמתאים לנתיך. בלי נחושת חשופה. נורית RSL שנראית מבחוץ.`},
-    {h:"נורית ה־RSL",p:`נורית כתומה. כשהרובוט דלוק היא דולקת קבוע, וכשהוא Enabled היא מהבהבת. מהבהבת = הרובוט יכול לזוז, ומתרחקים.`},
+    {h:"נורית ה־<bdi>RSL - Robot Status Light</bdi>",p:`נורית כתומה. כשהרובוט דלוק היא דולקת קבוע, וכשהוא Enabled היא מהבהבת. מהבהבת = הרובוט יכול לזוז, ומתרחקים.`},
     {h:"איך מחפשים",p:`עוברים לפי הסדר, אחד אחד, ושואלים על כל דבר: מה המניואל אומר עליו? לא כל מה שנראה מוזר הוא תקלה.`}],
   batt:[{h:"המתח יורד כשמושכים זרם",p:`לכל סוללה יש התנגדות פנימית קטנה. כשהמנועים מושכים הרבה זרם, המתח שהרובוט מקבל יורד. סוללה ישנה או לא טעונה יורדת יותר.`,art:L_ART.sag},
     {h:"בראון־אאוט",p:`כשהמתח יורד נמוך מדי, ה־roboRIO מנתק את המנועים כדי לא לכבות את עצמו. באמצע דחיפה זה אומר שהרובוט פשוט עוצר.`},
@@ -1444,7 +1444,7 @@ function learnView(){
   return `<section class="gamehead"><div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 280px">
     <button class="btn ghost small" data-go="world" style="align-self:flex-start">→ שביל המשימות</button>
     <span class="eyebrow">לפני המשימה · ${WN().name}</span><h2>${title}: מה צריך לדעת</h2></div></section>
-    <div class="learn">${cards.map((c,i)=>`<article class="card lcard"><h3><span class="lnum mono">${i+1}</span>${c.h}</h3><p>${c.p}</p>${c.art?`<div class="lart">${c.art}</div>`:""}</article>`).join("")}</div>
+    <div class="learn">${cards.map((c,i)=>`<article class="card lcard"><h3><span class="lnum mono">${i+1}</span><span>${c.h}</span></h3><p>${c.p}</p>${c.art?`<div class="lart">${c.art}</div>`:""}</article>`).join("")}</div>
     <div class="row"><button class="btn" id="learned">הבנתי, למשימה ←</button></div>`;
 }
 
@@ -1692,7 +1692,7 @@ const MOD_EFAULT=makeQuiz("efault",{title:"בלש התקלות",pass:5,
     {art:DS(true,true,true,`<text x="230" y="72" style="font-size:12px;fill:#F2B01E;font-family:var(--f-mono)">CAN: ID 3 not found</text>`),q:"הכול ירוק, אבל מנוע אחד לא זז, והלוג אומר שלא מוצאים את ID 3.",o:["בודקים את החיבור של המנוע הזה ל־CAN ואת ה־ID שלו","מחליפים סוללה","מעלים קוד מחדש"],a:0,w:"מנוע אחד שחסר ב־CAN: מחבר CAN רופף, או ID לא נכון בבקר. שם מתחילים."},
     {art:DS(true,true,true,`<text x="230" y="72" style="font-size:12px;fill:#F2B01E;font-family:var(--f-mono)">CAN: IDs 4,5,6 missing</text>`),q:"שלושה מנועים שיושבים בסוף שרשרת ה־CAN נעלמו ביחד.",o:["הניתוק בשרשרת לפני המנוע הראשון שחסר","שלושתם התקלקלו באותו רגע","הקוד"],a:0,w:"כשכמה התקנים ברצף נעלמים, השרשרת נקטעה בנקודה אחת. מחפשים את המחבר בין האחרון שעובד לראשון שלא."},
     {art:DS(true,true,true,`<path d="M230 120 l16 -40 l16 30 l16 -50 l16 60" stroke="#F2B01E" stroke-width="2" fill="none"/><text x="230" y="140" style="font-size:11px;fill:#F2B01E;font-family:var(--f-mono)">voltage dips</text>`),q:"בדחיפה הרובוט מגמגם, ובגרף המתח רואים צניחות חדות.",o:["בראון־אאוט: סוללה חלשה או בלי הגבלת זרם","שרשרת CAN קטועה","הג׳ויסטיק רופף"],a:0,w:"זה בדיוק מה שראינו במשימת הסוללה. בודקים סוללה ומוסיפים הגבלת זרם."},
-    {art:`<svg viewBox="0 0 400 170" aria-hidden="true"><rect x="160" y="40" width="80" height="80" rx="12" fill="#F2A23B"><animate attributeName="opacity" values="1;.25;1" dur="0.8s" repeatCount="indefinite"/></rect><text x="200" y="146" text-anchor="middle" style="font-size:12px;fill:#5A6B7F">נורית RSL מהבהבת</text></svg>`,q:"נורית ה־RSL מהבהבת. מה זה אומר?",o:["הרובוט מופעל (enabled), זהירות מתקרבים","הרובוט כבוי","יש קצר"],a:0,w:"RSL דולקת קבוע כשהרובוט דלוק ולא מופעל, ומהבהבת כשהוא מופעל. אם היא מהבהבת, לא מכניסים ידיים."}],
+    {art:`<svg viewBox="0 0 400 170" aria-hidden="true"><rect x="160" y="40" width="80" height="80" rx="12" fill="#F2A23B"><animate attributeName="opacity" values="1;.25;1" dur="0.8s" repeatCount="indefinite"/></rect><text x="200" y="146" text-anchor="middle" style="font-size:12px;fill:#5A6B7F">נורית RSL מהבהבת</text></svg>`,q:"נורית ה־<bdi>RSL - Robot Status Light</bdi> מהבהבת. מה זה אומר?",o:["הרובוט מופעל (enabled), זהירות מתקרבים","הרובוט כבוי","יש קצר"],a:0,w:"RSL דולקת קבוע כשהרובוט דלוק ולא מופעל, ומהבהבת כשהוא מופעל. אם היא מהבהבת, לא מכניסים ידיים."}],
   lesson:"בלש טוב בודק מהפשוט למסובך: חשמל, חיבור, קוד, ואז התקן אחד. וכשכמה דברים נופלים ביחד, מחפשים את הדבר האחד שמשותף להם."});
 Object.assign(MODS,{ecrimp:MOD_ECRIMP,eroute:MOD_EROUTE,efault:MOD_EFAULT});
 
