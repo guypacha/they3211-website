@@ -4,7 +4,8 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
 import {
   getAuth, connectAuthEmulator, onAuthStateChanged, signInWithEmailAndPassword,
-  createUserWithEmailAndPassword, signOut, deleteUser, type Auth, type User,
+  createUserWithEmailAndPassword, signOut, deleteUser, EmailAuthProvider, reauthenticateWithCredential,
+  verifyBeforeUpdateEmail, sendPasswordResetEmail, type Auth, type User,
 } from 'firebase/auth';
 import {
   getFirestore, connectFirestoreEmulator, doc, getDoc, setDoc, updateDoc, deleteDoc, writeBatch,
@@ -64,12 +65,41 @@ export function watch(cb: (p: Profile | null) => void) {
   });
 }
 
-export async function login(username: string, password: string) {
-  const cred = await signInWithEmailAndPassword(auth, emailOf(username), password);
+// Log in with a username, or with the email the account confirmed (needed once an email is confirmed).
+export async function login(id: string, password: string) {
+  id = id.trim();
+  const viaEmail = id.includes('@');
+  let cred;
+  try { cred = await signInWithEmailAndPassword(auth, viaEmail ? id : emailOf(id), password); }
+  catch (e: any) {
+    if (!viaEmail && ['auth/invalid-credential', 'auth/user-not-found', 'auth/wrong-password'].includes(e?.code)) {
+      const u = await getDoc(doc(db, 'usernames', cleanUsername(id))).catch(() => null);
+      if (u?.data()?.hasEmail) throw Object.assign(new Error('use email'), { code: 'app/use-email' });
+    }
+    throw e;
+  }
   const p = await loadProfile(cred.user);
   if (!p || p.disabled) { await signOut(auth); remember(null); throw Object.assign(new Error('disabled'), { code: 'app/disabled' }); }
   return p;
 }
+
+// ---- email: required for mentors and admins, optional for students ----
+const realEmail = (u: User | null) => (u?.email && !u.email.endsWith('@' + DOMAIN) ? u.email : null);
+export function emailState() {
+  const u = enabled ? auth.currentUser : null;
+  return { email: realEmail(u), verified: !!(realEmail(u) && u!.emailVerified) };
+}
+// Sends a confirmation link. The account's login email changes only after the link is opened.
+export async function addEmail(email: string, password: string, username: string) {
+  const u = auth.currentUser!;
+  await reauthenticateWithCredential(u, EmailAuthProvider.credential(u.email!, password));
+  try { await verifyBeforeUpdateEmail(u, email.trim(), { url: location.href }); }
+  catch (e: any) { if (e?.code === 'auth/email-already-in-use') throw Object.assign(new Error('used'), { code: 'app/email-used' }); throw e; }
+  // So the login page can say "log in with your email" once the link is opened.
+  await updateDoc(doc(db, 'usernames', cleanUsername(username)), { hasEmail: true }).catch(() => {});
+}
+export const resetPassword = (email: string) => sendPasswordResetEmail(auth, email.trim());
+export const refreshUser = async () => { if (auth.currentUser) { await auth.currentUser.reload(); await auth.currentUser.getIdToken(true); } };
 
 export async function logout() { remember(null); if (enabled) await signOut(auth); }
 

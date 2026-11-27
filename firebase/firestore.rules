@@ -7,8 +7,10 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
     function active() { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && me().get('disabled', false) == false; }
-    function isAdmin() { return active() && me().role == 'admin'; }
-    function isStaff() { return active() && me().role in ['mentor', 'admin']; }
+    // Mentors and admins must have confirmed a real email before their tools work.
+    function verified() { return request.auth.token.email_verified == true && !request.auth.token.email.matches('.*@accounts[.]they3211[.]invalid$'); }
+    function isAdmin() { return active() && me().role == 'admin' && verified(); }
+    function isStaff() { return active() && me().role in ['mentor', 'admin'] && verified(); }
     function validUsername(u) { return u is string && u.matches('^[a-z0-9._-]{3,20}$'); }
     function validName(n) { return n is string && n.size() > 0 && n.size() <= 60; }
     function inv(code) { return get(/databases/$(database)/documents/invites/$(code)).data; }
@@ -42,7 +44,10 @@ service cloud.firestore {
       allow create: if signedIn() && validUsername(username)
         && request.resource.data.keys().hasOnly(['uid']) && request.resource.data.uid == request.auth.uid
         && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.username == username;
-      allow update, delete: if false;
+      // The owner may mark that the account now logs in with a confirmed email.
+      allow update: if signedIn() && resource.data.uid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hasEmail']) && request.resource.data.hasEmail == true;
+      allow delete: if false;
     }
 
     match /invites/{code} {

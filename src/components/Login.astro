@@ -7,8 +7,8 @@ const he = lang === 'he';
 const P = (p: string) => u((he ? '' : '/en') + p);
 const a = A[lang];
 const t = he
-  ? { title: 'כניסה', desc: 'כניסה לחשבון של תלמידים ומנטורים בקבוצה 3211.', lbl: 'כניסה', h: 'כניסה לחשבון שלכם.', p: 'לתלמידים ולמנטורים של הקבוצה. כדי לקרוא על הקבוצה או לשחק במגרש האימונים לא צריך להתחבר.', go: 'כניסה', no: 'אין לכם חשבון?', nop: 'חשבון פותחים עם קוד הזמנה שמקבלים ממנטור בסדנה.', signup: 'פתיחת חשבון עם קוד', guest: 'להמשיך כאורחים', train: 'למגרש האימונים', forgot: 'שכחתם סיסמה? מנטור ייתן לכם קוד חדש.' }
-  : { title: 'Log in', desc: 'Log in for students and mentors of team 3211.', lbl: 'Log in', h: 'Log in to your account.', p: 'For the team’s students and mentors. You do not need to log in to read about the team or play in the training ground.', go: 'Log in', no: 'No account yet?', nop: 'You open an account with an invite code from a mentor at the workshop.', signup: 'Open an account with a code', guest: 'Continue as a guest', train: 'To the training ground', forgot: 'Forgot your password? A mentor will give you a new code.' };
+  ? { title: 'כניסה', desc: 'כניסה לחשבון של תלמידים ומנטורים בקבוצה 3211.', lbl: 'כניסה', h: 'כניסה לחשבון שלכם.', p: 'לתלמידים ולמנטורים של הקבוצה. כדי לקרוא על הקבוצה או לשחק במגרש האימונים לא צריך להתחבר.', go: 'כניסה', no: 'אין לכם חשבון?', nop: 'חשבון פותחים עם קוד הזמנה שמקבלים ממנטור בסדנה.', signup: 'פתיחת חשבון עם קוד', guest: 'להמשיך כאורחים', train: 'למגרש האימונים', forgot: 'שכחתם סיסמה?', fh: 'אם הוספתם אימייל לחשבון, נשלח אליו קישור לבחירת סיסמה חדשה. אם לא, דברו עם מנטור.', email: 'האימייל של החשבון', send: 'שליחת קישור', sent: 'אם האימייל הזה שייך לחשבון, נשלח אליו קישור. בדקו גם בספאם.' }
+  : { title: 'Log in', desc: 'Log in for students and mentors of team 3211.', lbl: 'Log in', h: 'Log in to your account.', p: 'For the team’s students and mentors. You do not need to log in to read about the team or play in the training ground.', go: 'Log in', no: 'No account yet?', nop: 'You open an account with an invite code from a mentor at the workshop.', signup: 'Open an account with a code', guest: 'Continue as a guest', train: 'To the training ground', forgot: 'Forgot your password?', fh: 'If you added an email to your account, we will send it a link to choose a new password. If not, talk to a mentor.', email: 'Your account email', send: 'Send link', sent: 'If this email belongs to an account, a link is on its way. Check spam too.' };
 ---
 <Base title={t.title} description={t.desc} lang={lang}>
   <div class="w">
@@ -17,11 +17,18 @@ const t = he
       <div class="acc-card">
         <p class="acc-soon" hidden>{a.soon}</p>
         <form class="f" id="login-form" novalidate>
-          <label>{a.user}<input name="username" required autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" /></label>
+          <label>{a.userOrEmail}<input name="username" required autocomplete="username" autocapitalize="none" spellcheck="false" dir="ltr" /></label>
           <label>{a.pass}<input name="password" type="password" required autocomplete="current-password" dir="ltr" /></label>
           <p class="acc-err" role="alert" hidden></p>
           <button class="btn" type="submit">{t.go}</button>
-          <small class="acc-hint">{t.forgot}</small>
+          <button class="acc-x acc-forgot" id="forgot-open" type="button">{t.forgot}</button>
+        </form>
+        <form class="f" id="reset-form" novalidate hidden>
+          <h3>{t.forgot}</h3><p class="acc-hint">{t.fh}</p>
+          <label>{t.email}<input name="email" type="email" required autocomplete="email" dir="ltr" /></label>
+          <p class="acc-err" role="alert" hidden></p>
+          <p class="acc-ok" role="status" hidden>{t.sent}</p>
+          <button class="btn" type="submit">{t.send}</button>
         </form>
       </div>
       <aside class="acc-side">
@@ -32,7 +39,7 @@ const t = he
   </div>
 </Base>
 <script>
-  import { enabled, login, watch } from '../scripts/account';
+  import { enabled, login, watch, resetPassword } from '../scripts/account';
   import { errText } from '../i18n/account';
   const root = document.getElementById('acc')!;
   const lang = root.dataset.lang as 'he' | 'en';
@@ -41,6 +48,13 @@ const t = he
   if (!enabled) { (root.querySelector('.acc-soon') as HTMLElement).hidden = false; form.hidden = true; }
   else {
     const stop = watch(p => { if (p && !p.disabled) location.replace(root.dataset.next!); });
+    const rf = document.getElementById('reset-form') as HTMLFormElement;
+    document.getElementById('forgot-open')!.addEventListener('click', () => { rf.hidden = !rf.hidden; if (!rf.hidden) (rf.querySelector('input') as HTMLInputElement).focus(); });
+    rf.addEventListener('submit', async e => {
+      e.preventDefault(); const er = rf.querySelector('.acc-err') as HTMLElement, ok = rf.querySelector('.acc-ok') as HTMLElement; er.hidden = ok.hidden = true;
+      try { await resetPassword(String(new FormData(rf).get('email'))); ok.hidden = false; }
+      catch (x: any) { if (x?.code === 'auth/user-not-found') ok.hidden = false; else { er.textContent = errText(lang, x); er.hidden = false; } }
+    });
     form.addEventListener('submit', async e => {
       e.preventDefault(); err.hidden = true;
       const fd = new FormData(form), btn = form.querySelector('button')!;

@@ -1,9 +1,17 @@
 # Website accounts
 
 Guests use the site and the training ground with no account. Students and mentors log in with a
-username and password. Every account starts from a one-time invite code that a mentor makes on the
-"My account" page. A forgotten password is handled the same way: the mentor makes a new code, and
-disables the old account.
+username and password. Every account starts from a one-time invite code (valid 14 days) made on the
+"My account" page: mentors invite students, admins invite anyone. Roles: student, mentor, admin.
+
+Email: mentors and admins must add and confirm a real email (the rules lock their tools until then).
+For students it is optional. Once an email is confirmed, the account logs in with that email and can
+reset its password with "Forgot your password?". A student without an email asks a mentor for a new code.
+
+Training ground: `progress/{uid}` is written by the playground through `/train/sync.js`. The rules
+accept a mission only in order, at least 15 s (licenses 45 s) after it was opened, with 1-3 stars.
+Licenses count only after a mentor approves them on the progress board. The order and minimum times
+come from `config/missions`, which an admin publishes with "Update mission list".
 
 Data (Firestore): `users/{uid}` (username, name, role, disabled), `usernames/{username}`,
 `invites/{code}`. Rules: `firebase/firestore.rules`. Usernames become a private address
@@ -27,6 +35,16 @@ Data (Firestore): `users/{uid}` (username, name, role, disabled), `usernames/{us
    `createdAt` (timestamp) now, `usedBy` (null).
 9. After the next deploy, open `/signup?code=GUYSTART26` on the site, pick a username and password.
    From then on, make every other invite from the "My account" page.
+
+## After the permissions update (round 4)
+
+1. **Firestore › Rules:** paste the new `firebase/firestore.rules` and **Publish**.
+2. **Firestore › users › your document:** change `role` to `admin` (lowercase).
+3. On the site, **My account › Email and security:** add your email, open the link in your inbox,
+   then log in again with the email. Your admin tools unlock.
+4. **My account › Update mission list:** click once (and again after new games go live).
+5. Every mentor does step 3 too.
+6. Optional: **Authentication › Templates** to set the sender name and the email language to Hebrew.
 
 ## Local testing
 
