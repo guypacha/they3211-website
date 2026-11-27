@@ -173,25 +173,25 @@ const live = slides.some(s => s.src) ? slides.filter(s => s.src) : slides.slice(
 </script>
 <style is:global>
 .h2g{min-height:min(86vh,760px);display:flex;align-items:flex-end;position:relative;margin-top:-68px;padding-top:68px}
-.h2g::after{content:"";position:absolute;inset:40% 0 0 0;background:linear-gradient(transparent,rgba(15,27,45,.95))}
+.h2g::after{content:"";position:absolute;inset:40% 0 0 0;background:linear-gradient(transparent,var(--hero-fade))}
 .h2g .inner{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:end;padding-block:0 120px}
 .num{font-family:var(--n);font-weight:600;font-size:clamp(120px,19vw,260px);line-height:.78;letter-spacing:-.01em;direction:ltr}
 .h2g h1{font-size:clamp(28px,3.2vw,42px);font-weight:700;letter-spacing:-.01em;margin:0 0 12px}
-.h2g p{color:#D5DEE8;margin:0 0 24px;max-width:44ch}.cta{display:flex;gap:28px;flex-wrap:wrap}
+.h2g p{color:var(--hero-p);margin:0 0 24px;max-width:44ch}.cta{display:flex;gap:28px;flex-wrap:wrap}
 .coord{position:absolute;top:-40px;left:max(24px,env(safe-area-inset-left));color:var(--soft)}
 .slides{position:absolute;inset:0}
 .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
 .slide.on{opacity:1}
 .slide img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 7s ease-out}
 .slide.on img{transform:scale(1)}
-.slide:nth-child(2){background:#1C2E47}.slide:nth-child(3){background:#203450}
+.slide:nth-child(2){background:var(--slide2)}.slide:nth-child(3){background:var(--slide3)}
 .dots{position:absolute;z-index:3;bottom:132px;left:max(24px,env(safe-area-inset-left));display:flex;gap:4px}
 .dots button{width:28px;height:28px;border:0;background:none;padding:0;display:grid;place-items:center}
 .dots button::after{content:"";width:8px;height:8px;border-radius:999px;background:var(--soft);opacity:.5;transition:width .3s,opacity .3s}
 .dots button[aria-pressed="true"]::after{width:22px;opacity:1;background:var(--ink)}
 .sand{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .caravan{position:absolute;bottom:62px;left:-80px;z-index:1;display:flex;gap:6px;align-items:flex-end;animation:caravan 70s linear infinite}
-.caravan svg{fill:#1A2B44;transform:scaleX(-1)}
+.caravan svg{fill:var(--caravan);transform:scaleX(-1)}
 @keyframes caravan{from{transform:translateX(calc(100vw + 80px))}to{transform:translateX(0)}}
 .devil{position:absolute;bottom:44px;left:20%;width:34px;z-index:1;fill:none;stroke:#D6BE8C;stroke-width:1.4;opacity:0;animation:devil 16s ease-in-out infinite}
 .devil ellipse{animation:wob 1.1s ease-in-out infinite alternate}
@@ -209,13 +209,13 @@ const live = slides.some(s => s.src) ? slides.filter(s => s.src) : slides.slice(
 .mq-track{display:flex;width:max-content;animation:mq 32s linear infinite}
 .marquee:hover .mq-track{animation-play-state:paused}
 .mq-set{display:flex;gap:20px;padding:0 10px 0 10px;margin:0;list-style:none}
-.mq-set li{background:#fff;border-radius:999px;padding:14px 26px;display:flex;align-items:center;min-height:76px;color:var(--dim);white-space:nowrap}
+.mq-set li{background:var(--card);border-radius:999px;padding:14px 26px;display:flex;align-items:center;min-height:76px;color:var(--dim);white-space:nowrap}
 .mq-set li.logo{padding:10px 26px}.mq-set img{height:56px;width:auto;display:block}
 @keyframes mq{to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion: reduce){.mq-track{animation:none;flex-wrap:wrap}.mq-set[aria-hidden]{display:none}.caravan,.devil{display:none}}
 @media(max-width:860px){.oasis{right:4%;width:84px;bottom:28px}.caravan{bottom:58px}}
 .ridge{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:120px;z-index:1}
-.ridge .back{fill:#1A2B44}.ridge .front{fill:var(--bg)}
+.ridge .back{fill:var(--ridge)}.ridge .front{fill:var(--bg)}
 .camel{position:absolute;bottom:31px;left:48%;width:54px;z-index:1;fill:var(--bg);stroke:var(--bg)}
 .birds{position:absolute;top:18%;right:12%;width:150px;z-index:1;fill:none;stroke:var(--soft);stroke-width:1.6;stroke-linecap:round;opacity:.7;animation:drift 18s ease-in-out infinite alternate}
 @keyframes drift{to{transform:translate(-40px,8px)}}
