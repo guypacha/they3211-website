@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en" dir="ltr"><head><meta charset="utf-8"><script>try{var y3=localStorage.getItem("y3211-theme");if(y3==="light"||y3==="dark")document.documentElement.dataset.theme=y3}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script type="module" src="../../sync.js"></script></head><body>
+<html lang="en" dir="ltr"><head><meta charset="utf-8"><script>try{var y3=localStorage.getItem("y3211-theme");if(y3==="light"||y3==="dark")document.documentElement.dataset.theme=y3}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script type="module" src="../../sync.js"></script>
+</head><body>
 <title>Training Grounds 3211</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -354,11 +355,11 @@ const LEVELS={
     goal:"Connect the battery to the PDH through the main breaker. Pick a color and gauge for each wire.",
     hint:"Plus goes through the main breaker on its way to the PDH. Minus goes straight. The whole main path is thick wire.",
     vb:"0 0 400 500",
-    draw:L=>pdhBox(70,50,260,140,"PDH","Power Distribution Hub")+battery(50,370)+breaker(230,385),
+    draw:L=>pdhBox(70,50,260,140,"PDH","Power Distribution Hub")+battery(175,370)+breakerV(30,215),
     terms:[
-      {id:"B+",kind:"pw",x:85,y:370,pol:"+",name:"Battery plus"},{id:"B-",kind:"pw",x:165,y:370,pol:"-",name:"Battery minus"},
-      {id:"BR1",kind:"pw",x:255,y:385,name:"Breaker (screw 1)"},{id:"BR2",kind:"pw",x:325,y:385,name:"Breaker (screw 2)"},
-      {id:"P+",kind:"pw",x:150,y:190,pol:"+",name:"PDH Plus"},{id:"P-",kind:"pw",x:250,y:190,pol:"-",name:"PDH Minus"}],
+      {id:"B+",kind:"pw",x:210,y:370,pol:"+",name:"Battery plus"},{id:"B-",kind:"pw",x:290,y:370,pol:"-",name:"Battery minus"},
+      {id:"BR1",kind:"pw",x:61,y:345,name:"Breaker (screw 1)"},{id:"BR2",kind:"pw",x:61,y:215,name:"Breaker (screw 2)"},
+      {id:"P+",kind:"pw",x:150,y:190,pol:"+",name:"PDH Plus"},{id:"P-",kind:"pw",x:290,y:190,pol:"-",name:"PDH Minus"}],
     power:true,devices:[],
     solution:[{a:"B+",b:"BR1",color:"red",gauge:6},{a:"BR2",b:"P+",color:"red",gauge:6},{a:"B-",b:"P-",color:"black",gauge:6}]},
   m2:{title:"A fuse and cable for every motor",short:"PDH channels, fuses and wire gauge",
@@ -420,6 +421,12 @@ function breaker(x,y){
   <rect x="${x+48}" y="${y+40}" width="24" height="12" rx="3" fill="var(--wire-red)"/>
   <text class="lbl" x="${x+60}" y="${y+28}" text-anchor="middle" style="font-size:12px">Main breaker</text>
   <text class="sub" x="${x+60}" y="${y+-8}" text-anchor="middle">120A</text>`;
+}
+function breakerV(x,y){
+  return `<rect class="comp" x="${x}" y="${y}" width="62" height="130" rx="8"/>
+  <rect x="${x+43}" y="${y+53}" width="12" height="24" rx="3" fill="var(--wire-red)"/>
+  <text class="lbl" x="${x+24}" y="${y+65}" text-anchor="middle" transform="rotate(-90 ${x+24} ${y+65})" style="font-size:12px">Main breaker</text>
+  <text class="sub" x="${x+31}" y="${y+150}" text-anchor="middle">120A</text>`;
 }
 function fuse(x,y,a,ch){
   return `<rect x="${x-20}" y="${y-14}" width="40" height="28" rx="5" fill="${a===40?"#F2C21B":a===30?"#2E9E5B":"#E0E4EA"}" stroke="var(--comp-edge)"/>
