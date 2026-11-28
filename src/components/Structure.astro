@@ -14,7 +14,7 @@ const t = he
     <section class="org" aria-label={t.lbl}>
       <div class="org-top rv">
         {[leadership.head, leadership.finance, leadership.captains].map((x, i) => (
-          <div class:list={['org-n', { lead: i < 2 }]}><span class="lbl acc">{x.title[lang]}</span><b>{x.who[lang]}</b><p>{x.does[lang]}</p></div>))}
+          <div class:list={['org-n', { lead: i < 2 }]}><span class="lbl acc">{x.title[lang]}</span><b>{x.who[lang]}</b><p set:html={x.does[lang]} /></div>))}
       </div>
       <h2 class="org-h">{t.depts}</h2>
       <ul class="org-d">

@@ -20,7 +20,7 @@ export const mentors: Mentor[] = [
 
 export type Dept = { name: T; lead: T; mentor: T; does: T[] };
 export const leadership = {
-  head: { title: { he: 'מנטור ראשי · הכשרות', en: 'Co-lead mentor · Training' }, who: { he: 'גיא פאצ׳ה', en: 'Guy Pacha' }, does: { he: 'אחראי על כל ההכשרות שקשורות לרובוט: הרכבה, CAD, חשמל ותכנות.', en: 'In charge of all robot-related training: assembly, CAD, electrical and programming.' } },
+  head: { title: { he: 'מנטור ראשי · הכשרות', en: 'Co-lead mentor · Training' }, who: { he: 'גיא פאצ׳ה', en: 'Guy Pacha' }, does: { he: 'אחראי על כל ההכשרות שקשורות לרובוט: הרכבה, <bdi>CAD</bdi>, חשמל ותכנות.', en: 'In charge of all robot-related training: assembly, CAD, electrical and programming.' } },
   finance: { title: { he: 'מנטור ראשי · כספים וספונסרים', en: 'Co-lead mentor · Finance and sponsors' }, who: { he: 'לירון גורי', en: 'Liron Guri' }, does: { he: 'אחראי על התקציב והרכש, ועל הקשר עם הספונסרים הראשיים.', en: 'In charge of the budget and purchasing, and of contact with our main sponsors.' } },
   captains: { title: { he: 'קפטנים', en: 'Captains' }, who: { he: '[שני תלמידים]', en: '[Two students]' }, does: { he: 'מובילים את התלמידים ביום יום, קובעים יעדים לשבוע ומחברים בין המחלקות.', en: 'Lead the students day to day, set weekly goals and connect the departments.' } },
 };
