@@ -16,9 +16,9 @@ const t = he
       <h2 class="tree-h">{t.rowM}</h2>
       <ul class="tree-row rm">{tree.mentors.map(n => <li class:list={['tn', { lead: n.id === 'guy' || n.id === 'liron' }]} data-id={n.id} data-to={n.to.join(' ')} tabindex="0"><span class="lbl acc">{n.title[lang]}</span><b>{n.who?.[lang]}</b></li>)}</ul>
       <h2 class="tree-h">{t.rowC}</h2>
-      <ul class="tree-row rc">{tree.captains.map(n => <li class="tn cap" data-id={n.id} data-to={n.to.join(' ')} tabindex="0"><b>{n.title[lang]}</b><span class="tn-who">{n.who?.[lang] ?? t.tbd}</span></li>)}</ul>
+      <ul class="tree-row rc">{tree.captains.map(n => <li class="tn cap" data-id={n.id} data-to={n.to.join(' ')} tabindex="0"><span class="lbl acc">{n.title[lang]}</span><b>{n.who?.[lang] ?? t.tbd}</b></li>)}</ul>
       <h2 class="tree-h">{t.rowT}</h2>
-      <ul class="tree-row rt">{tree.teams.map(n => <li class="tn team" data-id={n.id} tabindex="0"><b><bdi>{n.title[lang]}</bdi></b><span class="tn-who">{n.note?.[lang]}</span>{(() => { const ms = tree.mentors.filter(m => m.to.includes(n.id)); return ms.length ? <span class="tn-mentors">{t.mentor}: {ms.map(m => m.who![lang]).join(', ')}</span> : null; })()}</li>)}</ul>
+      <ul class="tree-row rt">{tree.teams.map(n => <li class="tn team" data-id={n.id} tabindex="0"><span class="lbl acc"><bdi>{n.title[lang]}</bdi></span><b>{n.who?.[lang] ?? t.tbd}</b><span class="tn-who">{n.note?.[lang]}</span>{(() => { const ms = tree.mentors.filter(m => m.to.includes(n.id)); return ms.length ? <span class="tn-mentors">{t.mentor}: {ms.map(m => m.who![lang]).join(', ')}</span> : null; })()}</li>)}</ul>
       <p class="tree-key"><span class="k solid"></span>{t.keyLine} <span class="k dash"></span><span class="km">{t.keyMentor}</span></p>
     </section>
     <section class="sec"><div class="head"><h2>{t.flow}</h2></div>
