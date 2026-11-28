@@ -13,8 +13,8 @@ const t = he
     <header class="page-head"><span class="lbl">{t.lbl}</span><h1>{t.h}</h1><p>{t.p}</p><TeamTabs lang={lang} cur="structure" /></header>
     <section class="org" aria-label={t.lbl}>
       <div class="org-top rv">
-        {[leadership.head, leadership.captains].map((x, i) => (
-          <div class:list={['org-n', { lead: i === 0 }]}><span class="lbl acc">{x.title[lang]}</span><b>{x.who[lang]}</b><p>{x.does[lang]}</p></div>))}
+        {[leadership.head, leadership.finance, leadership.captains].map((x, i) => (
+          <div class:list={['org-n', { lead: i < 2 }]}><span class="lbl acc">{x.title[lang]}</span><b>{x.who[lang]}</b><p>{x.does[lang]}</p></div>))}
       </div>
       <h2 class="org-h">{t.depts}</h2>
       <ul class="org-d">
@@ -34,7 +34,7 @@ const t = he
 </Base>
 <style>
 .org{padding-top:56px}
-.org-top{display:grid;grid-template-columns:1fr 1fr;gap:20px;position:relative}
+.org-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;position:relative}
 .org-n{background:var(--bg2);border-radius:var(--r-lg,36px);padding:28px 32px;display:flex;flex-direction:column;gap:6px}
 .org-n.lead{background:var(--ink);color:var(--bg)}.org-n.lead .lbl{color:var(--lead-lbl)}.org-n.lead p{color:var(--lead-p)}
 .org-n b{font-size:24px;font-weight:700}
