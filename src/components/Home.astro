@@ -149,6 +149,20 @@ const live = slides.some(s => s.src) ? slides.filter(s => s.src) : slides.slice(
   dots.forEach(d => d.addEventListener('click', () => { show(+d.dataset.i!); play(); }));
   root?.addEventListener('mouseenter', () => clearInterval(timer)); root?.addEventListener('mouseleave', play);
   play();
+  // Swipe photos on touch screens. Past the first/last photo it stretches a little and springs back (rubber band).
+  const box = document.querySelector<HTMLElement>('.slides');
+  if (box && !still) {
+    let x0 = 0, dx = 0, on = false;
+    const rtl = document.dir === 'rtl', last = slides.length - 1;
+    box.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') return; on = true; x0 = e.clientX; dx = 0; box.style.transition = 'none'; clearInterval(timer); });
+    box.addEventListener('pointermove', e => { if (!on) return; dx = e.clientX - x0;
+      const fwd = rtl ? dx > 0 : dx < 0, edge = fwd ? cur === last : cur === 0;
+      const d = edge ? Math.sign(dx) * 40 * (1 - Math.exp(-Math.abs(dx) / 120)) : dx * 0.5;   // resists more the further you pull
+      box.style.transform = `translateX(${d}px)`; });
+    const end = () => { if (!on) return; on = false; box.style.transition = 'transform .45s cubic-bezier(.2,1.4,.4,1)'; box.style.transform = '';
+      const fwd = rtl ? dx > 0 : dx < 0; if (Math.abs(dx) > 60) { if (fwd && cur < last) show(cur + 1); if (!fwd && cur > 0) show(cur - 1); } play(); };
+    box.addEventListener('pointerup', end); box.addEventListener('pointercancel', end);
+  }
   // blowing sand: a few hundred grains drifting with the wind, paused when the hero is off screen
   const cv = document.querySelector<HTMLCanvasElement>('.sand');
   if (cv && !still) {
@@ -179,7 +193,7 @@ const live = slides.some(s => s.src) ? slides.filter(s => s.src) : slides.slice(
 .h2g h1{font-size:clamp(28px,3.2vw,42px);font-weight:700;letter-spacing:-.01em;margin:0 0 12px}
 .h2g p{color:var(--hero-p);margin:0 0 24px;max-width:44ch}.cta{display:flex;gap:28px;flex-wrap:wrap}
 .coord{position:absolute;top:-40px;left:max(24px,env(safe-area-inset-left));color:var(--soft)}
-.slides{position:absolute;inset:0}
+.slides{position:absolute;inset:0;touch-action:pan-y}
 .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
 .slide.on{opacity:1}
 .slide img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 7s ease-out}

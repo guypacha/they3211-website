@@ -1,11 +1,16 @@
 // Prefix internal links with the deploy base ("/" or "/website/").
 export const u = (p: string) => (import.meta.env.BASE_URL.replace(/\/$/, '') + '/' + p.replace(/^\//, '')).replace(/\/+$/, '') || '/';
 export type Lang = 'he' | 'en';
-export const NAV = [
-  { href: '/team', he: 'הקבוצה', en: 'Team' },
-  { href: '/robots', he: 'רובוטים', en: 'Robots' },
+// Top menu: three choices only (Hick's law). "Team" opens its own pages.
+export const NAV: { href: string; he: string; en: string; sub?: { href: string; he: string; en: string }[] }[] = [
+  { href: '/team', he: 'הקבוצה', en: 'Team', sub: [
+    { href: '/team', he: 'עלינו', en: 'About us' },
+    { href: '/robots', he: 'הרובוטים והעונות', en: 'Robots and seasons' },
+    { href: '/team/mentors', he: 'המנטורים', en: 'Mentors' },
+    { href: '/team/structure', he: 'מבנה הקבוצה', en: 'Team structure' },
+  ] },
   { href: '/train', he: 'מגרש האימונים', en: 'Training' },
-  { href: '/attendx', he: 'AttendX', en: 'AttendX' },
+  { href: '/support', he: 'תמכו בנו', en: 'Support us' },
 ];
 export const CONTACT = {
   email: 'yer.3211@gmail.com',

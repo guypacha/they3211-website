@@ -46,7 +46,10 @@ const ICON: Record<string, string> = {
   <nav id="nav"><div class="w">
     <a href={L('/')} aria-label={en ? 'The Y Team 3211, home' : 'The Y Team 3211, דף הבית'}><img class="logo-d" src={u('/assets/logo.jpg')} alt="" width="58" height="34" /><img class="logo-l" src={u('/assets/logo-light.png')} alt="" width="58" height="34" /></a>
     <div class="links" id="links">
-      {NAV.map(n => <a href={L(n.href)} aria-current={bare === n.href || bare.startsWith(n.href + '/') ? 'page' : undefined}>{n[lang]}</a>)}
+      {NAV.map(n => n.sub
+        ? <div class="dd"><button class="dd-b" type="button" aria-expanded="false" aria-current={n.sub.some(x => bare === x.href || bare.startsWith(x.href + '/')) ? 'page' : undefined}>{n[lang]}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" /></svg></button>
+            <div class="dd-p">{n.sub.map(x => <a href={L(x.href)} aria-current={bare === x.href ? 'page' : undefined}>{x[lang]}</a>)}</div></div>
+        : <a href={L(n.href)} aria-current={bare === n.href || bare.startsWith(n.href + '/') ? 'page' : undefined}>{n[lang]}</a>)}
     </div>
     <div class="right">
       <button class="theme" id="theme" type="button" aria-label={en ? 'Switch to light mode' : 'מעבר למצב בהיר'} data-light={en ? 'Switch to light mode' : 'מעבר למצב בהיר'} data-dark={en ? 'Switch to dark mode' : 'מעבר למצב כהה'}>
@@ -54,10 +57,9 @@ const ICON: Record<string, string> = {
         <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
       </button>
       <a class="lang" href={u(other)} hreflang={en ? 'he' : 'en'} lang={en ? 'he' : 'en'}>{en ? 'עברית' : 'EN'}</a>
-      <a class="sup" href={L('/support')} aria-current={bare === '/support' ? 'page' : undefined}>{en ? 'Support us' : 'תמכו בנו'}</a>
       <a class="login" id="nav-login" href={L('/login')} data-account={L('/account')} aria-current={bare === '/login' || bare === '/account' ? 'page' : undefined}>{en ? 'Log in' : 'כניסה'}</a>
       <a class="join" href={L('/join')}>{en ? 'Join' : 'הצטרפו'}</a>
-      <button class="menu" aria-expanded="false" aria-controls="links" id="menu">{en ? 'Menu' : 'תפריט'}</button>
+      <button class="menu" aria-expanded="false" aria-controls="links" id="menu" aria-label={en ? 'Menu' : 'תפריט'}><svg class="i-menu" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg><svg class="i-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg></button>
     </div>
   </div></nav>
   {!(path === '/' || path === '/en') && <div class="ih" id="ih" aria-hidden="true">
@@ -68,6 +70,7 @@ const ICON: Record<string, string> = {
   <main id="main"><slot /></main>
   <footer><div class="w">
     <div><b><bdi>The Y Team · FRC 3211</bdi></b>{CONTACT.address[lang]}</div>
+    <div><b>{en ? 'More' : 'עוד'}</b><a href={L('/attendx')}><bdi>AttendX</bdi></a><a href={L('/join')}>{en ? 'Join the team' : 'הצטרפות לקבוצה'}</a></div>
     <div><b>{en ? 'Contact' : 'יצירת קשר'}</b><a class="m" style="font-size:14px" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></div>
     <div><b>{en ? 'Follow' : 'עקבו'}</b>
       <ul class="social">{SOCIAL.filter(s => s.url).map(s => <li><a href={s.url} rel="noopener" target="_blank" aria-label={s.label} title={s.label}><svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICON[s.id]} /></a></li>)}</ul></div>
@@ -75,7 +78,7 @@ const ICON: Record<string, string> = {
   <script>
     // Reveal on scroll (skipped for reduced motion); content is visible without JS.
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-      const els = document.querySelectorAll<HTMLElement>('.rv, .page-head > *, .acc-card, .acc-side > *, .faq details, .two-links > a, .sec .head, .facts > div, .seasons > a, .paths > a, .ax > *, .spons > span, .robot, .tiers > div, .two > *, .shots > figure, .list li');
+      const els = document.querySelectorAll<HTMLElement>('.rv, .page-head > :not(h1), .acc-card, .acc-side > *, .faq details, .two-links > a, .sec .head, .facts > div, .seasons > a, .paths > a, .ax > *, .spons > span, .robot, .tiers > div, .two > *, .shots > figure, .list li');
       const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const el = e.target as HTMLElement; el.classList.add('in'); io.unobserve(el);
         const n = el.querySelector<HTMLElement>('[data-count]'); if (n) { const to = +n.dataset.count!, from = to > 1000 ? to - 40 : 0, t0 = performance.now();
           const tick = (t: number) => { const k = Math.min(1, (t - t0) / 1100), e2 = 1 - Math.pow(1 - k, 3); n.textContent = String(Math.round(from + (to - from) * e2)); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); } }), { rootMargin: '0px 0px -8% 0px' });
@@ -93,7 +96,15 @@ const ICON: Record<string, string> = {
       setLbl();
     });
     const b = document.getElementById('menu'), n = document.getElementById('nav');
-    b?.addEventListener('click', () => { const o = n!.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); });
+    const setMenu = (o: boolean) => { n!.classList.toggle('open', o); b!.setAttribute('aria-expanded', String(o)); document.body.classList.toggle('menu-open', o); };
+    b?.addEventListener('click', () => setMenu(!n!.classList.contains('open')));
+    // the dimmed page behind the phone menu closes it (stage the focus)
+    document.addEventListener('click', e => { if (n!.classList.contains('open') && !n!.contains(e.target as Node)) setMenu(false); });
+    // "Team" sub-menu: click/tap to open, Escape or outside click to close
+    document.querySelectorAll<HTMLElement>('.dd').forEach(d => { const db = d.querySelector('button')!;
+      db.addEventListener('click', e => { e.stopPropagation(); const o = !d.classList.contains('on'); d.classList.toggle('on', o); db.setAttribute('aria-expanded', String(o)); });
+      document.addEventListener('click', e => { if (!d.contains(e.target as Node)) { d.classList.remove('on'); db.setAttribute('aria-expanded', 'false'); } });
+      d.addEventListener('keydown', e => { if (e.key === 'Escape') { d.classList.remove('on'); db.setAttribute('aria-expanded', 'false'); db.focus(); } }); });
   </script>
 <script is:inline>(function(){try{var a=JSON.parse(localStorage.getItem('y3211-account')||'null'),l=document.getElementById('nav-login');if(a&&a.name&&l){l.textContent=a.name;l.href=l.dataset.account;l.classList.add('in')}}catch(e){}})();</script>
 <script>

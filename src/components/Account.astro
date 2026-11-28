@@ -161,7 +161,14 @@ const t = he
   }
   $('pub-btn').addEventListener('click', async () => { await publishMissions(MS); $('pub-hint').textContent = t.pubok; });
   $('board').addEventListener('click', async e => { const b = (e.target as HTMLElement).closest('[data-lic]') as HTMLElement | null;
-    if (b) { e.stopPropagation(); await setLicense(b.dataset.uid!, b.dataset.lic!, b.dataset.v === '1'); board(); return; } });
+    if (b) { e.stopPropagation();
+      // Doherty: change the screen at once, save in the background, undo if the save fails
+      const ok = b.dataset.v === '1', chip = b.previousElementSibling as HTMLElement, before = [chip.className, chip.textContent, b.textContent, b.dataset.v];
+      const name = (chip.textContent || '').split(' · ')[0].replace(' ✓', '');
+      chip.className = 'acc-chip' + (ok ? ' ok-pulse' : ' wait'); chip.textContent = ok ? `${name} ✓` : `${name} · ${t.waiting}`; b.textContent = ok ? t.revoke : t.approve; b.dataset.v = ok ? '0' : '1';
+      try { await setLicense(b.dataset.uid!, b.dataset.lic!, ok); }
+      catch { [chip.className, chip.textContent, b.textContent, b.dataset.v] = before as string[]; }
+      return; } });
   $('board').addEventListener('click', e => { if ((e.target as HTMLElement).closest('[data-lic]')) return; const r = (e.target as HTMLElement).closest('.brow') as HTMLElement | null; if (!r) return; const d = r.nextElementSibling as HTMLElement; d.hidden = !d.hidden; r.setAttribute('aria-expanded', String(!d.hidden)); });
   $('board').addEventListener('keydown', e => { if ((e as KeyboardEvent).key === 'Enter') ((e.target as HTMLElement).closest('.brow') as HTMLElement)?.click(); });
 
@@ -186,12 +193,13 @@ const t = he
   const form = $('inv-form') as HTMLFormElement;
   form.addEventListener('submit', async e => {
     e.preventDefault(); const err = form.querySelector('.acc-err') as HTMLElement; err.hidden = true;
-    const fd = new FormData(form);
+    const fd = new FormData(form), sb = form.querySelector('button[type=submit]')!; sb.setAttribute('aria-busy', 'true');
     try {
       const role = (me!.role === 'admin' ? fd.get('role') : 'student') as 'student' | 'mentor' | 'admin';
       const code = await createInvite(role, String(fd.get('name') || ''));
-      $('made-code').textContent = code; ($('made-link') as HTMLInputElement).value = link(code); $('made').hidden = false; form.reset(); refresh();
+      $('made-code').textContent = code; ($('made-link') as HTMLInputElement).value = link(code); $('made').hidden = false; ($('copy') as HTMLElement).textContent = t.copy; form.reset(); refresh();
     } catch (x) { err.textContent = errText(lang, x); err.hidden = false; }
+    sb.removeAttribute('aria-busy');
   });
-  $('copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(($('made-link') as HTMLInputElement).value); $('copy').textContent = t.copied; } catch { ($('made-link') as HTMLInputElement).select(); } });
+  $('copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(($('made-link') as HTMLInputElement).value); const c = $('copy'); c.textContent = '✓ ' + t.copied; c.classList.remove('ok-pulse'); void c.offsetWidth; c.classList.add('ok-pulse'); } catch { ($('made-link') as HTMLInputElement).select(); } });
 </script>
