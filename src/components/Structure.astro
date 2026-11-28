@@ -61,15 +61,27 @@ const t = he
   if (tree) {
     const svg = tree.querySelector('svg')!, NS = 'http://www.w3.org/2000/svg';
     const box = (id: string) => tree.querySelector<HTMLElement>(`[data-id="${id}"]`);
+    // Org-chart lines: each group drops to one shared rail, then down to its boxes (right angles, rounded corners).
+    const R = 10;
+    const elbow = (x1: number, y1: number, x2: number, y2: number, yb: number) => {
+      if (Math.abs(x2 - x1) < 2) return `M${x1} ${y1}V${y2}`;
+      const d = x2 > x1 ? 1 : -1, r = Math.min(R, Math.abs(x2 - x1) / 2);
+      return `M${x1} ${y1}V${yb - r}Q${x1} ${yb} ${x1 + d * r} ${yb}H${x2 - d * r}Q${x2} ${yb} ${x2} ${yb + r}V${y2}`;
+    };
     const draw = () => {
       const r0 = tree.getBoundingClientRect(); svg.innerHTML = '';
+      const rc = (el: Element) => { const r = el.getBoundingClientRect(); return { l: r.left - r0.left, r: r.right - r0.left, t: r.top - r0.top, b: r.bottom - r0.top, cx: r.left + r.width / 2 - r0.left }; };
+      const rowM = tree.querySelector('.rm')!, rowC = tree.querySelector('.rc')!, rowT = tree.querySelector('.rt')!;
+      const busMC = (rc(rowM).b + rc(rowC).t) / 2, busCT = (rc(rowC).b + rc(rowT).t) / 2, busMT = rc(rowT).t - 16;
       tree.querySelectorAll<HTMLElement>('[data-to]').forEach(a => a.dataset.to!.split(' ').filter(Boolean).forEach(id => {
         const b = box(id); if (!b) return;
-        const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
-        const x1 = ra.left + ra.width / 2 - r0.left, y1 = ra.bottom - r0.top, x2 = rb.left + rb.width / 2 - r0.left, y2 = rb.top - r0.top, my = (y1 + y2) / 2;
+        const A = rc(a), B = rc(b);
+        const mentorToTeam = !!a.closest('.rm') && b.classList.contains('team');
+        const fromCaptain = !!a.closest('.rc');
+        // mentors' dashed lines land beside the solid ones, so the two kinds never overlap
+        const x2 = mentorToTeam ? B.cx + 22 * (document.dir === 'rtl' ? 1 : -1) : B.cx;
         const p = document.createElementNS(NS, 'path');
-        p.setAttribute('d', `M${x1} ${y1}C${x1} ${my} ${x2} ${my} ${x2} ${y2}`);
-        const mentorToTeam = a.closest('.rm') && b.classList.contains('team');
+        p.setAttribute('d', elbow(A.cx, A.b, x2, B.t, mentorToTeam ? busMT : fromCaptain ? busCT : busMC));
         p.setAttribute('class', mentorToTeam ? 'mt' : 'h'); p.dataset.a = a.dataset.id; p.dataset.b = id; svg.appendChild(p);
       }));
     };
