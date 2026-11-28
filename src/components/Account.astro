@@ -105,7 +105,7 @@ const t = he
     if (isStaff(p.role) && !es.verified) { $('locked').hidden = false; if (p.role === 'admin') $('tile-train').hidden = true; return; }
     if (p.role === 'admin') { $('tile-train').hidden = true; $('tools-h').textContent = t.at; $('role-pick').hidden = false; $('inv-hint').textContent = t.invp; }
     if (p.role === 'admin') pubCheck();
-    if (isStaff(p.role)) { $('mentor').hidden = false; $('board-sec').hidden = false; await Promise.all([refresh(), board()]); }
+    if (isStaff(p.role)) { $('mentor').hidden = false; $('board-sec').hidden = false; await Promise.all([refresh(), board().catch(() => { $('board').innerHTML = `<tr><td colspan="${worlds.length + 4}" class="acc-hint">${t.noone}</td></tr>`; })]); }
     else mine();
   });
   function showEmail(es: { email: string | null; verified: boolean }, p: Profile) {

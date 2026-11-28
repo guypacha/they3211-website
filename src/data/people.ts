@@ -37,6 +37,7 @@ export const depts: Dept[] = [
     does: [{ he: 'תוכן ורשתות', en: 'Content and social' }, { he: 'ספונסרים', en: 'Sponsors' }, { he: 'קהילה', en: 'Community' }] },
 ];
 
+// Students are shown by first name only (minors). Full names: ask Guy first.
 // Structure page tree: mentors on top, then the two captains, then the team leads.
 // links: which mentor draws a line to which box. Only the two lead mentors connect to the captains.
 // The media and community team has no lead yet, so it is not shown.
@@ -51,13 +52,13 @@ export const tree: { mentors: (Node & { to: string[] })[]; captains: (Node & { t
     { id: 'rachel', title: { he: 'מנטורית קהילה', en: 'Community mentor' }, who: { he: 'רחל קנול', en: 'Rachel Knol' }, to: [] },
   ],
   captains: [
-    { id: 'c-mech', title: { he: 'קפטן מכניקה', en: 'Mechanics captain' }, who: { he: 'יהונתן צימרינג', en: 'Yehonatan Tsimmering' }, to: ['t-asm', 't-cad'] },
-    { id: 'c-ctrl', title: { he: 'קפטן בקרה', en: 'Control captain' }, who: { he: 'לביא קרופלד', en: 'Lavi Kroppeld' }, to: ['t-elec', 't-prog'] },
+    { id: 'c-mech', title: { he: 'קפטן מכניקה', en: 'Mechanics captain' }, who: { he: 'יהונתן', en: 'Yehonatan' }, to: ['t-asm', 't-cad'] },
+    { id: 'c-ctrl', title: { he: 'קפטן בקרה', en: 'Control captain' }, who: { he: 'לביא', en: 'Lavi' }, to: ['t-elec', 't-prog'] },
   ],
   teams: [
-    { id: 't-asm', title: { he: 'הרכבה וייצור', en: 'Assembly and manufacturing' }, who: { he: 'ארנון ישי', en: 'Arnon Ishai' }, note: { he: 'ראש צוות', en: 'Team lead' } },
-    { id: 't-cad', title: { he: 'CAD', en: 'CAD' }, who: { he: 'יקיר שטיינמץ', en: 'Yakir Steinmatz' }, note: { he: 'ראש צוות', en: 'Team lead' } },
-    { id: 't-elec', title: { he: 'חשמל', en: 'Electrical' }, who: { he: 'יהודה חבר', en: 'Yehuda Haver' }, note: { he: 'ראש צוות', en: 'Team lead' } },
-    { id: 't-prog', title: { he: 'תכנות', en: 'Programming' }, who: { he: 'לביא קרופלד', en: 'Lavi Kroppeld' }, note: { he: 'קפטן הבקרה', en: 'The control captain' } },
+    { id: 't-asm', title: { he: 'הרכבה וייצור', en: 'Assembly and manufacturing' }, who: { he: 'ארנון', en: 'Arnon' }, note: { he: 'ראש צוות', en: 'Team lead' } },
+    { id: 't-cad', title: { he: 'CAD', en: 'CAD' }, who: { he: 'יקיר', en: 'Yakir' }, note: { he: 'ראש צוות', en: 'Team lead' } },
+    { id: 't-elec', title: { he: 'חשמל', en: 'Electrical' }, who: { he: 'יהודה', en: 'Yehuda' }, note: { he: 'ראש צוות', en: 'Team lead' } },
+    { id: 't-prog', title: { he: 'תכנות', en: 'Programming' }, who: { he: 'לביא', en: 'Lavi' }, note: { he: 'קפטן הבקרה', en: 'The control captain' } },
   ],
 };

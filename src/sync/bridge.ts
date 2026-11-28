@@ -49,6 +49,9 @@ else {
     first = false;
     if (!u) return resolveReady(null);
     try {
+      // Until the admin publishes the mission list (and the new security rules are in), keep playing locally.
+      const cfgDoc = await getDoc(doc(db, 'config', 'missions')).catch(() => null);
+      if (!cfgDoc?.exists()) return resolveReady(null);
       const p = await getDoc(doc(db, 'users', u.uid));
       if (!p.exists() || p.data().disabled) return resolveReady(null);
       const ref = doc(db, 'progress', u.uid);
