@@ -2,6 +2,8 @@
 import Base from '../layouts/Base.astro';
 import { u } from '../lib';
 import { A } from '../i18n/account';
+import { WORLDS } from '../data/worlds';
+import MISSIONS from '../data/missions.json';
 const { lang = 'he' } = Astro.props as { lang?: 'he' | 'en' };
 const he = lang === 'he';
 const P = (p: string) => u((he ? '' : '/en') + p);
@@ -9,36 +11,44 @@ const a = A[lang];
 const t = he
   ? { title: 'החשבון שלי', desc: 'אזור החברים של קבוצה 3211.', lbl: 'החשבון שלי', hi: 'שלום', out: 'יציאה', area: 'אזור החברים', soon: 'בקרוב',
       ax: ['AttendX', 'נוכחות, משימות, שעות קהילה והזמנות. יתחבר לחשבון הזה.'], tr: ['מגרש האימונים', 'המשימות והרישיונות שלכם.'],
-      mt: 'כלים למנטורים', inv: 'הזמנה חדשה', invp: 'צרו קוד לתלמיד או למנטור. הקוד עובד פעם אחת. גם סיסמה שנשכחה מחליפים בקוד חדש.', invName: 'שם (לא חובה)', make: 'יצירת קוד',
+      mt: 'כלים למנטורים', at: 'ניהול', board: 'התקדמות במגרש האימונים', boardp: 'כוכבים לפי עולם. לחצו על שורה כדי לראות כל משימה.', student: 'תלמיד', total: 'סה״כ', last: 'פעילות אחרונה', lic: 'רישיונות', noone: 'עוד אין התקדמות שמורה.', approve: 'אישור', revoke: 'ביטול', waiting: 'ממתין לאישור', fast: 'מהיר מדי', tries: 'ניסיונות', sec: 'שנ׳', pub: 'עדכון רשימת המשימות', pubp: 'הכללים בודקים כל שמירה מול הרשימה הזו. אחרי שמשחקים חדשים עולים לאתר, לחצו כאן פעם אחת.', pubok: 'הרשימה עודכנה', pubneed: 'הרשימה באתר לא מעודכנת. לחצו לעדכון.', mine: 'ההתקדמות שלי', missions: 'משימות', stars: 'כוכבים', invpm: 'צרו קוד לתלמיד חדש. הקוד עובד פעם אחת, במשך 14 יום.', exp: 'בתוקף עד', expd: 'פג תוקף', inv: 'הזמנה חדשה', invp: 'צרו קוד לתלמיד, למנטור או למנהל. הקוד עובד פעם אחת, במשך 14 יום.', invName: 'שם (לא חובה)', make: 'יצירת קוד',
       made: 'הקוד מוכן. שלחו אותו או את הקישור:', copy: 'העתקת הקישור', copied: 'הועתק', pending: 'קודים שעוד לא נוצלו', none: 'אין.', del: 'מחיקה',
-      members: 'חברים באתר', user: 'משתמש', role: 'תפקיד', status: 'מצב', active: 'פעיל', off: 'מושבת', disable: 'השבתה', enable: 'הפעלה', you: 'אתם' }
+      members: 'חברים באתר', user: 'משתמש', role: 'תפקיד', status: 'מצב', active: 'פעיל', off: 'מושבת', disable: 'השבתה', enable: 'הפעלה', you: 'אתם',
+      em: 'אימייל ואבטחה', emNone: 'עוד לא הוספתם אימייל. עם אימייל מאושר תוכלו לאפס סיסמה לבד, בלי מנטור.', emNeed: 'מנטורים ומנהלים חייבים אימייל מאושר. הכלים שלכם ייפתחו אחרי שתאשרו אותו.', emAdd: 'הוספת אימייל', emNew: 'אימייל', emPass: 'הסיסמה הנוכחית שלכם', emSend: 'שליחת קישור אישור', emSent: 'שלחנו קישור אל {e}. פתחו אותו, ואז היכנסו מחדש עם האימייל. בדקו גם בספאם.', emOk: 'מאושר', emIs: 'האימייל שלכם:', emLogin: 'מעכשיו נכנסים עם האימייל הזה.', emReset: 'שליחת קישור לסיסמה חדשה', emResetOk: 'נשלח קישור לבחירת סיסמה חדשה.', emChange: 'החלפת אימייל', emCheck: 'אישרתי, לבדוק שוב', locked: 'הכלים למנטורים נעולים עד שתאשרו אימייל (למטה).' }
   : { title: 'My account', desc: 'Team 3211 members area.', lbl: 'My account', hi: 'Hello', out: 'Log out', area: 'Members area', soon: 'Soon',
       ax: ['AttendX', 'Attendance, tasks, community hours and orders. Will connect to this account.'], tr: ['Training ground', 'Your missions and licenses.'],
-      mt: 'Mentor tools', inv: 'New invite', invp: 'Create a code for a student or a mentor. It works once. A forgotten password is also replaced with a new code.', invName: 'Name (optional)', make: 'Create code',
+      mt: 'Mentor tools', at: 'Admin', board: 'Training ground progress', boardp: 'Stars per world. Click a row to see every mission.', student: 'Student', total: 'Total', last: 'Last active', lic: 'Licenses', noone: 'No saved progress yet.', approve: 'Approve', revoke: 'Revoke', waiting: 'Waiting for approval', fast: 'Too fast', tries: 'tries', sec: 's', pub: 'Update mission list', pubp: 'The rules check every save against this list. After new games go live, click here once.', pubok: 'Mission list updated', pubneed: 'The saved list is out of date. Click to update.', mine: 'My progress', missions: 'missions', stars: 'stars', invpm: 'Create a code for a new student. It works once, for 14 days.', exp: 'Valid until', expd: 'Expired', inv: 'New invite', invp: 'Create a code for a student, mentor or admin. It works once, for 14 days.', invName: 'Name (optional)', make: 'Create code',
       made: 'The code is ready. Send it, or the link:', copy: 'Copy link', copied: 'Copied', pending: 'Unused codes', none: 'None.', del: 'Delete',
-      members: 'Website members', user: 'User', role: 'Role', status: 'Status', active: 'Active', off: 'Disabled', disable: 'Disable', enable: 'Enable', you: 'You' };
+      members: 'Website members', user: 'User', role: 'Role', status: 'Status', active: 'Active', off: 'Disabled', disable: 'Disable', enable: 'Enable', you: 'You',
+      em: 'Email and security', emNone: 'You have not added an email yet. With a confirmed email you can reset your password yourself, without a mentor.', emNeed: 'Mentors and admins need a confirmed email. Your tools unlock once you confirm it.', emAdd: 'Add an email', emNew: 'Email', emPass: 'Your current password', emSend: 'Send confirmation link', emSent: 'We sent a link to {e}. Open it, then log in again with that email. Check spam too.', emOk: 'Confirmed', emIs: 'Your email:', emLogin: 'From now on you log in with this email.', emReset: 'Send a new-password link', emResetOk: 'A link to choose a new password is on its way.', emChange: 'Change email', emCheck: 'I confirmed it, check again', locked: 'Mentor tools are locked until you confirm an email (below).' };
 ---
 <Base title={t.title} description={t.desc} lang={lang}>
-  <div class="w" id="acc" data-lang={lang} data-login={P('/login')} data-home={P('/')} data-signup={new URL(P('/signup'), 'https://x').pathname} data-t={JSON.stringify({ ...t, roles: a.role })}>
+  <div class="w" id="acc" data-lang={lang} data-login={P('/login')} data-home={P('/')} data-signup={new URL(P('/signup'), 'https://x').pathname} data-t={JSON.stringify({ ...t, roles: a.role })} data-worlds={JSON.stringify(WORLDS.map(w => ({ id: w.id, name: w[lang] })))} data-missions={JSON.stringify(MISSIONS)}>
     <header class="page-head"><span class="lbl">{t.lbl}</span><h1><span>{t.hi}</span>, <span id="who">…</span></h1>
       <p><span id="role-chip" class="acc-chip"></span> <bdi class="m" id="uname"></bdi></p>
       <button class="btn ghost" id="logout" type="button">{t.out}</button></header>
-    <section class="sec">
+    <section class="sec" id="area">
       <div class="head"><h2>{t.area}</h2></div>
       <div class="acc-tiles">
         <div class="acc-tile soon"><span class="acc-chip">{t.soon}</span><h3><bdi>{t.ax[0]}</bdi></h3><p>{t.ax[1]}</p></div>
-        <a class="acc-tile" href={P('/train')}><h3>{t.tr[0]}</h3><p>{t.tr[1]}</p></a>
+        <a class="acc-tile" id="tile-train" href={P('/train')}><h3>{t.tr[0]}</h3><p id="mine">{t.tr[1]}</p></a>
       </div>
     </section>
+    <p class="acc-err" id="locked" hidden>{t.locked}</p>
+    <section class="sec" id="board-sec" hidden>
+      <div class="head"><h2>{t.board}</h2></div><p class="acc-hint">{t.boardp}</p>
+      <div class="acc-table-wrap"><table class="acc-table board"><thead><tr><th>{t.student}</th>{WORLDS.map(w => <th class="wcol">{w[lang]}</th>)}<th>{t.total}</th><th>{t.lic}</th><th>{t.last}</th></tr></thead><tbody id="board"></tbody></table></div>
+    </section>
     <section class="sec" id="mentor" hidden>
-      <div class="head"><h2>{t.mt}</h2></div>
+      <div class="head"><h2 id="tools-h">{t.mt}</h2></div>
+      <div class="acc-card acc-pub" id="pub" hidden><div><h3>{t.pub}</h3><p class="acc-hint" id="pub-hint">{t.pubp}</p></div><button class="btn ghost" id="pub-btn" type="button">{t.pub}</button></div>
       <div class="acc-grid">
         <div class="acc-card">
-          <h3>{t.inv}</h3><p class="acc-hint">{t.invp}</p>
+          <h3>{t.inv}</h3><p class="acc-hint" id="inv-hint">{t.invpm}</p>
           <form class="f" id="inv-form">
             <div class="row2">
               <label>{t.invName}<input name="name" maxlength="60" /></label>
-              <label>{t.role}<select name="role"><option value="student">{a.role.student}</option><option value="mentor">{a.role.mentor}</option></select></label>
+              <label id="role-pick" hidden>{t.role}<select name="role"><option value="student">{a.role.student}</option><option value="mentor">{a.role.mentor}</option><option value="admin">{a.role.admin}</option></select></label>
             </div>
             <button class="btn" type="submit">{t.make}</button>
             <p class="acc-err" role="alert" hidden></p>
@@ -52,16 +62,38 @@ const t = he
       <h3 class="acc-h3">{t.members}</h3>
       <div class="acc-table-wrap"><table class="acc-table"><thead><tr><th>{a.name}</th><th>{t.user}</th><th>{t.role}</th><th>{t.status}</th></tr></thead><tbody id="members"></tbody></table></div>
     </section>
+    <section class="sec" id="email-sec">
+      <div class="head"><h2>{t.em}</h2></div>
+      <div class="acc-card acc-email">
+        <div id="em-has" hidden><p>{t.emIs} <bdi class="m" id="em-addr"></bdi> <span class="acc-chip">{t.emOk} ✓</span></p><p class="acc-hint">{t.emLogin}</p>
+          <div class="acc-btns"><button class="btn ghost" id="em-reset" type="button">{t.emReset}</button><button class="acc-x" id="em-change" type="button">{t.emChange}</button></div>
+          <p class="acc-ok" id="em-reset-ok" role="status" hidden>{t.emResetOk}</p></div>
+        <p class="acc-hint" id="em-none">{t.emNone}</p>
+        <form class="f" id="em-form" novalidate>
+          <div class="row2">
+            <label>{t.emNew}<input name="email" type="email" required autocomplete="email" dir="ltr" /></label>
+            <label>{t.emPass}<input name="password" type="password" required autocomplete="current-password" dir="ltr" /></label>
+          </div>
+          <p class="acc-err" role="alert" hidden></p>
+          <p class="acc-ok" role="status" hidden></p>
+          <div class="acc-btns"><button class="btn" type="submit">{t.emSend}</button><button class="acc-x" id="em-check" type="button">{t.emCheck}</button></div>
+        </form>
+      </div>
+    </section>
   </div>
 </Base>
 <script>
-  import { enabled, watch, logout, createInvite, listInvites, deleteInvite, listMembers, setMember, type Profile } from '../scripts/account';
+  import { enabled, watch, logout, createInvite, listInvites, deleteInvite, listMembers, setMember, listProgress, myProgress, isStaff, setLicense, publishMissions, readMissions, emailState, addEmail, resetPassword, refreshUser, type Profile } from '../scripts/account';
   import { errText } from '../i18n/account';
+  import { worldOf, isLicense } from '../data/worlds';
   const root = document.getElementById('acc')!;
   const lang = root.dataset.lang as 'he' | 'en';
   const t = JSON.parse(root.dataset.t!);
+  const worlds: { id: string; name: string }[] = JSON.parse(root.dataset.worlds!);
+  const MS = JSON.parse(root.dataset.missions!);
   const $ = (id: string) => document.getElementById(id)!;
-  const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+  const esc = (s: string) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+  const fmtDate = (ms?: number) => ms ? new Date(ms).toLocaleDateString(lang === 'he' ? 'he-IL' : 'en-GB', { day: 'numeric', month: 'short' }) : '—';
   if (!enabled) location.replace(root.dataset.login!);
   let me: Profile | null = null;
   watch(async p => {
@@ -69,32 +101,105 @@ const t = he
     me = p;
     $('who').textContent = p.name; $('uname').textContent = '@' + p.username;
     $('role-chip').textContent = t.roles[p.role];
-    if (p.role === 'mentor') { $('mentor').hidden = false; await refresh(); }
+    const es = emailState(); showEmail(es, p);
+    if (isStaff(p.role) && !es.verified) { $('locked').hidden = false; if (p.role === 'admin') $('tile-train').hidden = true; return; }
+    if (p.role === 'admin') { $('tile-train').hidden = true; $('tools-h').textContent = t.at; $('role-pick').hidden = false; $('inv-hint').textContent = t.invp; }
+    if (p.role === 'admin') pubCheck();
+    if (isStaff(p.role)) { $('mentor').hidden = false; $('board-sec').hidden = false; await Promise.all([refresh(), board().catch(() => { $('board').innerHTML = `<tr><td colspan="${worlds.length + 4}" class="acc-hint">${t.noone}</td></tr>`; })]); }
+    else mine();
   });
+  function showEmail(es: { email: string | null; verified: boolean }, p: Profile) {
+    $('em-has').hidden = !es.verified; $('em-form').hidden = es.verified; $('em-none').hidden = es.verified;
+    if (es.verified) $('em-addr').textContent = es.email!;
+    else $('em-none').textContent = isStaff(p.role) ? t.emNeed : t.emNone;
+  }
+  const ef = $('em-form') as HTMLFormElement;
+  ef.addEventListener('submit', async e => {
+    e.preventDefault(); const er = ef.querySelector('.acc-err') as HTMLElement, ok = ef.querySelector('.acc-ok') as HTMLElement; er.hidden = ok.hidden = true;
+    const fd = new FormData(ef), btn = ef.querySelector('button[type=submit]') as HTMLButtonElement; btn.disabled = true;
+    try { const em = String(fd.get('email')).trim(); await addEmail(em, String(fd.get('password')), me!.username); ok.textContent = t.emSent.replace('{e}', em); ok.hidden = false; ef.reset(); }
+    catch (x) { er.textContent = errText(lang, x); er.hidden = false; }
+    btn.disabled = false;
+  });
+  $('em-check').addEventListener('click', async () => { try { await refreshUser(); } catch {} location.reload(); });
+  $('em-change').addEventListener('click', () => { $('em-form').hidden = false; });
+  $('em-reset').addEventListener('click', async () => { const es = emailState(); if (es.email) { await resetPassword(es.email).catch(() => {}); $('em-reset-ok').hidden = false; } });
   $('logout').addEventListener('click', async () => { await logout(); location.replace(root.dataset.home!); });
-  const link = (code: string) => location.origin + root.dataset.signup.replace(/\/?$/, '/') + '?code=' + code;
+
+  async function mine() {
+    const pr = await myProgress().catch(() => null); if (!pr) return;
+    const done = Object.keys(pr.m).length, st = Object.values(pr.m).reduce((n, x) => n + (x.stars || 0), 0);
+    $('mine').textContent = `${t.mine}: ${done} ${t.missions} · ${st} ★`;
+  }
+
+  async function board() {
+    const [ms, pr] = await Promise.all([listMembers(), listProgress()]);
+    const byUid = new Map(pr.map(x => [x.uid, x]));
+    const rows = ms.filter(m => m.role === 'student' || byUid.has(m.uid)).map(m => ({ m, p: byUid.get(m.uid) }))
+      .sort((a, b) => (b.p?.updatedAt?.toMillis() || 0) - (a.p?.updatedAt?.toMillis() || 0));
+    if (!rows.length) { $('board').innerHTML = `<tr><td colspan="${worlds.length + 4}" class="acc-hint">${t.noone}</td></tr>`; return; }
+    $('board').innerHTML = rows.map(({ m, p }) => {
+      const per: Record<string, { s: number; d: number }> = {}; let tot = 0, flags = 0; const lic: string[] = [];
+      const ents = Object.entries(p?.m || {});
+      for (const [id, r] of ents) { const w = MS.world[id] || worldOf(id); per[w] ??= { s: 0, d: 0 }; per[w].s += r.stars || 0; per[w].d++; tot += r.stars || 0;
+        const dur = r.at && r.s ? (r.at.toMillis() - r.s.toMillis()) / 1000 : 0; if (dur && dur < (MS.min[id] || 15) * 1.5) flags++;
+        if (MS.lic[id]) { const ok = !!p?.lic?.[id]; const wn = worlds.find(x => x.id === w)?.name || w;
+          lic.push(`<span class="acc-chip${ok ? '' : ' wait'}">${esc(wn)}${ok ? ' ✓' : ` · ${t.waiting}`}</span> <button class="acc-x" type="button" data-lic="${id}" data-uid="${m.uid}" data-v="${ok ? 0 : 1}">${ok ? t.revoke : t.approve}</button>`); } }
+      const detail = ents.sort((a, b) => (a[1].at?.toMillis() || 0) - (b[1].at?.toMillis() || 0)).map(([id, r]) => {
+        const dur = r.at && r.s ? Math.round((r.at.toMillis() - r.s.toMillis()) / 1000) : null; const fast = dur !== null && dur < (MS.min[id] || 15) * 1.5;
+        return `<span class="mchip ok${fast ? ' flag' : ''}"><bdi class="m">${esc(id)}</bdi> ${'★'.repeat(r.stars || 0)} · ${r.n} ${t.tries}${dur !== null ? ` · ${dur}${t.sec}` : ''}${fast ? ` · ${t.fast}` : ''}</span>`; }).join('') || '—';
+      return `<tr class="brow" tabindex="0" aria-expanded="false"><td><b>${esc(m.name)}</b> <bdi class="m acc-hint">@${esc(m.username)}</bdi>${m.disabled ? ` <span class="acc-chip">${t.off}</span>` : ''}${flags ? ` <span class="acc-chip flag">⚠ ${flags}</span>` : ''}</td>
+        ${worlds.map(w => `<td class="wcol">${per[w.id] ? `<b>${per[w.id].s}</b>★ <span class="acc-hint">· ${per[w.id].d}</span>` : '<span class="acc-hint">—</span>'}</td>`).join('')}
+        <td><b>${tot}</b>★</td><td class="licc">${lic.join('<br>') || '<span class="acc-hint">—</span>'}</td><td class="acc-hint">${fmtDate(p?.updatedAt?.toMillis())}</td></tr>
+        <tr class="bdet" hidden><td colspan="${worlds.length + 4}"><div class="mchips">${detail}</div></td></tr>`;
+    }).join('');
+  }
+  async function pubCheck() {
+    $('pub').hidden = false;
+    const cur = await readMissions().catch(() => null);
+    if (!cur || JSON.stringify(cur.prev) !== JSON.stringify(MS.prev) || JSON.stringify(cur.min) !== JSON.stringify(MS.min)) $('pub-hint').textContent = t.pubneed;
+  }
+  $('pub-btn').addEventListener('click', async () => { await publishMissions(MS); $('pub-hint').textContent = t.pubok; });
+  $('board').addEventListener('click', async e => { const b = (e.target as HTMLElement).closest('[data-lic]') as HTMLElement | null;
+    if (b) { e.stopPropagation();
+      // Doherty: change the screen at once, save in the background, undo if the save fails
+      const ok = b.dataset.v === '1', chip = b.previousElementSibling as HTMLElement, before = [chip.className, chip.textContent, b.textContent, b.dataset.v];
+      const name = (chip.textContent || '').split(' · ')[0].replace(' ✓', '');
+      chip.className = 'acc-chip' + (ok ? ' ok-pulse' : ' wait'); chip.textContent = ok ? `${name} ✓` : `${name} · ${t.waiting}`; b.textContent = ok ? t.revoke : t.approve; b.dataset.v = ok ? '0' : '1';
+      try { await setLicense(b.dataset.uid!, b.dataset.lic!, ok); }
+      catch { [chip.className, chip.textContent, b.textContent, b.dataset.v] = before as string[]; }
+      return; } });
+  $('board').addEventListener('click', e => { if ((e.target as HTMLElement).closest('[data-lic]')) return; const r = (e.target as HTMLElement).closest('.brow') as HTMLElement | null; if (!r) return; const d = r.nextElementSibling as HTMLElement; d.hidden = !d.hidden; r.setAttribute('aria-expanded', String(!d.hidden)); });
+  $('board').addEventListener('keydown', e => { if ((e as KeyboardEvent).key === 'Enter') ((e.target as HTMLElement).closest('.brow') as HTMLElement)?.click(); });
+
+  const link = (code: string) => location.origin + root.dataset.signup!.replace(/\/?$/, '/') + '?code=' + code;
   async function refresh() {
+    const admin = me!.role === 'admin';
     const inv = (await listInvites()).filter(i => !i.usedBy);
-    $('invites').innerHTML = inv.length ? inv.map(i => `<li><span><b class="m">${i.code}</b> · ${esc(i.name || '—')} · ${t.roles[i.role]}</span><button class="acc-x" data-del="${i.code}" type="button">${t.del}</button></li>`).join('') : `<li class="acc-hint">${t.none}</li>`;
+    $('invites').innerHTML = inv.length ? inv.map(i => { const exp = i.expiresAt?.toMillis(); const dead = !!exp && exp < Date.now();
+      return `<li><span><b class="m">${i.code}</b> · ${esc(i.name || '—')} · ${t.roles[i.role]}<br><small class="acc-hint">${dead ? t.expd : exp ? `${t.exp} ${fmtDate(exp)}` : ''}</small></span><button class="acc-x" data-del="${i.code}" type="button">${t.del}</button></li>`; }).join('') : `<li class="acc-hint">${t.none}</li>`;
     const ms = await listMembers();
     $('members').innerHTML = ms.map(m => {
-      const self = m.uid === me!.uid;
+      const self = m.uid === me!.uid, edit = admin && !self;
+      const opts = ['student', 'mentor', 'admin'].map(r => `<option value="${r}"${m.role === r ? ' selected' : ''}>${t.roles[r]}</option>`).join('');
       return `<tr><td>${esc(m.name)}${self ? ` <span class="acc-chip">${t.you}</span>` : ''}</td><td><bdi class="m">@${esc(m.username)}</bdi></td>
-        <td>${self ? t.roles[m.role] : `<select data-role="${m.uid}"><option value="student"${m.role === 'student' ? ' selected' : ''}>${t.roles.student}</option><option value="mentor"${m.role === 'mentor' ? ' selected' : ''}>${t.roles.mentor}</option></select>`}</td>
-        <td>${m.disabled ? t.off : t.active}${self ? '' : ` <button class="acc-x" type="button" data-dis="${m.uid}" data-v="${m.disabled ? '0' : '1'}">${m.disabled ? t.enable : t.disable}</button>`}</td></tr>`;
+        <td>${edit ? `<select data-role="${m.uid}">${opts}</select>` : t.roles[m.role]}</td>
+        <td>${m.disabled ? t.off : t.active}${edit ? ` <button class="acc-x" type="button" data-dis="${m.uid}" data-v="${m.disabled ? '0' : '1'}">${m.disabled ? t.enable : t.disable}</button>` : ''}</td></tr>`;
     }).join('');
   }
   $('invites').addEventListener('click', async e => { const c = (e.target as HTMLElement).dataset.del; if (c) { await deleteInvite(c); refresh(); } });
-  $('members').addEventListener('click', async e => { const b = e.target as HTMLElement; if (b.dataset.dis) { await setMember(b.dataset.dis, { disabled: b.dataset.v === '1' }); refresh(); } });
-  $('members').addEventListener('change', async e => { const s = e.target as HTMLSelectElement; if (s.dataset.role) { await setMember(s.dataset.role, { role: s.value as 'student' | 'mentor' }); refresh(); } });
+  $('members').addEventListener('click', async e => { const b = e.target as HTMLElement; if (b.dataset.dis) { await setMember(b.dataset.dis, { disabled: b.dataset.v === '1' }); refresh(); board(); } });
+  $('members').addEventListener('change', async e => { const s = e.target as HTMLSelectElement; if (s.dataset.role) { await setMember(s.dataset.role, { role: s.value as any }); refresh(); board(); } });
   const form = $('inv-form') as HTMLFormElement;
   form.addEventListener('submit', async e => {
     e.preventDefault(); const err = form.querySelector('.acc-err') as HTMLElement; err.hidden = true;
-    const fd = new FormData(form);
+    const fd = new FormData(form), sb = form.querySelector('button[type=submit]')!; sb.setAttribute('aria-busy', 'true');
     try {
-      const code = await createInvite(fd.get('role') as 'student' | 'mentor', String(fd.get('name') || ''));
-      $('made-code').textContent = code; ($('made-link') as HTMLInputElement).value = link(code); $('made').hidden = false; form.reset(); refresh();
+      const role = (me!.role === 'admin' ? fd.get('role') : 'student') as 'student' | 'mentor' | 'admin';
+      const code = await createInvite(role, String(fd.get('name') || ''));
+      $('made-code').textContent = code; ($('made-link') as HTMLInputElement).value = link(code); $('made').hidden = false; ($('copy') as HTMLElement).textContent = t.copy; form.reset(); refresh();
     } catch (x) { err.textContent = errText(lang, x); err.hidden = false; }
+    sb.removeAttribute('aria-busy');
   });
-  $('copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(($('made-link') as HTMLInputElement).value); $('copy').textContent = t.copied; } catch { ($('made-link') as HTMLInputElement).select(); } });
+  $('copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(($('made-link') as HTMLInputElement).value); const c = $('copy'); c.textContent = '✓ ' + t.copied; c.classList.remove('ok-pulse'); void c.offsetWidth; c.classList.add('ok-pulse'); } catch { ($('made-link') as HTMLInputElement).select(); } });
 </script>

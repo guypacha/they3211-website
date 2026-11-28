@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en" dir="ltr"><head><meta charset="utf-8"><script>try{var y3=localStorage.getItem("y3211-theme");if(y3==="light"||y3==="dark")document.documentElement.dataset.theme=y3}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<html lang="en" dir="ltr"><head><meta charset="utf-8"><script>try{var y3=localStorage.getItem("y3211-theme");if(y3==="light"||y3==="dark")document.documentElement.dataset.theme=y3}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script type="module" src="../../sync.js"></script>
+</head><body>
 <title>Training Grounds 3211</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -209,7 +210,7 @@ table.m th{font-size:12px;color:var(--muted);font-weight:700}
 .why{background:var(--accent-soft);border-radius:12px;padding:12px 14px;margin:0}
 
 .world{cursor:pointer}.world.full{border-color:var(--good)}
-.tabbtn.site{color:inherit;text-decoration:none;display:inline-flex;align-items:center;min-height:32px;white-space:nowrap}.bar .tabbtn.site{margin-inline-start:auto}.login>.tabbtn.site{justify-self:start;margin-bottom:8px}.bar .tabbtn.lang{margin-inline-start:0}.tabbtn.lang{font-family:var(--f-mono);font-weight:700}
+.tabbtn.site{color:inherit;text-decoration:none;display:inline-flex;align-items:center;min-height:32px;white-space:nowrap}.bar .tabbtn.site{margin-inline-start:auto}.login>.tabbtn.site{justify-self:start;margin-bottom:8px}.bar .tabbtn.lang{margin-inline-start:0}svg text.bi{direction:ltr}.tabbtn.back{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700;white-space:nowrap;min-height:32px}@media (max-width:460px){.bar:has(.back) .xp{display:none}}.tabbtn.lang{font-family:var(--f-mono);font-weight:700}
 @media (max-width:460px){.xp .mono,.brand small{display:none}}
 @media (max-width:380px){.xp{display:none}}
 /* ==== WORLDS CSS ==== */
@@ -304,6 +305,19 @@ pre.code .kw{color:#7CC4FF}pre.code .comment{color:#8FA3B8;font-style:italic}pre
 .namebar{display:flex;flex-direction:column;gap:8px;padding:10px 12px}.namebar.sticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);z-index:5;box-shadow:0 6px 16px -10px rgba(11,42,69,.35)}
 .namebar .chips{gap:6px}.namebar .namechip{padding:6px 10px;font-size:14px}
 
+/* UX polish: next mission stands out, success pulses once, unlock crossfades, concept cards reveal in order */
+.mission.next{background:var(--accent-soft);border-radius:16px;padding-inline:10px;box-shadow:inset 0 0 0 2px var(--accent)}
+.mission.next .pill{background:var(--accent);color:#fff}
+.mission.open:not(.next) .node{box-shadow:none}
+@keyframes y3pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+@keyframes y3unlock{0%{transform:scale(.5);filter:blur(6px);opacity:0}100%{transform:scale(1);filter:none;opacity:1}}
+@keyframes y3reveal{from{clip-path:inset(0 0 100% 0);transform:translateY(10px);opacity:.3}to{clip-path:inset(0 0 0 0);transform:none;opacity:1}}
+.win .stars svg{animation:y3pop .45s both}.win .stars svg:nth-child(2){animation-delay:.12s}.win .stars svg:nth-child(3){animation-delay:.24s}
+.mission.justdone .node{animation:y3pop .6s both}.mission.justopen .node{animation:y3unlock .55s .35s both}
+.learn .lcard{animation:y3reveal .5s both}.learn .lcard:nth-child(2){animation-delay:.12s}.learn .lcard:nth-child(3){animation-delay:.24s}.learn .lcard:nth-child(4){animation-delay:.36s}.learn .lcard:nth-child(n+5){animation-delay:.48s}
+#learned{min-height:52px;font-size:17px;padding-inline:26px}
+.tabbtn.back{min-height:40px;padding-inline:14px}
+.gamehead{view-transition-name:y3card}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -318,7 +332,13 @@ const Store={
   save(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
 };
 let S=Store.load()||{user:null,xp:0,m:{}};
-const save=()=>Store.save(S);
+/* ACC = signed-in site account (window.Y3211Sync); null = guest, progress stays on this device */
+let ACC=null;
+let FX={};
+function markFx(id,prev){if(prev&&prev.done)return;const i=MISSIONS.findIndex(m=>m.id===id);FX={done:id,open:MISSIONS[i+1]?MISSIONS[i+1].id:null}}
+const save=()=>{if(!ACC)Store.save(S)};
+const isLic=id=>/lic$/.test(id);
+const canMentor=()=>!ACC||ACC.role==="mentor"||ACC.role==="admin";
 const level=xp=>Math.floor(xp/150)+1;
 
 /* ---------- content ---------- */
@@ -354,11 +374,11 @@ const LEVELS={
     goal:"Connect the battery to the PDH through the main breaker. Pick a color and gauge for each wire.",
     hint:"Plus goes through the main breaker on its way to the PDH. Minus goes straight. The whole main path is thick wire.",
     vb:"0 0 400 500",
-    draw:L=>pdhBox(70,50,260,140,"PDH","Power Distribution Hub")+battery(50,370)+breaker(230,385),
+    draw:L=>pdhBox(70,50,260,140,"PDH","Power Distribution Hub")+battery(175,370)+breakerV(30,215),
     terms:[
-      {id:"B+",kind:"pw",x:85,y:370,pol:"+",name:"Battery plus"},{id:"B-",kind:"pw",x:165,y:370,pol:"-",name:"Battery minus"},
-      {id:"BR1",kind:"pw",x:255,y:385,name:"Breaker (screw 1)"},{id:"BR2",kind:"pw",x:325,y:385,name:"Breaker (screw 2)"},
-      {id:"P+",kind:"pw",x:150,y:190,pol:"+",name:"PDH Plus"},{id:"P-",kind:"pw",x:250,y:190,pol:"-",name:"PDH Minus"}],
+      {id:"B+",kind:"pw",x:210,y:370,pol:"+",name:"Battery plus"},{id:"B-",kind:"pw",x:290,y:370,pol:"-",name:"Battery minus"},
+      {id:"BR1",kind:"pw",x:61,y:345,name:"Breaker (screw 1)"},{id:"BR2",kind:"pw",x:61,y:215,name:"Breaker (screw 2)"},
+      {id:"P+",kind:"pw",x:150,y:190,pol:"+",name:"PDH Plus"},{id:"P-",kind:"pw",x:290,y:190,pol:"-",name:"PDH Minus"}],
     power:true,devices:[],
     solution:[{a:"B+",b:"BR1",color:"red",gauge:6},{a:"BR2",b:"P+",color:"red",gauge:6},{a:"B-",b:"P-",color:"black",gauge:6}]},
   m2:{title:"A fuse and cable for every motor",short:"PDH channels, fuses and wire gauge",
@@ -369,21 +389,21 @@ const LEVELS={
     terms:[
       {id:"C0",kind:"ch",x:70,y:210,amps:30,ch:0,name:"Channel 0"},{id:"C1",kind:"ch",x:155,y:210,amps:40,ch:1,name:"Channel 1"},
       {id:"C2",kind:"ch",x:245,y:210,amps:20,ch:2,name:"Channel 2"},{id:"C3",kind:"ch",x:330,y:210,amps:40,ch:3,name:"Channel 3"},
-      {id:"D0",kind:"dev",x:60,y:380,need:40,dev:"kraken",name:"Kraken Left"},{id:"D1",kind:"dev",x:150,y:380,need:20,dev:"led",name:"LEDs"},
-      {id:"D2",kind:"dev",x:250,y:380,need:30,dev:"kraken",name:"Kraken Intake",short:1},{id:"D3",kind:"dev",x:340,y:380,need:40,dev:"kraken",name:"Kraken Right"}],
+      {id:"D0",kind:"dev",x:47,y:370,need:40,dev:"kraken",name:"Kraken Left"},{id:"D1",kind:"dev",x:149,y:370,need:20,dev:"led",name:"LEDs"},
+      {id:"D2",kind:"dev",x:251,y:370,need:30,dev:"kraken",name:"Kraken Intake",short:1},{id:"D3",kind:"dev",x:353,y:370,need:40,dev:"kraken",name:"Kraken Right"}],
     power:false,
     solution:[{a:"C1",b:"D0",gauge:12},{a:"C2",b:"D1",gauge:18},{a:"C0",b:"D2",gauge:14},{a:"C3",b:"D3",gauge:12}]},
   m3:{title:"Full electrical board",short:"Everything together, no hints along the way",
     goal:"Wire a whole robot: battery, main breaker, PDH and two devices. It all has to pass inspection.",
     hint:"First the power path (plus through the breaker), then each device to a channel with its fuse.",
-    vb:"0 0 400 520",manual:true,
-    draw:L=>pdhBox(20,40,360,150,"PDH","")+fuse(255,135,40,0)+fuse(335,135,20,1)+battery(25,410)+breaker(30,290)+L.terms.filter(t=>t.kind==="dev").map(device).join(""),
+    vb:"0 0 400 545",manual:true,
+    draw:L=>pdhBox(20,40,360,150,"PDH","")+fuse(275,135,40,0)+fuse(357,135,20,1)+battery(75,410)+breakerV(10,215)+L.terms.filter(t=>t.kind==="dev").map(device).join(""),
     terms:[
-      {id:"P+",kind:"pw",x:70,y:190,pol:"+",name:"PDH Plus"},{id:"P-",kind:"pw",x:150,y:190,pol:"-",name:"PDH Minus"},
-      {id:"C0",kind:"ch",x:255,y:190,amps:40,ch:0,name:"Channel 0"},{id:"C1",kind:"ch",x:335,y:190,amps:20,ch:1,name:"Channel 1"},
-      {id:"BR1",kind:"pw",x:55,y:290,name:"Breaker (screw 1)"},{id:"BR2",kind:"pw",x:125,y:290,name:"Breaker (screw 2)"},
-      {id:"B+",kind:"pw",x:60,y:410,pol:"+",name:"Battery plus"},{id:"B-",kind:"pw",x:140,y:410,pol:"-",name:"Battery minus"},
-      {id:"D0",kind:"dev",x:340,y:420,need:20,dev:"led",name:"LEDs"},{id:"D1",kind:"dev",x:250,y:420,need:40,dev:"kraken",name:"Kraken Elevator"}],
+      {id:"P+",kind:"pw",x:110,y:190,pol:"+",name:"PDH Plus"},{id:"P-",kind:"pw",x:190,y:190,pol:"-",name:"PDH Minus"},
+      {id:"C0",kind:"ch",x:275,y:190,amps:40,ch:0,name:"Channel 0"},{id:"C1",kind:"ch",x:357,y:190,amps:20,ch:1,name:"Channel 1"},
+      {id:"BR1",kind:"pw",x:41,y:345,name:"Breaker (screw 1)"},{id:"BR2",kind:"pw",x:41,y:215,name:"Breaker (screw 2)"},
+      {id:"B+",kind:"pw",x:110,y:410,pol:"+",name:"Battery plus"},{id:"B-",kind:"pw",x:190,y:410,pol:"-",name:"Battery minus"},
+      {id:"D0",kind:"dev",x:357,y:420,need:20,dev:"led",name:"LEDs"},{id:"D1",kind:"dev",x:275,y:420,need:40,dev:"kraken",name:"Kraken Elevator"}],
     power:true,
     solution:[{a:"B+",b:"BR1",color:"red",gauge:6},{a:"BR2",b:"P+",color:"red",gauge:6},{a:"B-",b:"P-",color:"black",gauge:6},{a:"C0",b:"D1",gauge:12},{a:"C1",b:"D0",gauge:18}]}
 };
@@ -405,7 +425,7 @@ function pdhBox(x,y,w,h,t,s){
   let holes="";for(let i=0;i<4;i++){holes+=`<circle class="hole" cx="${x+12+(i%2)*(w-24)}" cy="${y+12+(i>1)*(h-24)}" r="4"/>`}
   return `<rect class="comp" x="${x}" y="${y}" width="${w}" height="${h}" rx="12"/>${holes}
   <text class="lbl" x="${x+w/2}" y="${y+30}" text-anchor="middle" style="font-size:17px">${t}</text>
-  <text class="sub" x="${x+w/2}" y="${y+48}" text-anchor="middle">${s}</text>`;
+  <text class="sub bi" x="${x+w/2}" y="${y+48}" text-anchor="middle">${s}</text>`;
 }
 function battery(x,y){
   return `<rect class="comp" x="${x}" y="${y}" width="150" height="95" rx="8"/>
@@ -421,19 +441,26 @@ function breaker(x,y){
   <text class="lbl" x="${x+60}" y="${y+28}" text-anchor="middle" style="font-size:12px">Main breaker</text>
   <text class="sub" x="${x+60}" y="${y+-8}" text-anchor="middle">120A</text>`;
 }
+function breakerV(x,y){
+  return `<rect class="comp" x="${x}" y="${y}" width="62" height="130" rx="8"/>
+  <rect x="${x+43}" y="${y+45}" width="12" height="24" rx="3" fill="var(--wire-red)"/>
+  <text class="lbl" x="${x+24}" y="${y+57}" text-anchor="middle" transform="rotate(-90 ${x+24} ${y+57})" style="font-size:12px">Main breaker</text>
+  <text class="sub" x="${x+31}" y="${y+112}" text-anchor="middle" style="font-size:10px">120A</text>`;
+}
 function fuse(x,y,a,ch){
   return `<rect x="${x-20}" y="${y-14}" width="40" height="28" rx="5" fill="${a===40?"#F2C21B":a===30?"#2E9E5B":"#E0E4EA"}" stroke="var(--comp-edge)"/>
   <text class="tag" x="${x}" y="${y+4}" text-anchor="middle" style="fill:#1C1F24">${a}A</text>
   <text class="sub" x="${x}" y="${y+33}" text-anchor="middle">ch ${ch}</text>`;
 }
 function device(t){
-  const x=t.x,y=t.y,w=86;
+  const x=t.x,y=t.y,w=80,m=t.name.match(/^Kraken (.+)$/),role=m?m[1]:t.name;
   const pic=t.dev==="kraken"
-    ? `<g class="dv" data-dev="${t.id}"><circle cx="${x}" cy="${y+42}" r="20" fill="var(--ink)"/><circle cx="${x}" cy="${y+42}" r="13" fill="none" stroke="var(--comp)" stroke-width="2"/><path class="rotor" d="M${x} ${y+30}v24M${x-12} ${y+42}h24" stroke="var(--comp)" stroke-width="3"/></g>`
-    : `<g class="dv" data-dev="${t.id}">${[0,1,2,3,4].map(i=>`<rect class="led" x="${x-30+i*12.5}" y="${y+34}" width="9" height="14" rx="2" fill="var(--comp-edge)"/>`).join("")}</g>`;
-  return `<rect class="comp" x="${x-w/2}" y="${y}" width="${w}" height="104" rx="10"/>${pic}
-  <text class="lbl" x="${x}" y="${y+78}" text-anchor="middle" style="font-size:${t.short?10.5:11.5}px">${t.name}</text>
-  <text class="tag" x="${x}" y="${y+96}" text-anchor="middle" style="fill:var(--accent)">needs ${t.need}A</text>`;
+    ? `<g class="dv" data-dev="${t.id}"><circle cx="${x}" cy="${y+40}" r="19" fill="var(--ink)"/><circle cx="${x}" cy="${y+40}" r="12" fill="none" stroke="var(--comp)" stroke-width="2"/><path class="rotor" d="M${x} ${y+29}v22M${x-11} ${y+40}h22" stroke="var(--comp)" stroke-width="3"/></g>`
+    : `<g class="dv" data-dev="${t.id}">${[0,1,2,3,4].map(i=>`<rect class="led" x="${x-28+i*11.5}" y="${y+33}" width="8" height="14" rx="2" fill="var(--comp-edge)"/>`).join("")}</g>`;
+  return `<rect class="comp" x="${x-w/2}" y="${y}" width="${w}" height="118" rx="10"/>${pic}
+  <text class="lbl bi" x="${x}" y="${y+78}" text-anchor="middle" style="font-size:13px">${role}</text>
+  ${m?`<text class="sub" x="${x}" y="${y+93}" text-anchor="middle" style="font-size:10px">Kraken X60</text>`:""}
+  <text class="tag bi" x="${x}" y="${y+110}" text-anchor="middle" style="fill:var(--accent)">needs <tspan class="mono">${t.need}A</tspan></text>`;
 }
 function termSvg(t,sel){
   const cls=["term",t.pol==="+"?"pos":t.pol==="-"?"neg":"",sel?"sel":""].join(" ");
@@ -475,10 +502,11 @@ function topbar(){
   const lv=level(S.xp),pct=Math.round((S.xp%150)/150*100);
   return `<header class="bar">
     <button class="brand" data-go="home" aria-label="Home screen"><span class="mark">3211</span><span><b>Training Grounds</b><small>The Y Team · Yeruham</small></span></button>
+    ${view==="game"||view==="world"?`<button class="tabbtn back" data-go="${view==="game"?"world":"home"}" aria-label="${view==="game"?"Back to the mission path":"Back to all worlds"}">← Back</button>`:""}
     <div class="xp" title="${S.xp} XP"><span class="lvl">Level ${lv}</span><span class="track"><span class="fill" style="width:${pct}%;display:block"></span></span><span class="mono">${S.xp} XP</span></div>
     <a class="tabbtn site" href="../../../en/" aria-label="Back to the team site">← Site</a>
     <a class="tabbtn site lang" href="../" lang="he" dir="rtl" aria-label="עברית">עברית</a>
-    <button class="tabbtn" data-go="mentor" aria-pressed="${view==="mentor"}">Mentor</button>
+    ${canMentor()?`<button class="tabbtn" data-go="mentor" aria-pressed="${view==="mentor"}">Mentor</button>`:""}
   </header>`;
 }
 function stars(n,max=3){
@@ -488,10 +516,12 @@ function stars(n,max=3){
 function missionState(i){
   const m=MISSIONS[i];if(!m.play)return"lock";
   if(S.m[m.id]&&S.m[m.id].done)return"done";
-  if(i===0||S.all||(S.m[MISSIONS[i-1].id]&&S.m[MISSIONS[i-1].id].done))return"open";
+  if(i===0||(S.all&&canMentor())||(S.m[MISSIONS[i-1].id]&&S.m[MISSIONS[i-1].id].done))return"open";
   return"lock";
 }
 function render(){
+  if(SYNCWAIT){app.innerHTML=`<section class="login"><p class="muted" style="margin:40px 0;text-align:center">Loading your account…</p></section>`;return}
+  if(view==="mentor"&&!canMentor())view="home";
   if(!S.user){app.innerHTML=loginView();bindLogin();return}
   let body="";
   if(view==="home")body=homeView();
@@ -532,11 +562,12 @@ function worldView(){
     <button class="btn ghost small" data-go="home" style="align-self:flex-start">← All worlds</button>
     <span class="eyebrow">World ${WORLDS.indexOf(WN())+1}</span><h1 style="font-size:28px">${WN().name}</h1>
     <p class="muted" style="margin:0">${WN().intro}</p></section>
-    <div class="path">${MISSIONS.map((m,i)=>{
-      const st=missionState(i),L=LEVELS[m.id]||m,rec=S.m[m.id];
-      const right=st==="done"?stars(rec.stars):st==="open"?`<span class="pill p-prog">Play</span>`:`<span class="pill p-none">${m.play?"Locked":"Coming soon"}</span>`;
-      return `<button class="mission ${st}" ${st==="lock"?"disabled":""} data-play="${m.id}">
-        <span class="node">${st==="done"?"✓":i+1}</span><span><h3>${L.title}</h3><p>${L.short}</p></span>${right}</button>`}).join("")}</div>`;
+    <div class="path">${(()=>{const nx=MISSIONS.findIndex((m,i)=>missionState(i)==="open"),fx=FX;FX={};return MISSIONS.map((m,i)=>{
+      const st=missionState(i),L=LEVELS[m.id]||m,rec=S.m[m.id],cx=[i===nx?"next":"",fx.done===m.id?"justdone":"",fx.open===m.id?"justopen":""].join(" ");
+      const wait=ACC&&isLic(m.id)&&st==="done"&&!rec.approved;
+      const right=wait?`<span class="pill p-prog">Waiting for a mentor</span>`:st==="done"?stars(rec.stars):st==="open"?`<span class="pill p-prog">Play</span>`:`<span class="pill p-none">${m.play?"Locked":"Coming soon"}</span>`;
+      return `<button class="mission ${st} ${cx}" ${st==="lock"?"disabled":""} data-play="${m.id}">
+        <span class="node">${st==="done"?"✓":i+1}</span><span><h3>${L.title}</h3><p>${L.short}</p></span>${right}</button>`}).join("")})()}</div>`;
 }
 function gameView(){
   if(typeof LEARN!=="undefined"&&LEARN[G.id]&&!G.learned)return learnView();
@@ -601,6 +632,7 @@ let ANIMS=[];const stopAnims=()=>{ANIMS.forEach(f=>{try{f()}catch(e){}});ANIMS=[
 function startGame(id){
   G={id,L:LEVELS[id],wires:[],sel:null,attempts:0,hint:false,errors:null,flags:{},fx:[],phase:"play",n:0,learned:false};
   if(MODS[id])MODS[id].init();
+  if(ACC)try{Promise.resolve(window.Y3211Sync.start(id)).catch(()=>{})}catch(e){}
   view="game";render();window.scrollTo(0,0);
 }
 function bindGame(){
@@ -760,7 +792,7 @@ function win(shown){
   const gain=shown?0:Math.max(0,(st*30+10)-(prev.done?prev.stars*30+10:0));
   G.gain=gain;S.xp+=gain;
   S.m[G.id]={done:true,stars:Math.max(prev.stars||0,st),attempts:(prev.attempts||0)+1,at:Date.now()};
-  save();render();
+  if(!shown)markFx(G.id,prev);save();accAfter(prev,st,shown);render();
   const r=app.querySelector(".win");if(r)r.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 function showSolution(){
@@ -781,7 +813,7 @@ function award(st,shown){
   const gain=shown?0:Math.max(0,(st*30+10)-(prev.done?(prev.stars||0)*30+10:0));
   S.xp+=gain;
   S.m[G.id]=Object.assign({},prev,{done:true,stars:Math.max(prev.stars||0,shown?0:st),attempts:(prev.attempts||0)+1,at:Date.now()});
-  G.phase="win";G.shown=shown;G.earned=shown?0:st;G.gain=gain;save();
+  G.phase="win";G.shown=shown;G.earned=shown?0:st;G.gain=gain;if(!shown)markFx(G.id,prev);save();accAfter(prev,shown?0:st,shown);
 }
 function failAttempt(){const r=S.m[G.id]||{stars:0,attempts:0};r.attempts=(r.attempts||0)+1;S.m[G.id]=r;save()}
 function headHtml(L,note){
@@ -2657,17 +2689,18 @@ function mentorView(){
     </tbody></table></div>
     <p class="note" style="margin:0">In the real version: data from all devices, export to Excel for marking in AttendX, and adding a student with a personal code.</p>
     <label class="row note" style="gap:8px"><input type="checkbox" id="allopen" ${S.all?"checked":""}> Open all missions in all worlds (for mentor testing)</label>
-    <div class="row"><button class="btn ghost small" id="logout">Switch user</button><button class="btn ghost small" id="reset">Reset my progress</button></div>`;
+    ${ACC?"":`<div class="row"><button class="btn ghost small" id="logout">Switch user</button><button class="btn ghost small" id="reset">Reset my progress</button></div>`}`;
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 /* ---------- global clicks ---------- */
+const VT=f=>{if(document.startViewTransition&&!matchMedia("(prefers-reduced-motion: reduce)").matches){try{document.startViewTransition(f);return}catch(e){}}f()};
 app.addEventListener("click",e=>{
-  const go=e.target.closest("[data-go]");if(go){closeSheet();stopAnims();view=go.dataset.go;render();window.scrollTo(0,0);return}
+  const go=e.target.closest("[data-go]");if(go){closeSheet();stopAnims();VT(()=>{view=go.dataset.go;render();window.scrollTo(0,0)});return}
   const wd=e.target.closest("[data-world]");if(wd){setWorld(wd.dataset.world);view="world";render();window.scrollTo(0,0);return}
   const mw=e.target.closest("[data-mw]");if(mw){setWorld(mw.dataset.mw);render();return}
-  const pl=e.target.closest("[data-play]");if(pl&&!pl.disabled){const w=worldOf(pl.dataset.play);if(w){setWorld(w);const m=MISSIONS.find(x=>x.id===pl.dataset.play);if(m&&m.play){stopAnims();startGame(m.id)}}return}
-  if(e.target.id==="allopen"){S.all=e.target.checked;save();return}
+  const pl=e.target.closest("[data-play]");if(pl&&!pl.disabled){const w=worldOf(pl.dataset.play);if(w){setWorld(w);const m=MISSIONS.find(x=>x.id===pl.dataset.play);if(m&&m.play){stopAnims();const card=pl.classList.contains("mission")?pl:null;if(card)card.style.viewTransitionName="y3card";VT(()=>startGame(m.id))}}return}
+  if(e.target.id==="allopen"){if(canMentor())S.all=e.target.checked;save();return}
   const lic=e.target.closest("[data-lic]");if(lic){lic.outerHTML='<span class="pill p-done">Approved</span>';toast("License approved (preview only)");return}
   if(e.target.id==="logout"){S.user=null;save();view="home";render();return}
   if(e.target.id==="reset"){if(e.target.dataset.sure){S={user:S.user,xp:0,m:{}};save();render();toast("Progress reset")}else{e.target.dataset.sure="1";e.target.textContent="Sure? Tap again to reset"}}
@@ -2675,6 +2708,34 @@ app.addEventListener("click",e=>{
 /* count a failed check as an attempt for the mentor view */
 const _check=check;
 check=function(){_check();if(G.phase!=="win")recordAttempt()};
+/* ---------- site account (window.Y3211Sync, injected by the site) ---------- */
+let SYNCWAIT=!!(window.Y3211Sync||document.querySelector('script[src*="sync.js"]'));
+function accApply(){
+  const m={};
+  Object.keys(ACC.m||{}).forEach(id=>{const r=ACC.m[id]||{};m[id]={done:true,stars:r.stars||0,attempts:r.n||1}});
+  Object.keys(ACC.lic||{}).forEach(id=>{m[id]=m[id]||{done:true,stars:0,attempts:1}});
+  Object.keys(m).forEach(id=>{if(isLic(id))m[id].approved=!!(ACC.lic&&ACC.lic[id])});
+  S.m=m;S.xp=Object.values(m).reduce((a,r)=>a+(r.stars||0)*30+10,0);
+}
+function accAfter(prev,st,shown){
+  if(!ACC)return;const id=G.id;
+  const undo=()=>{if(prev&&prev.done)S.m[id]=prev;else delete S.m[id];S.xp=Object.values(S.m).reduce((a,r)=>a+(r.done?(r.stars||0)*30+10:0),0)};
+  if(shown||!st){undo();return}
+  let p;try{p=window.Y3211Sync.finish(id,st)}catch(e){p="offline"}
+  Promise.resolve(p).catch(()=>"offline").then(r=>{
+    if(r==="ok"){ACC.m=ACC.m||{};const o=ACC.m[id]||{};ACC.m[id]={stars:Math.max(st,o.stars||0),n:(o.n||0)+1};accApply();if(isLic(id)&&!S.m[id].approved)toast("Saved. The license is waiting for a mentor")}
+    else{undo();FX={};toast(r==="rejected"?"Not saved: mission locked or finished too fast":"No connection, try again")}
+    render()});
+}
+function accStart(){
+  const y=window.Y3211Sync;if(!y){SYNCWAIT=false;render();return}
+  Promise.race([Promise.resolve(y.ready),new Promise(r=>setTimeout(()=>r(null),8000))]).catch(()=>null).then(a=>{
+    SYNCWAIT=false;
+    if(a&&typeof a==="object"){ACC=a;S={user:{name:a.name||"",acct:true},xp:0,m:{},all:false};accApply();view="home"}
+    render()});
+}
+if(window.Y3211Sync)accStart();
+else if(SYNCWAIT){let n=0;const t=setInterval(()=>{if(window.Y3211Sync||++n>80){clearInterval(t);accStart()}},100)}
 setWorld("shop");
 render();
 </script>

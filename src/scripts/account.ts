@@ -4,11 +4,12 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
 import {
   getAuth, connectAuthEmulator, onAuthStateChanged, signInWithEmailAndPassword,
-  createUserWithEmailAndPassword, signOut, deleteUser, type Auth, type User,
+  createUserWithEmailAndPassword, signOut, deleteUser, EmailAuthProvider, reauthenticateWithCredential,
+  verifyBeforeUpdateEmail, sendPasswordResetEmail, type Auth, type User,
 } from 'firebase/auth';
 import {
   getFirestore, connectFirestoreEmulator, doc, getDoc, setDoc, updateDoc, deleteDoc, writeBatch,
-  collection, getDocs, query, orderBy, serverTimestamp, type Firestore,
+  collection, getDocs, query, orderBy, serverTimestamp, Timestamp, type Firestore,
 } from 'firebase/firestore';
 
 const env = import.meta.env;
@@ -32,7 +33,8 @@ if (enabled) {
   }
 }
 
-export type Role = 'student' | 'mentor';
+export type Role = 'student' | 'mentor' | 'admin';
+export const isStaff = (r?: Role) => r === 'mentor' || r === 'admin';
 export type Profile = { uid: string; username: string; name: string; role: Role; disabled?: boolean };
 
 // Usernames are turned into a private, never-mailed address, so minors need no email.
@@ -63,20 +65,50 @@ export function watch(cb: (p: Profile | null) => void) {
   });
 }
 
-export async function login(username: string, password: string) {
-  const cred = await signInWithEmailAndPassword(auth, emailOf(username), password);
+// Log in with a username, or with the email the account confirmed (needed once an email is confirmed).
+export async function login(id: string, password: string) {
+  id = id.trim();
+  const viaEmail = id.includes('@');
+  let cred;
+  try { cred = await signInWithEmailAndPassword(auth, viaEmail ? id : emailOf(id), password); }
+  catch (e: any) {
+    if (!viaEmail && ['auth/invalid-credential', 'auth/user-not-found', 'auth/wrong-password'].includes(e?.code)) {
+      const u = await getDoc(doc(db, 'usernames', cleanUsername(id))).catch(() => null);
+      if (u?.data()?.hasEmail) throw Object.assign(new Error('use email'), { code: 'app/use-email' });
+    }
+    throw e;
+  }
   const p = await loadProfile(cred.user);
   if (!p || p.disabled) { await signOut(auth); remember(null); throw Object.assign(new Error('disabled'), { code: 'app/disabled' }); }
   return p;
 }
+
+// ---- email: required for mentors and admins, optional for students ----
+const realEmail = (u: User | null) => (u?.email && !u.email.endsWith('@' + DOMAIN) ? u.email : null);
+export function emailState() {
+  const u = enabled ? auth.currentUser : null;
+  return { email: realEmail(u), verified: !!(realEmail(u) && u!.emailVerified) };
+}
+// Sends a confirmation link. The account's login email changes only after the link is opened.
+export async function addEmail(email: string, password: string, username: string) {
+  const u = auth.currentUser!;
+  await reauthenticateWithCredential(u, EmailAuthProvider.credential(u.email!, password));
+  try { await verifyBeforeUpdateEmail(u, email.trim(), { url: location.href }); }
+  catch (e: any) { if (e?.code === 'auth/email-already-in-use') throw Object.assign(new Error('used'), { code: 'app/email-used' }); throw e; }
+  // So the login page can say "log in with your email" once the link is opened.
+  await updateDoc(doc(db, 'usernames', cleanUsername(username)), { hasEmail: true }).catch(() => {});
+}
+export const resetPassword = (email: string) => sendPasswordResetEmail(auth, email.trim());
+export const refreshUser = async () => { if (auth.currentUser) { await auth.currentUser.reload(); await auth.currentUser.getIdToken(true); } };
 
 export async function logout() { remember(null); if (enabled) await signOut(auth); }
 
 export async function readInvite(code: string) {
   const s = await getDoc(doc(db, 'invites', code.trim().toUpperCase()));
   if (!s.exists()) return null;
-  const d = s.data() as { role: Role; name: string; usedBy: string | null };
-  return d.usedBy ? { ...d, used: true } : { ...d, used: false };
+  const d = s.data() as { role: Role; name: string; usedBy: string | null; expiresAt?: Timestamp };
+  const expired = !!d.expiresAt && d.expiresAt.toMillis() < Date.now();
+  return { ...d, used: !!d.usedBy, expired };
 }
 
 export async function usernameFree(username: string) {
@@ -89,6 +121,7 @@ export async function signup(code: string, username: string, password: string, n
   const inv = await readInvite(code);
   if (!inv) throw Object.assign(new Error('no invite'), { code: 'app/no-invite' });
   if (inv.used) throw Object.assign(new Error('used'), { code: 'app/invite-used' });
+  if (inv.expired) throw Object.assign(new Error('expired'), { code: 'app/invite-expired' });
   if (!validUsername(username)) throw Object.assign(new Error('bad username'), { code: 'app/bad-username' });
   if (!(await usernameFree(username))) throw Object.assign(new Error('taken'), { code: 'app/username-taken' });
   const cred = await createUserWithEmailAndPassword(auth, emailOf(username), password);
@@ -110,12 +143,13 @@ export function newCode(n = 10) {
 }
 export async function createInvite(role: Role, name: string) {
   const code = newCode();
-  await setDoc(doc(db, 'invites', code), { role, name: name.trim(), createdBy: auth.currentUser!.uid, createdAt: serverTimestamp(), usedBy: null });
+  const expiresAt = Timestamp.fromMillis(Date.now() + 14 * 864e5); // codes work for 14 days
+  await setDoc(doc(db, 'invites', code), { role, name: name.trim(), createdBy: auth.currentUser!.uid, createdAt: serverTimestamp(), usedBy: null, expiresAt });
   return code;
 }
 export async function listInvites() {
   const s = await getDocs(query(collection(db, 'invites'), orderBy('createdAt', 'desc')));
-  return s.docs.map(d => ({ code: d.id, ...(d.data() as { role: Role; name: string; usedBy: string | null }) }));
+  return s.docs.map(d => ({ code: d.id, ...(d.data() as { role: Role; name: string; usedBy: string | null; expiresAt?: Timestamp }) }));
 }
 export const deleteInvite = (code: string) => deleteDoc(doc(db, 'invites', code));
 export async function listMembers() {
@@ -124,3 +158,26 @@ export async function listMembers() {
 }
 export const setMember = (uid: string, data: { role?: Role; disabled?: boolean }) => updateDoc(doc(db, 'users', uid), data);
 export const rename = (name: string) => updateDoc(doc(db, 'users', auth.currentUser!.uid), { name: name.trim() });
+
+// ---- training-ground progress ----
+export type Progress = { uid: string; m: Record<string, { stars: number; n: number; at?: Timestamp; s?: Timestamp }>; lic?: Record<string, { by: string; at: Timestamp }>; updatedAt?: Timestamp };
+export async function listProgress(): Promise<Progress[]> {
+  const s = await getDocs(collection(db, 'progress'));
+  return s.docs.map(d => ({ uid: d.id, ...(d.data() as Omit<Progress, 'uid'>) }));
+}
+export async function myProgress(): Promise<Progress | null> {
+  const u = auth.currentUser; if (!u) return null;
+  const s = await getDoc(doc(db, 'progress', u.uid));
+  return s.exists() ? { uid: u.uid, ...(s.data() as Omit<Progress, 'uid'>) } : null;
+}
+
+// Staff: approve (or take back) a license after checking it in the workshop.
+export async function setLicense(uid: string, id: string, ok: boolean) {
+  const { deleteField } = await import('firebase/firestore');
+  await updateDoc(doc(db, 'progress', uid), { [`lic.${id}`]: ok ? { by: auth.currentUser!.uid, at: serverTimestamp() } : deleteField(), licLast: id });
+}
+// Admin: publish the mission list that the security rules check against.
+export async function publishMissions(data: { prev: Record<string, string>; min: Record<string, number>; lic: Record<string, boolean>; world: Record<string, string> }) {
+  await setDoc(doc(db, 'config', 'missions'), { prev: data.prev, min: data.min, lic: data.lic, world: data.world });
+}
+export async function readMissions() { const s = await getDoc(doc(db, 'config', 'missions')); return s.exists() ? s.data() : null; }
