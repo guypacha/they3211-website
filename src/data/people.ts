@@ -10,8 +10,8 @@ export const mentors: Mentor[] = [
     owns: [{ he: 'איך בונים', en: 'How to build' }, { he: 'תכנון לייצור ולהרכבה', en: 'DFM and DFA' }] },
   { name: { he: 'לאוניד קרפנקו', en: 'Leonid Karpenko' }, role: { he: 'מנטור ייצור', en: 'Manufacturing mentor' },
     owns: [{ he: 'מחרטה וכרסומת', en: 'Lathe and mill' }, { he: 'CNC', en: 'CNC' }, { he: 'חותך לייזר', en: 'Laser cutter' }] },
-  { name: { he: 'לירון גורי', en: 'Liron Guri' }, role: { he: 'רכש ותקציב', en: 'Purchasing and budget' },
-    owns: [{ he: 'רכש', en: 'Purchasing' }, { he: 'תקציב', en: 'Budget' }] },
+  { name: { he: 'לירון גורי', en: 'Liron Guri' }, role: { he: 'כספים וספונסרים', en: 'Finance and sponsors' },
+    owns: [{ he: 'תקציב ורכש', en: 'Budget and purchasing' }, { he: 'הקשר עם הספונסרים הראשיים', en: 'Contact with our main sponsors' }] },
   { name: { he: 'ציפי', en: 'Tzipi' }, role: { he: 'מנטורית מדיה', en: 'Media mentor' },
     owns: [{ he: 'צילום', en: 'Photography' }, { he: 'רשתות חברתיות', en: 'Social media' }] },
   { name: { he: 'רחל קנול', en: 'Rachel Knol' }, role: { he: 'מנטורית קהילה', en: 'Community mentor' },
@@ -32,6 +32,6 @@ export const depts: Dept[] = [
     does: [{ he: 'קוד הרובוט', en: 'Robot code' }, { he: 'אוטונומי', en: 'Autonomous' }, { he: 'ראייה', en: 'Vision' }] },
   { name: { he: 'אסטרטגיה', en: 'Strategy' }, lead: { he: '[ראש מחלקה]', en: '[Lead]' }, mentor: { he: 'גיא פאצ׳ה', en: 'Guy Pacha' },
     does: [{ he: 'ניתוח המשחק', en: 'Game analysis' }, { he: 'סקאוטינג', en: 'Scouting' }, { he: 'נהיגה', en: 'Drive team' }] },
-  { name: { he: 'מדיה ועסקים', en: 'Media and business' }, lead: { he: '[ראש מחלקה]', en: '[Lead]' }, mentor: { he: 'ציפי, רחל קנול', en: 'Tzipi, Rachel Knol' },
+  { name: { he: 'מדיה ועסקים', en: 'Media and business' }, lead: { he: '[ראש מחלקה]', en: '[Lead]' }, mentor: { he: 'ציפי, לירון גורי, רחל קנול', en: 'Tzipi, Liron Guri, Rachel Knol' },
     does: [{ he: 'תוכן ורשתות', en: 'Content and social' }, { he: 'ספונסרים', en: 'Sponsors' }, { he: 'קהילה', en: 'Community' }] },
 ];
