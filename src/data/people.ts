@@ -36,3 +36,28 @@ export const depts: Dept[] = [
   { name: { he: 'מדיה ועסקים', en: 'Media and business' }, lead: { he: '[ראש מחלקה]', en: '[Lead]' }, mentor: { he: 'ציפי, רחל קנול', en: 'Tzipi, Rachel Knol' },
     does: [{ he: 'תוכן ורשתות', en: 'Content and social' }, { he: 'ספונסרים', en: 'Sponsors' }, { he: 'קהילה', en: 'Community' }] },
 ];
+
+// Structure page tree: mentors on top, then the two captains, then the team leads.
+// links: which mentor draws a line to which box. Only the two lead mentors connect to the captains.
+// The media and community team has no lead yet, so it is not shown.
+export type Node = { id: string; title: T; who?: T; note?: T };
+export const tree: { mentors: (Node & { to: string[] })[]; captains: (Node & { to: string[] })[]; teams: Node[] } = {
+  mentors: [
+    { id: 'yehuda', title: { he: 'מנטור מכניקה', en: 'Mechanical mentor' }, who: { he: 'יהודה שלו', en: 'Yehuda Shalev' }, to: ['t-asm', 't-cad'] },
+    { id: 'leonid', title: { he: 'מנטור ייצור', en: 'Manufacturing mentor' }, who: { he: 'לאוניד קרפנקו', en: 'Leonid Karpenko' }, to: ['t-asm'] },
+    { id: 'guy', title: { he: 'מנטור ראשי · הכשרות', en: 'Co-lead mentor · Training' }, who: { he: 'גיא פצ׳ה', en: 'Guy Pacha' }, to: ['c-mech', 'c-ctrl'] },
+    { id: 'liron', title: { he: 'מנטור ראשי · כספים וספונסרים', en: 'Co-lead mentor · Finance and sponsors' }, who: { he: 'לירון גורי', en: 'Liron Guri' }, to: ['c-mech', 'c-ctrl'] },
+    { id: 'tzipi', title: { he: 'מנטורית מדיה', en: 'Media mentor' }, who: { he: 'ציפי', en: 'Tzipi' }, to: [] },
+    { id: 'rachel', title: { he: 'מנטורית קהילה', en: 'Community mentor' }, who: { he: 'רחל קנול', en: 'Rachel Knol' }, to: [] },
+  ],
+  captains: [
+    { id: 'c-mech', title: { he: 'קפטן מכניקה', en: 'Mechanics captain' }, to: ['t-asm', 't-cad'] },
+    { id: 'c-ctrl', title: { he: 'קפטן בקרה', en: 'Control captain' }, to: ['t-elec', 't-prog'] },
+  ],
+  teams: [
+    { id: 't-asm', title: { he: 'הרכבה וייצור', en: 'Assembly and manufacturing' }, note: { he: 'ראש צוות', en: 'Team lead' } },
+    { id: 't-cad', title: { he: 'CAD', en: 'CAD' }, note: { he: 'ראש צוות', en: 'Team lead' } },
+    { id: 't-elec', title: { he: 'חשמל', en: 'Electrical' }, note: { he: 'ראש צוות', en: 'Team lead' } },
+    { id: 't-prog', title: { he: 'תכנות', en: 'Programming' }, note: { he: 'ראש הצוות: קפטן הבקרה', en: 'Led by the control captain' } },
+  ],
+};

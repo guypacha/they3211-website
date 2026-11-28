@@ -1,31 +1,25 @@
 ---
 import Base from '../layouts/Base.astro';
 import TeamTabs from './TeamTabs.astro';
-import { leadership, depts } from '../data/people';
+import { tree } from '../data/people';
 const { lang = 'he' } = Astro.props as { lang?: 'he' | 'en' };
 const he = lang === 'he';
 const t = he
-  ? { title: 'מבנה הקבוצה', desc: 'איך קבוצה 3211 בנויה: הנהלה, קפטנים וחמש מחלקות.', lbl: 'מבנה הקבוצה', h: 'איך הקבוצה עובדת.', p: 'כל תלמיד שייך למחלקה אחת לפחות. בכל מחלקה יש ראש מחלקה מהתלמידים ומנטור שמלווה אותה. הקפטנים מחברים בין המחלקות, ושני המנטורים הראשיים אחראים יחד על התמונה הכוללת.', lead: 'ראש מחלקה', mentor: 'מנטור', depts: 'המחלקות', flow: 'איך מתקבלות החלטות', steps: [['כל שבוע', 'הקפטנים וראשי המחלקות קובעים יעדים לשבוע ובודקים מה נתקע.'], ['כל החלטה גדולה', 'ראשי המחלקות מציגים אפשרויות, הקבוצה מצביעה, והמנטורים מאשרים בטיחות ותקציב.'], ['כל עונה', 'בסוף העונה בוחרים קפטנים וראשי מחלקות חדשים לשנה הבאה.']] }
-  : { title: 'Team structure', desc: 'How team 3211 is organized: leadership, captains and five departments.', lbl: 'Team structure', h: 'How the team works.', p: 'Every student belongs to at least one department. Each department has a student lead and a mentor. The captains connect the departments, and the two co-lead mentors look after the whole picture together.', lead: 'Student lead', mentor: 'Mentor', depts: 'Departments', flow: 'How decisions are made', steps: [['Every week', 'Captains and department leads set the goals for the week and check what is stuck.'], ['Every big decision', 'Department leads present options, the team votes, and mentors sign off on safety and budget.'], ['Every season', 'At the end of the season we choose new captains and department leads for next year.']] };
+  ? { title: 'מבנה הקבוצה', desc: 'איך קבוצה 3211 בנויה: מנטורים, שני קפטנים וראשי צוותים.', lbl: 'מבנה הקבוצה', h: 'איך הקבוצה עובדת.', p: 'למעלה המנטורים, ושני המנטורים הראשיים מלווים את הקפטנים. יש שני קפטנים, אחד לבקרה ואחד למכניקה, ומתחתם ראשי הצוותים. כל מנטור מחובר בקו לצוות שהוא מלווה.', rowM: 'מנטורים', rowC: 'קפטנים', rowT: 'ראשי צוותים', tbd: 'שם בקרוב', keyLine: 'מי מוביל את מי', keyMentor: 'מנטור שמלווה צוות', lead: 'ראש מחלקה', mentor: 'מנטור', depts: 'המחלקות', flow: 'איך מתקבלות החלטות', steps: [['כל שבוע', 'הקפטנים וראשי הצוותים קובעים יעדים לשבוע ובודקים מה נתקע.'], ['כל החלטה גדולה', 'ראשי הצוותים מציגים אפשרויות, הקבוצה מצביעה, והמנטורים מאשרים בטיחות ותקציב.'], ['כל עונה', 'בסוף העונה בוחרים קפטנים וראשי מחלקות חדשים לשנה הבאה.']] }
+  : { title: 'Team structure', desc: 'How team 3211 is organized: mentors, two captains and team leads.', lbl: 'Team structure', h: 'How the team works.', p: 'Mentors are at the top, and the two co-lead mentors guide the captains. There are two captains, one for control and one for mechanics, and the team leads sit under them. Each mentor has a line to the team they guide.', rowM: 'Mentors', rowC: 'Captains', rowT: 'Team leads', tbd: 'Name coming soon', keyLine: 'Who leads whom', keyMentor: 'Mentor guiding a team', lead: 'Student lead', mentor: 'Mentor', depts: 'Departments', flow: 'How decisions are made', steps: [['Every week', 'Captains and team leads set the goals for the week and check what is stuck.'], ['Every big decision', 'Team leads present options, the team votes, and mentors sign off on safety and budget.'], ['Every season', 'At the end of the season we choose new captains and team leads for next year.']] };
 ---
 <Base title={t.title} description={t.desc} lang={lang}>
   <div class="w">
     <header class="page-head"><span class="lbl">{t.lbl}</span><h1>{t.h}</h1><p>{t.p}</p><TeamTabs lang={lang} cur="structure" /></header>
-    <section class="org" aria-label={t.lbl}>
-      <div class="org-top rv">
-        {[leadership.head, leadership.finance, leadership.captains].map((x, i) => (
-          <div class:list={['org-n', { lead: i < 2 }]}><span class="lbl acc">{x.title[lang]}</span><b>{x.who[lang]}</b><p set:html={x.does[lang]} /></div>))}
-      </div>
-      <h2 class="org-h">{t.depts}</h2>
-      <ul class="org-d">
-        {depts.map((d, i) => (
-          <li class="rv">
-            <span class="org-i"><bdi>0{i + 1}</bdi></span>
-            <h3>{d.name[lang]}</h3>
-            <ul class="org-does">{d.does.map(x => <li>{x[lang]}</li>)}</ul>
-            <dl><div><dt>{t.lead}</dt><dd>{d.lead[lang]}</dd></div><div><dt>{t.mentor}</dt><dd>{d.mentor[lang]}</dd></div></dl>
-          </li>))}
-      </ul>
+    <section class="tree" id="tree" aria-label={t.lbl}>
+      <svg class="tree-lines" aria-hidden="true"></svg>
+      <h2 class="tree-h">{t.rowM}</h2>
+      <ul class="tree-row rm">{tree.mentors.map(n => <li class:list={['tn', { lead: n.id === 'guy' || n.id === 'liron' }]} data-id={n.id} data-to={n.to.join(' ')} tabindex="0"><span class="lbl acc">{n.title[lang]}</span><b>{n.who?.[lang]}</b></li>)}</ul>
+      <h2 class="tree-h">{t.rowC}</h2>
+      <ul class="tree-row rc">{tree.captains.map(n => <li class="tn cap" data-id={n.id} data-to={n.to.join(' ')} tabindex="0"><b>{n.title[lang]}</b><span class="tn-who">{n.who?.[lang] ?? t.tbd}</span></li>)}</ul>
+      <h2 class="tree-h">{t.rowT}</h2>
+      <ul class="tree-row rt">{tree.teams.map(n => <li class="tn team" data-id={n.id} tabindex="0"><b><bdi>{n.title[lang]}</bdi></b><span class="tn-who">{n.note?.[lang]}</span>{(() => { const ms = tree.mentors.filter(m => m.to.includes(n.id)); return ms.length ? <span class="tn-mentors">{t.mentor}: {ms.map(m => m.who![lang]).join(', ')}</span> : null; })()}</li>)}</ul>
+      <p class="tree-key"><span class="k solid"></span>{t.keyLine} <span class="k dash"></span><span class="km">{t.keyMentor}</span></p>
     </section>
     <section class="sec"><div class="head"><h2>{t.flow}</h2></div>
       <ol class="flow">{t.steps.map(([a, b]) => <li class="rv"><b>{a}</b><p>{b}</p></li>)}</ol>
@@ -33,24 +27,59 @@ const t = he
   </div>
 </Base>
 <style>
-.org{padding-top:56px}
-.org-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;position:relative}
-.org-n{background:var(--bg2);border-radius:var(--r-lg,36px);padding:28px 32px;display:flex;flex-direction:column;gap:6px}
-.org-n.lead{background:var(--ink);color:var(--bg)}.org-n.lead .lbl{color:var(--lead-lbl)}.org-n.lead p{color:var(--lead-p)}
-.org-n b{font-size:24px;font-weight:700}
-.org-n p{margin:0;color:var(--soft);font-size:15px}
-.org-h{font-size:15px;font-weight:500;color:var(--soft);margin:44px 0 16px;display:flex;align-items:center;gap:14px}
-.org-h::after{content:"";flex:1;height:1px;background:var(--line)}
-.org-d{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
-.org-d>li{background:var(--bg2);border-radius:var(--r,28px);padding:22px 20px;display:flex;flex-direction:column;gap:10px;position:relative}
-.org-i{font-family:var(--n);font-weight:700;font-size:15px;color:var(--blue)}
-.org-d h3{margin:0;font-size:21px;font-weight:700}
-.org-does{list-style:none;margin:0;padding:0;color:var(--soft);font-size:14px;display:grid;gap:2px}
-.org-d dl{margin:auto 0 0;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:8px}
-.org-d dt{font-size:12px;color:var(--dim)}.org-d dd{margin:0;font-size:15px}
+.tree{position:relative;padding-top:48px}
+.tree-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.tree-lines :global(path){fill:none;stroke:var(--soft);stroke-width:1.5;opacity:.45;transition:opacity .2s,stroke .2s}
+.tree-lines :global(path.h){stroke:var(--blue);stroke-width:2;opacity:.8}
+.tree-lines :global(path.mt){stroke-dasharray:5 5}
+.tree.focus .tree-lines :global(path){opacity:.1}.tree.focus .tree-lines :global(path.on){opacity:1}
+.tree.focus .tn{opacity:.35}.tree.focus .tn.on{opacity:1}
+.tree-h{font-size:13px;font-weight:500;color:var(--dim);margin:0 0 12px;text-align:center;letter-spacing:.02em}
+.tree-row{list-style:none;margin:0 0 72px;padding:0;display:flex;justify-content:center;gap:14px;flex-wrap:wrap;position:relative;z-index:1}
+.tree-row.rt{margin-bottom:28px}
+.tn{background:var(--bg2);border-radius:22px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 0;max-width:200px;text-align:center;transition:opacity .2s;cursor:default;outline-offset:3px}
+.tn b{font-size:18px;font-weight:700;white-space:normal;overflow-wrap:break-word;text-wrap:balance}
+.tn .lbl{font-size:12px}
+.tn.lead{background:var(--ink);color:var(--bg)}.tn.lead .lbl{color:var(--lead-lbl)}
+.tn.cap{max-width:280px;border:1.5px solid var(--blue)}
+.tn.team{max-width:240px}
+.tn :global(bdi){white-space:normal}
+.tn-who{font-size:13px;color:var(--dim)}
+.tn-mentors{display:none;font-size:12px;color:var(--soft)}
+.tree-key{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:13px;color:var(--dim);margin:0}
+.k{display:inline-block;width:28px;height:0;border-top:2px solid var(--blue)}.k.dash{border-top:1.5px dashed var(--soft);margin-inline-start:14px}
+@media(max-width:760px){.tree-lines :global(path.mt){display:none}.tn-mentors{display:block}.k.dash,.km{display:none}.tree-row.rm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.tree-row.rt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.rt .tn{padding:10px 6px}.rt .tn b{font-size:14px}.rt .tn-who,.tn-mentors{font-size:11px}.rm [data-id=guy]{order:5}.rm [data-id=liron]{order:6}.rm [data-id=rachel]{order:4}.tn{max-width:none;padding:12px 10px}.tn b{font-size:15px}.tree-row{margin-bottom:56px}}
 .flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:f}
 .flow li{border-top:2px solid var(--blue);padding-top:16px}
 .flow b{font-size:19px}.flow p{margin:6px 0 0;color:var(--soft)}
 @media(max-width:1000px){.org-d{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.org-top,.flow{grid-template-columns:1fr}.org-d{grid-template-columns:minmax(0,1fr)}.org-n{padding:24px}}
 </style>
+<script>
+  // Draw the tree lines between boxes, and redraw when the layout changes.
+  const tree = document.getElementById('tree');
+  if (tree) {
+    const svg = tree.querySelector('svg')!, NS = 'http://www.w3.org/2000/svg';
+    const box = (id: string) => tree.querySelector<HTMLElement>(`[data-id="${id}"]`);
+    const draw = () => {
+      const r0 = tree.getBoundingClientRect(); svg.innerHTML = '';
+      tree.querySelectorAll<HTMLElement>('[data-to]').forEach(a => a.dataset.to!.split(' ').filter(Boolean).forEach(id => {
+        const b = box(id); if (!b) return;
+        const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+        const x1 = ra.left + ra.width / 2 - r0.left, y1 = ra.bottom - r0.top, x2 = rb.left + rb.width / 2 - r0.left, y2 = rb.top - r0.top, my = (y1 + y2) / 2;
+        const p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', `M${x1} ${y1}C${x1} ${my} ${x2} ${my} ${x2} ${y2}`);
+        const mentorToTeam = a.closest('.rm') && b.classList.contains('team');
+        p.setAttribute('class', mentorToTeam ? 'mt' : 'h'); p.dataset.a = a.dataset.id; p.dataset.b = id; svg.appendChild(p);
+      }));
+    };
+    new ResizeObserver(draw).observe(tree); document.fonts?.ready.then(draw); draw();
+    // Stage the focus: pointing at a box lights up its own lines and the boxes they reach.
+    const focus = (el: HTMLElement | null) => {
+      tree.classList.toggle('focus', !!el); tree.querySelectorAll('.on').forEach(x => x.classList.remove('on')); if (!el) return;
+      const id = el.dataset.id!; el.classList.add('on');
+      svg.querySelectorAll<SVGPathElement>('path').forEach(p => { if (p.dataset.a === id || p.dataset.b === id) { p.classList.add('on'); box(p.dataset.a === id ? p.dataset.b! : p.dataset.a!)?.classList.add('on'); } });
+    };
+    tree.querySelectorAll<HTMLElement>('.tn').forEach(n => { n.addEventListener('mouseenter', () => focus(n)); n.addEventListener('focus', () => focus(n)); n.addEventListener('mouseleave', () => focus(null)); n.addEventListener('blur', () => focus(null)); });
+  }
+</script>
